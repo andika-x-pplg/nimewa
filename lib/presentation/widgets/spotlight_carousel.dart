@@ -125,12 +125,16 @@ class _SpotlightCarouselState extends State<SpotlightCarousel> {
             ),
           ),
           const SizedBox(width: 10),
-          Text(
-            widget.sectionTitle,
-            style: AppTypography.titleMedium.copyWith(
-              color: AppColors.textPrimary,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 0.5,
+          Flexible(
+            child: Text(
+              widget.sectionTitle,
+              style: AppTypography.titleMedium.copyWith(
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 0.5,
+              ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
             ),
           ),
         ],
