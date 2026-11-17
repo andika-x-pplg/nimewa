@@ -51,7 +51,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(AnimeGridCard), findsNWidgets(6));
-    expect(find.text('Hotaru no Yomeiri'), findsOneWidget);
+    expect(find.text('Kaguya-sama: Love is War - Ultra Romantic'), findsOneWidget);
   });
 }
 

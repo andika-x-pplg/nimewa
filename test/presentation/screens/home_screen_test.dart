@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nimeva/main.dart';
+import 'package:nimeva/presentation/screens/anime_detail_screen.dart';
+import 'package:nimeva/presentation/screens/anime_watch_screen.dart';
 import 'package:nimeva/presentation/screens/home_screen.dart';
 import 'package:nimeva/presentation/widgets/custom_bottom_nav.dart';
 import 'package:nimeva/presentation/widgets/empty_continue_watching.dart';
@@ -131,6 +133,33 @@ void main() {
 
       expect(find.text('dikzzz'), findsOneWidget);
       expect(find.text('Jelajah'), findsNothing);
+    });
+
+    testWidgets('tapping Tonton Sekarang in SpotlightCarousel navigates to Detail and then Watch Screen', (tester) async {
+      tester.view.physicalSize = const Size(400, 1000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await tester.pumpWidget(const NimevaApp());
+      await tester.pumpAndSettle();
+
+      // Tap "Tonton Sekarang" in SpotlightCarousel
+      expect(find.text('Tonton Sekarang'), findsOneWidget);
+      await tester.tap(find.text('Tonton Sekarang'));
+      await tester.pumpAndSettle();
+
+      // Should be on AnimeDetailScreen
+      expect(find.byType(AnimeDetailScreen), findsOneWidget);
+
+      // Now tap "Mulai Nonton" in AnimeDetailScreen
+      expect(find.text('Mulai Nonton'), findsOneWidget);
+      await tester.tap(find.text('Mulai Nonton'));
+      await tester.pumpAndSettle();
+
+      // Should now be on AnimeWatchScreen
+      expect(find.byType(AnimeWatchScreen), findsOneWidget);
+      expect(find.byKey(const Key('video_play_pause_button')), findsOneWidget);
     });
   });
 }

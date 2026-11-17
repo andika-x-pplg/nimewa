@@ -5,6 +5,7 @@ import '../../data/models/anime_detail.dart';
 import '../../data/models/anime_item.dart';
 import '../../data/models/episode_item.dart';
 import '../../data/services/anime_stream_service.dart';
+import 'anime_watch_screen.dart';
 
 /// Screen displaying anime information, synopsis, and episode streaming list.
 class AnimeDetailScreen extends StatefulWidget {
@@ -299,6 +300,18 @@ class _AnimeDetailScreenState extends State<AnimeDetailScreen> {
     );
   }
 
+  void _openWatchScreen(AnimeDetail detail, EpisodeItem episode) {
+    widget.onEpisodeTap?.call(episode);
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => AnimeWatchScreen(
+          anime: detail,
+          initialEpisode: episode,
+        ),
+      ),
+    );
+  }
+
   Widget _buildActionButtons(AnimeDetail? detail) {
     final firstEpisode = detail?.episodes.isNotEmpty ?? false ? detail!.episodes.first : null;
 
@@ -308,8 +321,8 @@ class _AnimeDetailScreenState extends State<AnimeDetailScreen> {
         Expanded(
           child: ElevatedButton.icon(
             onPressed: () {
-              if (firstEpisode != null) {
-                widget.onEpisodeTap?.call(firstEpisode);
+              if (detail != null && firstEpisode != null) {
+                _openWatchScreen(detail, firstEpisode);
               }
             },
             icon: const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 22),
@@ -448,7 +461,11 @@ class _AnimeDetailScreenState extends State<AnimeDetailScreen> {
             itemBuilder: (context, index) {
               final episode = episodes[index];
               return InkWell(
-                onTap: () => widget.onEpisodeTap?.call(episode),
+                onTap: () {
+                  if (detail != null) {
+                    _openWatchScreen(detail, episode);
+                  }
+                },
                 borderRadius: BorderRadius.circular(10),
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
