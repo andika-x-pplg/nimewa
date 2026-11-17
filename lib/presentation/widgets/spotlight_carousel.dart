@@ -94,10 +94,10 @@ class _SpotlightCarouselState extends State<SpotlightCarousel> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: AppColors.accentCrimson.withValues(alpha: 0.15),
+              color: AppColors.accentBlue.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(6),
               border: Border.all(
-                color: AppColors.accentCrimson.withValues(alpha: 0.3),
+                color: AppColors.accentBlue.withValues(alpha: 0.3),
                 width: 1,
               ),
             ),
@@ -108,7 +108,7 @@ class _SpotlightCarouselState extends State<SpotlightCarousel> {
                   width: 6,
                   height: 6,
                   decoration: const BoxDecoration(
-                    color: AppColors.accentCrimson,
+                    color: AppColors.accentBlue,
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -116,7 +116,7 @@ class _SpotlightCarouselState extends State<SpotlightCarousel> {
                 Text(
                   widget.sectionBadge,
                   style: AppTypography.labelSmall.copyWith(
-                    color: AppColors.accentCrimson,
+                    color: AppColors.accentBlue,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 0.8,
                   ),
@@ -352,7 +352,7 @@ class _SpotlightCarouselState extends State<SpotlightCarousel> {
               ),
             ),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.accentCrimson,
+              backgroundColor: AppColors.accentBlue,
               foregroundColor: Colors.white,
               elevation: 0,
               padding: const EdgeInsets.symmetric(vertical: 12),
@@ -421,7 +421,7 @@ class _SpotlightCarouselState extends State<SpotlightCarousel> {
               width: isActive ? 22.0 : 6.0,
               decoration: BoxDecoration(
                 color: isActive
-                    ? AppColors.accentCrimson
+                    ? AppColors.accentBlue
                     : AppColors.textMuted.withValues(alpha: 0.4),
                 borderRadius: BorderRadius.circular(3.0),
               ),

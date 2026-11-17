@@ -116,7 +116,7 @@ class HomeHeader extends StatelessWidget {
                       width: 7,
                       height: 7,
                       decoration: const BoxDecoration(
-                        color: AppColors.accentCrimson,
+                        color: AppColors.accentBlue,
                         shape: BoxShape.circle,
                       ),
                     ),

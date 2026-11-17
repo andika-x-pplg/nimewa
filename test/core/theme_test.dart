@@ -6,16 +6,16 @@ import 'package:nimeva/core/theme/app_theme.dart';
 
 void main() {
   group('AppColors', () {
-    test('defines correct Obsidian & Crimson design tokens', () {
-      expect(AppColors.bgPrimary, const Color(0xFF0B0D13));
-      expect(AppColors.surfaceCard, const Color(0xFF141824));
-      expect(AppColors.surfaceElevated, const Color(0xFF1D2333));
-      expect(AppColors.borderSubtle, const Color(0xFF252D40));
-      expect(AppColors.accentCrimson, const Color(0xFFE50914));
-      expect(AppColors.accentAmber, const Color(0xFFFFB703));
-      expect(AppColors.textPrimary, const Color(0xFFF8FAFC));
-      expect(AppColors.textSecondary, const Color(0xFF94A3B8));
-      expect(AppColors.textMuted, const Color(0xFF64748B));
+    test('defines correct Modern Monochrome & Azure Blue design tokens', () {
+      expect(AppColors.bgPrimary, const Color(0xFF000000));
+      expect(AppColors.surfaceCard, const Color(0xFF121212));
+      expect(AppColors.surfaceElevated, const Color(0xFF1C1C1E));
+      expect(AppColors.borderSubtle, const Color(0xFF26262A));
+      expect(AppColors.accentBlue, const Color(0xFF0066FF));
+      expect(AppColors.accentAmber, const Color(0xFFFFB800));
+      expect(AppColors.textPrimary, const Color(0xFFFFFFFF));
+      expect(AppColors.textSecondary, const Color(0xFFA1A1AA));
+      expect(AppColors.textMuted, const Color(0xFF71717A));
     });
   });
 
@@ -34,12 +34,12 @@ void main() {
   });
 
   group('AppTheme', () {
-    test('provides darkTheme configured for Obsidian & Crimson palette', () {
+    test('provides darkTheme configured for Modern Monochrome & Azure Blue palette', () {
       final theme = AppTheme.darkTheme;
 
       expect(theme.brightness, Brightness.dark);
       expect(theme.scaffoldBackgroundColor, AppColors.bgPrimary);
-      expect(theme.colorScheme.primary, AppColors.accentCrimson);
+      expect(theme.colorScheme.primary, AppColors.accentBlue);
       expect(theme.colorScheme.surface, AppColors.surfaceCard);
     });
   });

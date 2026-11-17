@@ -81,7 +81,7 @@ void main() {
       );
 
       final jadwalText = tester.widget<Text>(find.text('Jadwal'));
-      expect(jadwalText.style?.color, equals(AppColors.accentCrimson));
+      expect(jadwalText.style?.color, equals(AppColors.accentBlue));
 
       final homeText = tester.widget<Text>(find.text('Home'));
       expect(homeText.style?.color, equals(AppColors.textMuted));

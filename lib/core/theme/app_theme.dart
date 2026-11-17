@@ -10,7 +10,7 @@ abstract final class AppTheme {
       scaffoldBackgroundColor: AppColors.bgPrimary,
       canvasColor: AppColors.bgPrimary,
       colorScheme: const ColorScheme.dark(
-        primary: AppColors.accentCrimson,
+        primary: AppColors.accentBlue,
         secondary: AppColors.accentAmber,
         surface: AppColors.surfaceCard,
         onPrimary: Colors.white,
@@ -36,7 +36,7 @@ abstract final class AppTheme {
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: AppColors.bgPrimary,
-        selectedItemColor: AppColors.accentCrimson,
+        selectedItemColor: AppColors.accentBlue,
         unselectedItemColor: AppColors.textSecondary,
         type: BottomNavigationBarType.fixed,
         elevation: 0,

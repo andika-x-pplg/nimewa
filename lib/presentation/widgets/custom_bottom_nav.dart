@@ -54,7 +54,7 @@ class CustomBottomNavBar extends StatelessWidget {
             children: List.generate(_items.length, (index) {
               final item = _items[index];
               final isActive = index == currentIndex;
-              final color = isActive ? AppColors.accentCrimson : AppColors.textMuted;
+              final color = isActive ? AppColors.accentBlue : AppColors.textMuted;
 
               return Expanded(
                 child: Semantics(
@@ -65,7 +65,7 @@ class CustomBottomNavBar extends StatelessWidget {
                     onTap: () => onTap(index),
                     containedInkWell: true,
                     highlightShape: BoxShape.rectangle,
-                    splashColor: AppColors.accentCrimson.withValues(alpha: 0.12),
+                    splashColor: AppColors.accentBlue.withValues(alpha: 0.12),
                     highlightColor: Colors.transparent,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -95,7 +95,7 @@ class CustomBottomNavBar extends StatelessWidget {
                               width: 4,
                               height: 4,
                               decoration: const BoxDecoration(
-                                color: AppColors.accentCrimson,
+                                color: AppColors.accentBlue,
                                 shape: BoxShape.circle,
                               ),
                             )

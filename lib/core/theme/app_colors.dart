@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
 
 abstract final class AppColors {
-  // Backgrounds
-  static const Color bgPrimary = Color(0xFF0B0D13);
+  // Backgrounds - Modern Monochrome OLED
+  static const Color bgPrimary = Color(0xFF000000);
 
   // Surfaces
-  static const Color surfaceCard = Color(0xFF141824);
-  static const Color surfaceElevated = Color(0xFF1D2333);
+  static const Color surfaceCard = Color(0xFF121212);
+  static const Color surfaceElevated = Color(0xFF1C1C1E);
 
   // Borders
-  static const Color borderSubtle = Color(0xFF252D40);
+  static const Color borderSubtle = Color(0xFF26262A);
 
-  // Accents
-  static const Color accentCrimson = Color(0xFFE50914);
-  static const Color accentAmber = Color(0xFFFFB703);
+  // Accents - Modern Electric / Azure Blue
+  static const Color accentBlue = Color(0xFF0066FF);
+  static const Color accentPrimary = Color(0xFF0066FF);
+  static const Color accentCrimson = Color(0xFF0066FF); // Alias for compatibility
+  static const Color accentAmber = Color(0xFFFFB800);
 
-  // Text
-  static const Color textPrimary = Color(0xFFF8FAFC);
-  static const Color textSecondary = Color(0xFF94A3B8);
-  static const Color textMuted = Color(0xFF64748B);
+  // Text - Pure White & Crisp Neutral Slate
+  static const Color textPrimary = Color(0xFFFFFFFF);
+  static const Color textSecondary = Color(0xFFA1A1AA);
+  static const Color textMuted = Color(0xFF71717A);
 }
