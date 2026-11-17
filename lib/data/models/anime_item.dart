@@ -9,6 +9,8 @@ class AnimeItem {
   final String description;
   final String posterUrl;
   final String backdropUrl;
+  final String episodeInfo;
+  final String statusLabel;
 
   const AnimeItem({
     required this.id,
@@ -20,6 +22,8 @@ class AnimeItem {
     required this.description,
     required this.posterUrl,
     required this.backdropUrl,
+    this.episodeInfo = 'SUB · EP 12',
+    this.statusLabel = 'Ongoing',
   });
 
   @override
