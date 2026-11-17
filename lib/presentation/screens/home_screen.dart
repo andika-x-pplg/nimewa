@@ -2,14 +2,17 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../data/mock/mock_anime_data.dart';
+import '../../data/models/anime_item.dart';
 import '../widgets/custom_bottom_nav.dart';
 import '../widgets/empty_continue_watching.dart';
 import '../widgets/home_header.dart';
 import '../widgets/spotlight_carousel.dart';
+import 'anime_detail_screen.dart';
 import 'explore_screen.dart';
 
 /// Main Shell Screen for Nimeva.
-/// Supports switching between Home, Explore, and other tabs via CustomBottomNavBar.
+/// Supports switching between Home, Explore, and other tabs via CustomBottomNavBar,
+/// and navigating to AnimeDetailScreen when any anime is selected.
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -20,19 +23,39 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
 
+  void _openAnimeDetail(AnimeItem anime) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => AnimeDetailScreen(
+          animeId: anime.id,
+          previewItem: anime,
+        ),
+      ),
+    );
+  }
+
   Widget _buildHomeTab() {
     return SafeArea(
       bottom: false,
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            HomeHeader(username: 'dikzzz'),
-            SizedBox(height: 8),
-            SpotlightCarousel(items: mockPopularAnime),
-            SizedBox(height: 20),
-            EmptyContinueWatching(),
-            SizedBox(height: 24),
+          children: [
+            const HomeHeader(username: 'dikzzz'),
+            const SizedBox(height: 8),
+            SpotlightCarousel(
+              items: mockPopularAnime,
+              onWatchNow: _openAnimeDetail,
+            ),
+            const SizedBox(height: 20),
+            EmptyContinueWatching(
+              onExploreTap: () {
+                setState(() {
+                  _currentIndex = 1;
+                });
+              },
+            ),
+            const SizedBox(height: 24),
           ],
         ),
       ),
@@ -79,7 +102,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildBody() {
     switch (_currentIndex) {
       case 1:
-        return const ExploreScreen();
+        return ExploreScreen(
+          onAnimeTap: _openAnimeDetail,
+        );
       case 2:
         return _buildPlaceholderTab('Jadwal Tayang Anime', Icons.calendar_month_rounded);
       case 3:
