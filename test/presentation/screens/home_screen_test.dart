@@ -107,5 +107,30 @@ void main() {
       expect(find.byType(EmptyContinueWatching), findsOneWidget);
       expect(find.text('Tidak ada riwayat tonton saat ini.'), findsOneWidget);
     });
+
+    testWidgets('tapping Explore tab transitions view to ExploreScreen with 2-column grid', (tester) async {
+      await tester.pumpWidget(const NimevaApp());
+      await tester.pumpAndSettle();
+
+      // Initially on Home
+      expect(find.text('dikzzz'), findsOneWidget);
+      expect(find.text('Jelajah'), findsNothing);
+
+      // Tap Explore
+      await tester.tap(find.text('Explore'));
+      await tester.pumpAndSettle();
+
+      // Now ExploreScreen is rendered
+      expect(find.text('Jelajah'), findsOneWidget);
+      expect(find.text('Temukan anime favoritmu'), findsOneWidget);
+      expect(find.text('Solo Leveling: Arise from the Shadow'), findsOneWidget);
+
+      // Tap Home again
+      await tester.tap(find.text('Home'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('dikzzz'), findsOneWidget);
+      expect(find.text('Jelajah'), findsNothing);
+    });
   });
 }
