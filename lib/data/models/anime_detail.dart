@@ -45,3 +45,4 @@ class AnimeDetail {
   @override
   String toString() => 'AnimeDetail(id: $id, title: $title, episodes: ${episodes.length})';
 }
+

@@ -27,3 +27,4 @@ class EpisodeItem {
   @override
   String toString() => 'EpisodeItem(id: $id, ep: $episodeNumber, title: $title)';
 }
+
