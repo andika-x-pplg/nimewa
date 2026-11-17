@@ -427,3 +427,4 @@ List<AnimeItem> getExploreAnime({required String filter, String? genre}) {
       return popularAnimeList;
   }
 }
+

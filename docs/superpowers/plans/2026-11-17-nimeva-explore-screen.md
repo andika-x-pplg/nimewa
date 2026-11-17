@@ -37,11 +37,11 @@
   - `Map<String, List<AnimeItem>> mockExploreCatalog`: Berisi list 6 anime untuk kategori/tab: 'popular', 'latest', 'top_rated', 'action', 'fantasy', 'romance', 'scifi', 'isekai'.
   - `List<AnimeItem> getExploreAnime({required String filter, String? genre})`: Helper function untuk mengambil 6 anime berdasarkan filter aktif.
 
-- [ ] **Step 1: Write failing test in `test/data/explore_data_test.dart`**
-- [ ] **Step 2: Run test to verify it fails (`flutter test test/data/explore_data_test.dart`)**
-- [ ] **Step 3: Update `AnimeItem` and implement `mock_explore_data.dart`**
-- [ ] **Step 4: Run test to verify it passes (`flutter test test/data/explore_data_test.dart`)**
-- [ ] **Step 5: Commit**
+- [x] **Step 1: Write failing test in `test/data/explore_data_test.dart`**
+- [x] **Step 2: Run test to verify it fails (`flutter test test/data/explore_data_test.dart`)**
+- [x] **Step 3: Update `AnimeItem` and implement `mock_explore_data.dart`**
+- [x] **Step 4: Run test to verify it passes (`flutter test test/data/explore_data_test.dart`)**
+- [x] **Step 5: Commit**
 
 ---
 
@@ -55,11 +55,11 @@
 - Produces:
   - `class AnimeGridCard extends StatelessWidget`: Menerima `AnimeItem item` dan `VoidCallback? onTap`. Menampilkan poster rasio 2:3, badge rating amber, judul tebal putih, dan subtext episode.
 
-- [ ] **Step 1: Write failing widget test in `test/presentation/widgets/anime_grid_card_test.dart`**
-- [ ] **Step 2: Run test to verify it fails (`flutter test test/presentation/widgets/anime_grid_card_test.dart`)**
-- [ ] **Step 3: Implement `lib/presentation/widgets/anime_grid_card.dart`**
-- [ ] **Step 4: Run test to verify it passes (`flutter test test/presentation/widgets/anime_grid_card_test.dart`)**
-- [ ] **Step 5: Commit**
+- [x] **Step 1: Write failing widget test in `test/presentation/widgets/anime_grid_card_test.dart`**
+- [x] **Step 2: Run test to verify it fails (`flutter test test/presentation/widgets/anime_grid_card_test.dart`)**
+- [x] **Step 3: Implement `lib/presentation/widgets/anime_grid_card.dart`**
+- [x] **Step 4: Run test to verify it passes (`flutter test test/presentation/widgets/anime_grid_card_test.dart`)**
+- [x] **Step 5: Commit**
 
 ---
 
@@ -73,11 +73,11 @@
 - Produces:
   - `class ExploreScreen extends StatefulWidget`: Menampilkan header, search input, filter pills (Popular, Latest, Top rated), horizontal genre chips (Semua, Action, Fantasy, Romance, Sci-Fi, Isekai), dan 2-column grid berisi 6 anime.
 
-- [ ] **Step 1: Write failing widget test in `test/presentation/screens/explore_screen_test.dart`**
-- [ ] **Step 2: Run test to verify it fails (`flutter test test/presentation/screens/explore_screen_test.dart`)**
-- [ ] **Step 3: Implement `lib/presentation/screens/explore_screen.dart`**
-- [ ] **Step 4: Run test to verify it passes (`flutter test test/presentation/screens/explore_screen_test.dart`)**
-- [ ] **Step 5: Commit**
+- [x] **Step 1: Write failing widget test in `test/presentation/screens/explore_screen_test.dart`**
+- [x] **Step 2: Run test to verify it fails (`flutter test test/presentation/screens/explore_screen_test.dart`)**
+- [x] **Step 3: Implement `lib/presentation/screens/explore_screen.dart`**
+- [x] **Step 4: Run test to verify it passes (`flutter test test/presentation/screens/explore_screen_test.dart`)**
+- [x] **Step 5: Commit**
 
 ---
 
@@ -91,9 +91,10 @@
 - Consumes: `HomeScreen`, `ExploreScreen`, `CustomBottomNavBar`.
 - Behavior: Tapping tab "Explore" pada bottom nav beralih menampilkan `ExploreScreen`.
 
-- [ ] **Step 1: Write failing test in `test/presentation/screens/home_screen_test.dart` verifying tab switching to ExploreScreen**
-- [ ] **Step 2: Run test to verify it fails**
-- [ ] **Step 3: Update `HomeScreen` to switch between Home content and `ExploreScreen`**
-- [ ] **Step 4: Run all tests in the project (`flutter test`)**
-- [ ] **Step 5: Run `flutter analyze`**
-- [ ] **Step 6: Commit and finalize**
+- [x] **Step 1: Write failing test in `test/presentation/screens/home_screen_test.dart` verifying tab switching to ExploreScreen**
+- [x] **Step 2: Run test to verify it fails**
+- [x] **Step 3: Update `HomeScreen` to switch between Home content and `ExploreScreen`**
+- [x] **Step 4: Run all tests in the project (`flutter test`)**
+- [x] **Step 5: Run `flutter analyze`**
+- [x] **Step 6: Commit and finalize**
+

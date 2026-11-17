@@ -54,3 +54,4 @@ void main() {
     expect(find.text('Hotaru no Yomeiri'), findsOneWidget);
   });
 }
+
