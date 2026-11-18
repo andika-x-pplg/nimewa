@@ -49,47 +49,87 @@ class AnimeSubtitleService {
   ];
 
   static final Map<String, List<SubtitleCue>> _subtitles = {
-    // Demon Slayer Episode 1
+    // Demon Slayer Episode 1 (Cruelty - 残酷)
     'demon-slayer-ep1': const [
       SubtitleCue(
         start: Duration(seconds: 0),
-        end: Duration(seconds: 4),
-        text: 'Tanjiro: Nezuko, bertahanlah! Jangan menyerah!',
+        end: Duration(seconds: 8),
+        text: 'Tanjiro: Kenapa harus jadi begini... Nezuko, bertahanlah! Jangan mati!',
       ),
       SubtitleCue(
-        start: Duration(seconds: 4),
-        end: Duration(seconds: 9),
-        text: 'Tanjiro: Kenapa keluargaku dibantai... Siapa yang melakukan ini?!',
+        start: Duration(seconds: 8),
+        end: Duration(seconds: 18),
+        text: 'Ibu (Kie): Wajahmu kotor oleh jelaga arang, Tanjiro. Kemarilah agar kuusap.',
       ),
       SubtitleCue(
-        start: Duration(seconds: 9),
-        end: Duration(seconds: 15),
-        text: 'Tanjiro: Tubuh Nezuko hangat... Dia masih hidup! Aku pasti menyelamatkanmu!',
+        start: Duration(seconds: 18),
+        end: Duration(seconds: 28),
+        text: 'Tanjiro: Ibu, aku akan pergi ke kota untuk menjual arang agar kita semua kenyang di tahun baru.',
       ),
       SubtitleCue(
-        start: Duration(seconds: 15),
-        end: Duration(seconds: 22),
+        start: Duration(seconds: 28),
+        end: Duration(seconds: 38),
+        text: 'Shigeru & Hanako: Kakak! Kami ingin ikut pergi ke kota bersamamu!',
+      ),
+      SubtitleCue(
+        start: Duration(seconds: 38),
+        end: Duration(seconds: 50),
+        text: 'Kie: Kalian tidak boleh ikut. Kalian tidak bisa berjalan secepat kakakmu di tengah salju lebat ini.',
+      ),
+      SubtitleCue(
+        start: Duration(seconds: 50),
+        end: Duration(seconds: 65),
+        text: 'Nezuko: Hati-hati di jalan ya, Kakak! Aku sedang menidurkan Rokuta.',
+      ),
+      SubtitleCue(
+        start: Duration(seconds: 65),
+        end: Duration(seconds: 85),
+        text: 'Warga Kota: Hei Tanjiro! Arang buatanmu selalu terbakar sangat baik. Terima kasih banyak!',
+      ),
+      SubtitleCue(
+        start: Duration(seconds: 85),
+        end: Duration(seconds: 110),
+        text: 'Paman Saburo: Tanjiro! Jangan naik gunung saat malam! Menginaplah di gubukku, iblis berkeliaran di malam hari!',
+      ),
+      SubtitleCue(
+        start: Duration(seconds: 110),
+        end: Duration(seconds: 135),
+        text: 'Tanjiro: Iblis? Apakah iblis pemakan manusia itu benar-benar ada, Paman?',
+      ),
+      SubtitleCue(
+        start: Duration(seconds: 135),
+        end: Duration(seconds: 165),
+        text: 'Paman Saburo: Ya, sejak zaman kuno. Para Pembasmi Iblis yang mempertaruhkan nyawa melindungi kita.',
+      ),
+      SubtitleCue(
+        start: Duration(seconds: 165),
+        end: Duration(seconds: 195),
+        text: 'Tanjiro (Kembali ke rumah): Bau apa ini... Bau darah pekat?!',
+      ),
+      SubtitleCue(
+        start: Duration(seconds: 195),
+        end: Duration(seconds: 235),
+        text: 'Tanjiro: Ibu?! Rokuta?! Hanako?! Takeo?! Kenapa semuanya tewas dibantai... Siapa yang berbuat ini?!',
+      ),
+      SubtitleCue(
+        start: Duration(seconds: 235),
+        end: Duration(seconds: 275),
+        text: 'Tanjiro: Nezuko... Tubuhnya masih hangat! Nezuko masih hidup! Aku pasti menyelamatkanmu!',
+      ),
+      SubtitleCue(
+        start: Duration(seconds: 275),
+        end: Duration(seconds: 320),
         text: 'Giyu Tomioka: Menyingkirlah! Iblis itu bukan lagi adik yang kau kenal!',
       ),
       SubtitleCue(
-        start: Duration(seconds: 22),
-        end: Duration(seconds: 29),
-        text: 'Tanjiro: Jangan bunuh dia! Nezuko tidak memangsa siapapun!',
+        start: Duration(seconds: 320),
+        end: Duration(seconds: 365),
+        text: 'Tanjiro: Tolong jangan bunuh Nezuko! Aku bersumpah akan menyembuhkannya kembali menjadi manusia!',
       ),
       SubtitleCue(
-        start: Duration(seconds: 29),
-        end: Duration(seconds: 37),
-        text: 'Giyu Tomioka: Jangan pernah tundukkan kepalamu di hadapan orang lain!',
-      ),
-      SubtitleCue(
-        start: Duration(seconds: 37),
-        end: Duration(seconds: 46),
-        text: 'Giyu Tomioka: Pergilah ke Gunung Sagiri. Temui pria bernama Sakonji Urokodaki.',
-      ),
-      SubtitleCue(
-        start: Duration(seconds: 46),
-        end: Duration(seconds: 56),
-        text: 'Tanjiro: Aku bersumpah akan menemukan obat untuk mengubah Nezuko kembali!',
+        start: Duration(seconds: 365),
+        end: Duration(seconds: 420),
+        text: 'Giyu Tomioka: Jangan pernah bersujud memohon belas kasihan pada orang lain! Temui Sakonji Urokodaki di Gunung Sagiri.',
       ),
     ],
 
@@ -364,3 +404,4 @@ class AnimeSubtitleService {
     ],
   };
 }
+

@@ -4,14 +4,15 @@ import 'package:nimeva/data/services/anime_subtitle_service.dart';
 
 void main() {
   group('AnimeStreamResolver Tests', () {
-    test('resolves Demon Slayer to authentic Demon Slayer streams for Ep 1 and Ep 2', () {
+    test('resolves Demon Slayer to authentic Cruelty episode 1 and episode 2 streams', () {
       final ep1Server1 = AnimeStreamResolver.resolveStreamUrl(
         animeId: '41370', // Kitsu ID for Kimetsu no Yaiba
         animeTitle: 'Demon Slayer: Kimetsu no Yaiba',
         server: 'Server 1 (Fast HD)',
         episodeNumber: 1,
       );
-      expect(ep1Server1, contains('Tanjiro'));
+      // Episode 1 must be Cruelty (full 23m 40s)
+      expect(ep1Server1, contains('Cruelty'));
       expect(ep1Server1, contains('.mp4'));
       expect(ep1Server1, isNot(contains('sintel')));
       expect(ep1Server1, isNot(contains('oceans')));
@@ -22,7 +23,7 @@ void main() {
         server: 'Server 3 (Otaku)',
         episodeNumber: 1,
       );
-      expect(ep1Server3, contains('Tanjiro'));
+      expect(ep1Server3, contains('Cruelty'));
       expect(ep1Server3, contains('.mp4'));
 
       final ep2Server1 = AnimeStreamResolver.resolveStreamUrl(
@@ -90,7 +91,7 @@ void main() {
         server: 'Server 1 (Fast HD)',
         episodeNumber: 1,
       );
-      expect(ep1, contains('151'));
+      expect(ep1, contains('Enter%20Naruto'));
 
       final ep2 = AnimeStreamResolver.resolveStreamUrl(
         animeId: '3936',
@@ -98,7 +99,7 @@ void main() {
         server: 'Server 1 (Fast HD)',
         episodeNumber: 2,
       );
-      expect(ep2, contains('152'));
+      expect(ep2, contains('naruto%20episode%202'));
       expect(ep2, isNot(equals(ep1)));
     });
 
@@ -136,14 +137,14 @@ void main() {
         animeTitle: 'Sousou no Frieren',
         server: 'Server 1 (Fast HD)',
       );
-      expect(frieren, contains('frieren'));
+      expect(frieren, contains('Frieren'));
 
       final solo = AnimeStreamResolver.resolveStreamUrl(
         animeId: 'solo-leveling-s2',
         animeTitle: 'Solo Leveling',
         server: 'Server 1 (Fast HD)',
       );
-      expect(solo, contains('SoloLeveling'));
+      expect(solo, contains('Solo%20Leveling'));
     });
 
     test('never returns generic dummy 3D trailers for unknown titles', () {
@@ -164,7 +165,7 @@ void main() {
       final sub = AnimeSubtitleService.getSubtitleForPosition(
         animeKey: 'demon-slayer',
         episodeNumber: 1,
-        position: const Duration(seconds: 12),
+        position: const Duration(seconds: 4),
       );
       expect(sub, contains('Nezuko'));
       expect(sub, isNotEmpty);
@@ -194,7 +195,7 @@ void main() {
       final sub = AnimeSubtitleService.getSubtitleForPosition(
         animeKey: 'demon-slayer',
         episodeNumber: 1,
-        position: const Duration(seconds: 500),
+        position: const Duration(seconds: 5000),
       );
       expect(sub, isEmpty);
     });
