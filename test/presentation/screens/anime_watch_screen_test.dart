@@ -357,5 +357,23 @@ void main() {
 
       expect(find.byType(AnimeWatchScreen), findsNothing);
     });
+
+    testWidgets('subtitle toggle button toggles subtitle state', (tester) async {
+      tester.view.physicalSize = const Size(500, 1200);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await tester.pumpWidget(createWatchScreen());
+      await tester.pumpAndSettle();
+
+      final subBtn = find.byKey(const Key('btn_toggle_subtitles'));
+      expect(subBtn, findsOneWidget);
+      expect(find.text('SUB INDO'), findsOneWidget);
+
+      await tester.tap(subBtn);
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('btn_toggle_subtitles')), findsOneWidget);
+    });
   });
 }
