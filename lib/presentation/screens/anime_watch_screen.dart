@@ -4,6 +4,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../data/models/anime_detail.dart';
 import '../../data/models/episode_item.dart';
+import '../../data/services/anime_stream_resolver.dart';
 
 /// Screen for watching anime video streams with interactive video controls,
 /// server selection, episode navigation, and quick playback actions.
@@ -57,13 +58,13 @@ class _AnimeWatchScreenState extends State<AnimeWatchScreen> {
   }
 
   String _getStreamUrlForServer(String server, EpisodeItem episode) {
-    if (server == 'Server 3 (Otaku)') {
-      return 'https://vjs.zencdn.net/v/oceans.mp4';
-    }
-    if (episode.streamUrl.isNotEmpty && !episode.streamUrl.contains('BigBuckBunny')) {
-      return episode.streamUrl;
-    }
-    return 'https://media.w3.org/2010/05/sintel/trailer.mp4';
+    return AnimeStreamResolver.resolveStreamUrl(
+      animeId: widget.anime.id,
+      animeTitle: widget.anime.title,
+      server: server,
+      episodeNumber: episode.episodeNumber,
+      existingStreamUrl: episode.streamUrl,
+    );
   }
 
   Future<void> _initializePlayer() async {

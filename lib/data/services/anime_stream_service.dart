@@ -1,4 +1,5 @@
 import 'anime_api_client.dart';
+import 'anime_stream_resolver.dart';
 import '../models/anime_detail.dart';
 import '../models/anime_item.dart';
 import '../models/episode_item.dart';
@@ -70,11 +71,20 @@ class AnimeStreamService {
   }
 
   /// Fetches video streaming URL for a specific episode.
-  Future<String> getEpisodeStreamUrl(String episodeId) async {
+  Future<String> getEpisodeStreamUrl(
+    String episodeId, {
+    String animeId = '',
+    String title = '',
+    String server = 'Server 1 (Fast HD)',
+  }) async {
     if (networkDelay > Duration.zero) {
       await Future.delayed(networkDelay);
     }
-    return 'https://media.w3.org/2010/05/sintel/trailer.mp4';
+    return AnimeStreamResolver.resolveStreamUrl(
+      animeId: animeId.isNotEmpty ? animeId : episodeId,
+      animeTitle: title,
+      server: server,
+    );
   }
 
   static final Map<String, AnimeDetail> _curatedDetails = {
@@ -98,7 +108,12 @@ class AnimeStreamService {
           episodeNumber: index + 1,
           title: 'Episode ${index + 1} - Kebangkitan Bayangan',
           releaseDate: '2025-02-${(index + 1) * 7}',
-          streamUrl: 'https://media.w3.org/2010/05/sintel/trailer.mp4',
+          streamUrl: AnimeStreamResolver.resolveStreamUrl(
+            animeId: 'solo-leveling-s2',
+            animeTitle: 'Solo Leveling',
+            server: 'Server 1 (Fast HD)',
+            episodeNumber: index + 1,
+          ),
         ),
       ),
     ),
@@ -122,7 +137,12 @@ class AnimeStreamService {
           episodeNumber: index + 1,
           title: 'Episode ${index + 1} - Takdir Tak Terelakkan',
           releaseDate: '2025-01-${(index + 1) * 7}',
-          streamUrl: 'https://media.w3.org/2010/05/sintel/trailer.mp4',
+          streamUrl: AnimeStreamResolver.resolveStreamUrl(
+            animeId: 'tokyo-revengers-s4',
+            animeTitle: 'Tokyo Revengers',
+            server: 'Server 1 (Fast HD)',
+            episodeNumber: index + 1,
+          ),
         ),
       ),
     ),
@@ -146,7 +166,12 @@ class AnimeStreamService {
           episodeNumber: index + 1,
           title: 'Episode ${index + 1} - Perjalanan ke Utara',
           releaseDate: '2025-01-${(index + 1) * 7}',
-          streamUrl: 'https://media.w3.org/2010/05/sintel/trailer.mp4',
+          streamUrl: AnimeStreamResolver.resolveStreamUrl(
+            animeId: 'frieren-s2',
+            animeTitle: 'Sousou no Frieren',
+            server: 'Server 1 (Fast HD)',
+            episodeNumber: index + 1,
+          ),
         ),
       ),
     ),
@@ -170,7 +195,12 @@ class AnimeStreamService {
           episodeNumber: index + 1,
           title: 'Episode ${index + 1} - Janji di Balik Bilah',
           releaseDate: '2025-02-${(index + 1) * 7}',
-          streamUrl: 'https://media.w3.org/2010/05/sintel/trailer.mp4',
+          streamUrl: AnimeStreamResolver.resolveStreamUrl(
+            animeId: 'hotaru-no-yomeiri',
+            animeTitle: 'Hotaru no Yomeiri',
+            server: 'Server 1 (Fast HD)',
+            episodeNumber: index + 1,
+          ),
         ),
       ),
     ),
@@ -194,7 +224,12 @@ class AnimeStreamService {
           episodeNumber: index + 1,
           title: 'Episode ${index + 1} - Melampaui Batas',
           releaseDate: '2025-01-${(index + 1) * 7}',
-          streamUrl: 'https://media.w3.org/2010/05/sintel/trailer.mp4',
+          streamUrl: AnimeStreamResolver.resolveStreamUrl(
+            animeId: 'black-clover-s2',
+            animeTitle: 'Black Clover',
+            server: 'Server 1 (Fast HD)',
+            episodeNumber: index + 1,
+          ),
         ),
       ),
     ),
@@ -218,7 +253,12 @@ class AnimeStreamService {
           episodeNumber: index + 1,
           title: 'Episode ${index + 1} - Kehidupan Baru Sang Penyihir Buff',
           releaseDate: '2025-01-${(index + 1) * 7}',
-          streamUrl: 'https://media.w3.org/2010/05/sintel/trailer.mp4',
+          streamUrl: AnimeStreamResolver.resolveStreamUrl(
+            animeId: 'chii-fuyo',
+            animeTitle: 'Chii Fuyo',
+            server: 'Server 1 (Fast HD)',
+            episodeNumber: index + 1,
+          ),
         ),
       ),
     ),
@@ -242,7 +282,12 @@ class AnimeStreamService {
           episodeNumber: index + 1,
           title: 'Episode ${index + 1} - Rahasia Heavy Knight',
           releaseDate: '2025-01-${(index + 1) * 7}',
-          streamUrl: 'https://media.w3.org/2010/05/sintel/trailer.mp4',
+          streamUrl: AnimeStreamResolver.resolveStreamUrl(
+            animeId: 'tensei-juukishi',
+            animeTitle: 'Tensei juukishi',
+            server: 'Server 1 (Fast HD)',
+            episodeNumber: index + 1,
+          ),
         ),
       ),
     ),

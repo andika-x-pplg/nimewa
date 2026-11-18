@@ -4,6 +4,7 @@ import '../mock/mock_explore_data.dart';
 import '../models/anime_detail.dart';
 import '../models/anime_item.dart';
 import '../models/episode_item.dart';
+import 'anime_stream_resolver.dart';
 
 /// Direct HTTP client interacting with the live Kitsu REST API.
 /// Provides live anime lists, dynamic search, categories, and accurate episode counts.
@@ -245,7 +246,12 @@ class AnimeApiClient {
         episodeNumber: index + 1,
         title: 'Episode ${index + 1} Sub Indo',
         releaseDate: '2025-01-${(index + 1).toString().padLeft(2, '0')}',
-        streamUrl: 'https://media.w3.org/2010/05/sintel/trailer.mp4',
+        streamUrl: AnimeStreamResolver.resolveStreamUrl(
+          animeId: id,
+          animeTitle: title,
+          server: 'Server 1 (Fast HD)',
+          episodeNumber: index + 1,
+        ),
       ),
     );
 
@@ -288,7 +294,12 @@ class AnimeApiClient {
           episodeNumber: i + 1,
           title: 'Episode ${i + 1} Sub Indo',
           releaseDate: '2025-01-${(i + 1).toString().padLeft(2, '0')}',
-          streamUrl: 'https://media.w3.org/2010/05/sintel/trailer.mp4',
+          streamUrl: AnimeStreamResolver.resolveStreamUrl(
+            animeId: item.id,
+            animeTitle: item.title,
+            server: 'Server 1 (Fast HD)',
+            episodeNumber: i + 1,
+          ),
         ),
       ),
     );
