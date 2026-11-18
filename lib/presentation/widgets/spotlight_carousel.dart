@@ -398,37 +398,45 @@ class _SpotlightCarouselState extends State<SpotlightCarousel> {
   }
 
   Widget _buildPageIndicators() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(widget.items.length, (index) {
-        final isActive = index == _currentPage;
-        return GestureDetector(
-          key: Key('carousel_dot_$index'),
-          onTap: () {
-            _pageController.animateToPage(
-              index,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
-            );
-          },
-          child: Semantics(
-            button: true,
-            label: 'Halaman ${index + 1}',
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 250),
-              margin: const EdgeInsets.symmetric(horizontal: 3.5),
-              height: 6.0,
-              width: isActive ? 22.0 : 6.0,
-              decoration: BoxDecoration(
-                color: isActive
-                    ? AppColors.accentBlue
-                    : AppColors.textMuted.withValues(alpha: 0.4),
-                borderRadius: BorderRadius.circular(3.0),
+    return Center(
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: List.generate(widget.items.length, (index) {
+            final isActive = index == _currentPage;
+            return GestureDetector(
+              key: Key('carousel_dot_$index'),
+              onTap: () {
+                _pageController.animateToPage(
+                  index,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                );
+              },
+              child: Semantics(
+                button: true,
+                label: 'Halaman ${index + 1}',
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 250),
+                  margin: const EdgeInsets.symmetric(horizontal: 3.0),
+                  height: 6.0,
+                  width: isActive ? 20.0 : 6.0,
+                  decoration: BoxDecoration(
+                    color: isActive
+                        ? AppColors.accentBlue
+                        : AppColors.textMuted.withValues(alpha: 0.4),
+                    borderRadius: BorderRadius.circular(3.0),
+                  ),
+                ),
               ),
-            ),
-          ),
-        );
-      }),
+            );
+          }),
+        ),
+      ),
     );
   }
 }

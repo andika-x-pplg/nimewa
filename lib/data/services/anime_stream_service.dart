@@ -1,5 +1,4 @@
-import '../mock/mock_anime_data.dart';
-import '../mock/mock_explore_data.dart';
+import 'anime_api_client.dart';
 import '../models/anime_detail.dart';
 import '../models/anime_item.dart';
 import '../models/episode_item.dart';
@@ -8,17 +7,19 @@ import '../models/episode_item.dart';
 /// Supports both online Sub Indo endpoints and built-in fallback catalogs.
 class AnimeStreamService {
   final Duration networkDelay;
+  final AnimeApiClient apiClient;
 
   const AnimeStreamService({
     this.networkDelay = const Duration(milliseconds: 50),
+    this.apiClient = const AnimeApiClient(),
   });
 
-  /// Fetches spotlight anime for home hero carousel.
+  /// Fetches spotlight anime (10 items) for home hero carousel.
   Future<List<AnimeItem>> getSpotlightAnime() async {
     if (networkDelay > Duration.zero) {
       await Future.delayed(networkDelay);
     }
-    return List.from(mockPopularAnime);
+    return apiClient.fetchTrendingAnime(limit: 10);
   }
 
   /// Fetches explore anime catalog with reactive filtering and search query.
@@ -26,28 +27,27 @@ class AnimeStreamService {
     required String filter,
     String? genre,
     String? query,
+    int limit = 6,
   }) async {
     if (networkDelay > Duration.zero) {
       await Future.delayed(networkDelay);
     }
 
-    final baseList = getExploreAnime(filter: filter, genre: genre);
-    final cleanQuery = query?.trim().toLowerCase();
-
-    if (cleanQuery == null || cleanQuery.isEmpty) {
-      return baseList;
+    final cleanQuery = query?.trim();
+    if (cleanQuery != null && cleanQuery.isNotEmpty) {
+      return apiClient.searchAnime(cleanQuery, limit: limit);
     }
 
-    return baseList.where((anime) {
-      final matchesTitle = anime.title.toLowerCase().contains(cleanQuery);
-      final matchesGenres = anime.genres.any((g) => g.toLowerCase().contains(cleanQuery));
-      return matchesTitle || matchesGenres;
-    }).toList();
+    if (genre != null && genre != 'Semua' && genre.isNotEmpty) {
+      return apiClient.fetchAnimeByCategory(genre, limit: limit);
+    }
+
+    // Default to trending / popular from live API
+    return apiClient.fetchTrendingAnime(limit: limit);
   }
 
   /// Fetches detailed metadata and all available episodes for an anime.
   Future<AnimeDetail> getAnimeDetail(String animeId) async {
-    // Simulate slight async response time as if calling a network API
     if (networkDelay > Duration.zero) {
       await Future.delayed(networkDelay);
     }
@@ -58,8 +58,8 @@ class AnimeStreamService {
       return _curatedDetails[cleanId]!;
     }
 
-    // Default dynamic generator for any arbitrary or search anime item
-    return _generateFallbackDetail(cleanId);
+    // Fetch from live API
+    return apiClient.fetchAnimeDetail(cleanId);
   }
 
   /// Fetches video streaming URL for a specific episode.

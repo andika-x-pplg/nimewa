@@ -25,7 +25,7 @@ void main() {
 
       // Verify Spotlight Carousel and first popular anime item
       expect(find.byType(SpotlightCarousel), findsOneWidget);
-      expect(find.textContaining('Tokyo Revengers'), findsOneWidget);
+      expect(find.textContaining('Attack on Titan'), findsOneWidget);
       expect(find.text('Tonton Sekarang'), findsOneWidget);
       expect(find.byIcon(Icons.add_rounded), findsOneWidget);
 
@@ -99,10 +99,10 @@ void main() {
       await tester.pumpAndSettle();
 
       // Verify SingleChildScrollView exists
-      expect(find.byType(SingleChildScrollView), findsOneWidget);
+      expect(find.byKey(const Key('home_screen_scroll_view')), findsOneWidget);
 
       // Scroll down
-      await tester.drag(find.byType(SingleChildScrollView), const Offset(0, -300));
+      await tester.drag(find.byKey(const Key('home_screen_scroll_view')), const Offset(0, -300));
       await tester.pumpAndSettle();
 
       // EmptyContinueWatching should remain visible/accessible

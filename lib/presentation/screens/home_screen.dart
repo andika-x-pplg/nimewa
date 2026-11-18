@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
-import '../../data/mock/mock_anime_data.dart';
 import '../../data/models/anime_item.dart';
+import '../../data/services/anime_api_client.dart';
 import '../../data/services/anime_stream_service.dart';
 import '../widgets/custom_bottom_nav.dart';
 import '../widgets/empty_continue_watching.dart';
@@ -29,7 +29,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   late final AnimeStreamService _streamService;
-  List<AnimeItem> _spotlightItems = mockPopularAnime;
+  List<AnimeItem> _spotlightItems = AnimeApiClient.cachedTrendingAnime;
   bool _isLoadingSpotlight = false;
   String? _spotlightError;
 
@@ -138,6 +138,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return SafeArea(
       bottom: false,
       child: SingleChildScrollView(
+        key: const Key('home_screen_scroll_view'),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
