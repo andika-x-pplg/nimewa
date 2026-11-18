@@ -245,7 +245,7 @@ class AnimeApiClient {
         episodeNumber: index + 1,
         title: 'Episode ${index + 1} Sub Indo',
         releaseDate: '2025-01-${(index + 1).toString().padLeft(2, '0')}',
-        streamUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+        streamUrl: 'https://media.w3.org/2010/05/sintel/trailer.mp4',
       ),
     );
 
@@ -288,7 +288,7 @@ class AnimeApiClient {
           episodeNumber: i + 1,
           title: 'Episode ${i + 1} Sub Indo',
           releaseDate: '2025-01-${(i + 1).toString().padLeft(2, '0')}',
-          streamUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+          streamUrl: 'https://media.w3.org/2010/05/sintel/trailer.mp4',
         ),
       ),
     );

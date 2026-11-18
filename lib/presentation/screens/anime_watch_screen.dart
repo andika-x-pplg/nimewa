@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:video_player/video_player.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../data/models/anime_detail.dart';
@@ -36,11 +37,74 @@ class _AnimeWatchScreenState extends State<AnimeWatchScreen> {
   bool _isFullscreen = false;
   String? _serverErrorMessage;
 
+  VideoPlayerController? _videoController;
+  bool _isVideoInitialized = false;
+  bool _isVideoBuffering = false;
+
   @override
   void initState() {
     super.initState();
     _currentEpisode = widget.initialEpisode;
     _selectedServer = availableServers.first;
+    _initializePlayer();
+  }
+
+  @override
+  void dispose() {
+    _videoController?.removeListener(_videoListener);
+    _videoController?.dispose();
+    super.dispose();
+  }
+
+  String _getStreamUrlForServer(String server, EpisodeItem episode) {
+    if (server == 'Server 3 (Otaku)') {
+      return 'https://vjs.zencdn.net/v/oceans.mp4';
+    }
+    if (episode.streamUrl.isNotEmpty && !episode.streamUrl.contains('BigBuckBunny')) {
+      return episode.streamUrl;
+    }
+    return 'https://media.w3.org/2010/05/sintel/trailer.mp4';
+  }
+
+  Future<void> _initializePlayer() async {
+    if (!_isServerAvailable(_selectedServer)) return;
+
+    final url = _getStreamUrlForServer(_selectedServer, _currentEpisode);
+    _videoController?.removeListener(_videoListener);
+    await _videoController?.dispose();
+
+    final controller = VideoPlayerController.networkUrl(Uri.parse(url));
+    _videoController = controller;
+
+    try {
+      await controller.initialize();
+      controller.addListener(_videoListener);
+      await controller.play();
+      if (mounted) {
+        setState(() {
+          _isVideoInitialized = true;
+          _isPlaying = true;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _isVideoInitialized = false;
+        });
+      }
+    }
+  }
+
+  void _videoListener() {
+    if (!mounted || _videoController == null) return;
+    final value = _videoController!.value;
+    setState(() {
+      if (value.position > Duration.zero) {
+        _currentPosition = value.position;
+      }
+      _isPlaying = value.isPlaying;
+      _isVideoBuffering = value.isBuffering;
+    });
   }
 
   bool _isServerAvailable(String server) {
@@ -54,9 +118,11 @@ class _AnimeWatchScreenState extends State<AnimeWatchScreen> {
         _isPlaying = false;
         _serverErrorMessage =
             'Server 2 sedang gangguan / maintenance. Silakan beralih ke Server 1 atau Server 3 yang aktif.';
+        _videoController?.pause();
       } else {
         _serverErrorMessage = null;
         _isPlaying = true;
+        _initializePlayer();
       }
     });
   }
@@ -76,6 +142,7 @@ class _AnimeWatchScreenState extends State<AnimeWatchScreen> {
       _currentPosition = Duration.zero;
       _isPlaying = true;
     });
+    _initializePlayer();
   }
 
   void _goToPreviousEpisode() {
@@ -91,16 +158,41 @@ class _AnimeWatchScreenState extends State<AnimeWatchScreen> {
   }
 
   void _togglePlayPause() {
-    setState(() {
-      _isPlaying = !_isPlaying;
-    });
+    if (_videoController != null && _videoController!.value.isInitialized) {
+      if (_videoController!.value.isPlaying) {
+        _videoController!.pause();
+      } else {
+        _videoController!.play();
+      }
+    } else {
+      setState(() {
+        _isPlaying = !_isPlaying;
+      });
+    }
+  }
+
+  Duration get _effectiveDuration {
+    if (_videoController != null &&
+        _videoController!.value.isInitialized &&
+        _videoController!.value.duration > Duration.zero) {
+      return _videoController!.value.duration;
+    }
+    return _totalDuration;
   }
 
   void _seekRelative(int seconds) {
-    final target = (_currentPosition.inSeconds + seconds).clamp(0, _totalDuration.inSeconds);
+    final current = _currentPosition;
+    final duration = _effectiveDuration;
+    final target = current + Duration(seconds: seconds);
+    final clamped = target < Duration.zero
+        ? Duration.zero
+        : (target > duration ? duration : target);
     setState(() {
-      _currentPosition = Duration(seconds: target);
+      _currentPosition = clamped;
     });
+    if (_videoController != null && _videoController!.value.isInitialized) {
+      _videoController!.seekTo(clamped);
+    }
   }
 
   void _toggleControlsVisibility() {
@@ -169,8 +261,27 @@ class _AnimeWatchScreenState extends State<AnimeWatchScreen> {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          // Background simulation layer
-          _buildVideoBackdrop(),
+          // Video layer (real video or fallback thumbnail while loading)
+          if (_isVideoInitialized && _videoController != null)
+            Center(
+              child: AspectRatio(
+                aspectRatio: _videoController!.value.aspectRatio > 0
+                    ? _videoController!.value.aspectRatio
+                    : 16 / 9,
+                child: VideoPlayer(_videoController!),
+              ),
+            )
+          else
+            _buildVideoBackdrop(),
+
+          // Buffering indicator
+          if (_isVideoBuffering)
+            const Center(
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: AppColors.accentBlue,
+              ),
+            ),
 
           // Center pause indicator visual
           if (_serverErrorMessage == null && !_isPlaying)
@@ -474,8 +585,8 @@ class _AnimeWatchScreenState extends State<AnimeWatchScreen> {
   }
 
   Widget _buildBottomBar() {
-    final positionSeconds = _currentPosition.inSeconds.toDouble();
-    final maxSeconds = _totalDuration.inSeconds.toDouble();
+    final maxSeconds = _effectiveDuration.inSeconds.toDouble();
+    final positionSeconds = _currentPosition.inSeconds.toDouble().clamp(0.0, maxSeconds);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
@@ -485,7 +596,7 @@ class _AnimeWatchScreenState extends State<AnimeWatchScreen> {
           Row(
             children: [
               Text(
-                '${_formatDuration(_currentPosition)} / ${_formatDuration(_totalDuration)}',
+                '${_formatDuration(_currentPosition)} / ${_formatDuration(_effectiveDuration)}',
                 style: AppTypography.labelSmall.copyWith(
                   color: AppColors.textPrimary,
                   fontFeatures: const [FontFeature.tabularFigures()],
@@ -518,12 +629,16 @@ class _AnimeWatchScreenState extends State<AnimeWatchScreen> {
             ),
             child: Slider(
               key: const Key('video_progress_slider'),
-              value: positionSeconds.clamp(0.0, maxSeconds),
+              value: positionSeconds,
               min: 0.0,
-              max: maxSeconds,
+              max: maxSeconds > 0 ? maxSeconds : 1.0,
               onChanged: (value) {
+                final target = Duration(seconds: value.round());
+                if (_videoController != null && _videoController!.value.isInitialized) {
+                  _videoController!.seekTo(target);
+                }
                 setState(() {
-                  _currentPosition = Duration(seconds: value.round());
+                  _currentPosition = target;
                 });
               },
             ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 import 'package:nimeva/main.dart';
 import 'package:nimeva/presentation/screens/anime_detail_screen.dart';
 import 'package:nimeva/presentation/screens/anime_watch_screen.dart';
@@ -8,8 +9,14 @@ import 'package:nimeva/presentation/widgets/custom_bottom_nav.dart';
 import 'package:nimeva/presentation/widgets/empty_continue_watching.dart';
 import 'package:nimeva/presentation/widgets/home_header.dart';
 import 'package:nimeva/presentation/widgets/spotlight_carousel.dart';
+import '../../helpers/fake_video_player_platform.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  setUpAll(() {
+    VideoPlayerPlatform.instance = FakeVideoPlayerPlatform();
+  });
   group('HomeScreen & NimevaApp Integration Tests', () {
     testWidgets('NimevaApp initializes and renders HomeScreen with all core components', (tester) async {
       await tester.pumpWidget(const NimevaApp());

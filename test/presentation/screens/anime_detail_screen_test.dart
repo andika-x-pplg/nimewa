@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 import 'package:nimeva/core/theme/app_theme.dart';
 import 'package:nimeva/data/models/episode_item.dart';
 import 'package:nimeva/presentation/screens/anime_detail_screen.dart';
 import 'package:nimeva/presentation/screens/anime_watch_screen.dart';
+import '../../helpers/fake_video_player_platform.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  setUpAll(() {
+    VideoPlayerPlatform.instance = FakeVideoPlayerPlatform();
+  });
   group('AnimeDetailScreen Tests', () {
     testWidgets('renders header, metadata, synopsis, and episode list', (tester) async {
       EpisodeItem? selectedEpisode;
