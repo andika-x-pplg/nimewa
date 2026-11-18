@@ -50,7 +50,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
   void initState() {
     super.initState();
     _streamService = widget.streamService ?? const AnimeStreamService();
-    _animeList = getExploreAnime(filter: _selectedFilter, genre: _selectedGenre);
+    _animeList = popularAnimeList;
     _fetchCatalog(isInitial: true);
   }
 

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import '../mock/mock_explore_data.dart';
 import '../models/anime_detail.dart';
 import '../models/anime_item.dart';
 import '../models/episode_item.dart';
@@ -24,7 +25,33 @@ class AnimeApiClient {
     } catch (_) {
       // Graceful fallback to cached authentic catalog
     }
-    return _cachedTrendingAnime.take(limit).toList();
+    return cachedTrendingAnime.take(limit).toList();
+  }
+
+  /// Fetches latest anime releases sorted by release date.
+  Future<List<AnimeItem>> fetchLatestAnime({int limit = 6}) async {
+    final url = '$baseUrl/anime?sort=-startDate&page[limit]=$limit';
+    try {
+      final json = await _get(url);
+      final list = _parseAnimeList(json);
+      if (list.isNotEmpty) return list.take(limit).toList();
+    } catch (_) {
+      // Fallback
+    }
+    return latestAnimeList.take(limit).toList();
+  }
+
+  /// Fetches top rated anime sorted by score.
+  Future<List<AnimeItem>> fetchTopRatedAnime({int limit = 6}) async {
+    final url = '$baseUrl/anime?sort=-averageRating&page[limit]=$limit';
+    try {
+      final json = await _get(url);
+      final list = _parseAnimeList(json);
+      if (list.isNotEmpty) return list.take(limit).toList();
+    } catch (_) {
+      // Fallback
+    }
+    return topRatedAnimeList.take(limit).toList();
   }
 
   /// Searches anime by keyword.
@@ -43,8 +70,13 @@ class AnimeApiClient {
       // Graceful local query matching against fallback catalog
     }
 
-    return _cachedTrendingAnime
-        .where((a) => a.title.toLowerCase().contains(cleanQuery.toLowerCase()))
+    final combined = [...cachedTrendingAnime, ...popularAnimeList, ...latestAnimeList, ...romanceAnimeList];
+    final seen = <String>{};
+    return combined
+        .where((a) =>
+            seen.add(a.title.toLowerCase()) &&
+            a.title.toLowerCase().contains(cleanQuery.toLowerCase()))
+        .take(limit)
         .toList();
   }
 
@@ -64,9 +96,7 @@ class AnimeApiClient {
       // Fallback
     }
 
-    return _cachedTrendingAnime
-        .where((a) => a.genres.any((g) => g.toLowerCase() == cleanCategory))
-        .toList();
+    return getExploreAnime(filter: 'popular', genre: category).take(limit).toList();
   }
 
   /// Fetches complete anime detail with exact episodes from API.
@@ -82,9 +112,22 @@ class AnimeApiClient {
     }
 
     // Match in cached catalog or generate authentic detail
-    final match = _cachedTrendingAnime.firstWhere(
+    final match = cachedTrendingAnime.firstWhere(
       (a) => a.id == id,
-      orElse: () => _cachedTrendingAnime.first,
+      orElse: () => AnimeItem(
+        id: id,
+        title: id
+            .split('-')
+            .map((w) => w.isNotEmpty ? '${w[0].toUpperCase()}${w.substring(1)}' : '')
+            .join(' '),
+        japaneseTitle: 'アニメ詳細',
+        rating: 8.0,
+        releaseYear: 2025,
+        genres: const ['Action', 'Fantasy'],
+        description: 'Anime berkualitas tinggi dengan teks bahasa Indonesia.',
+        posterUrl: 'https://media.kitsu.app/anime/poster_images/7442/large.jpg',
+        backdropUrl: 'https://media.kitsu.app/anime/poster_images/7442/large.jpg',
+      ),
     );
 
     return _generateDetailFromItem(match);
@@ -251,7 +294,7 @@ class AnimeApiClient {
     );
   }
 
-  static const List<AnimeItem> _cachedTrendingAnime = [
+  static const List<AnimeItem> cachedTrendingAnime = [
     AnimeItem(
       id: '7442',
       title: 'Attack on Titan',
@@ -342,7 +385,7 @@ class AnimeApiClient {
     ),
     AnimeItem(
       id: '48671',
-      title: 'Kaiju No. 8',
+      title: 'Kaiju No. 8 Season 2',
       japaneseTitle: '怪獣8号',
       rating: 8.2,
       releaseYear: 2024,
@@ -350,6 +393,17 @@ class AnimeApiClient {
       description: 'Kafka Hibino bertransformasi menjadi Kaiju dan berjuang di Pasukan Pertahanan.',
       posterUrl: 'https://media.kitsu.app/anime/48671/poster_image/large-6156a7475d03dbb788ab1a9ce6c7f962.jpeg',
       backdropUrl: 'https://media.kitsu.app/anime/48671/poster_image/large-6156a7475d03dbb788ab1a9ce6c7f962.jpeg',
+    ),
+    AnimeItem(
+      id: '44384',
+      title: 'Kaguya-sama: Love is War - Ultra Romantic',
+      japaneseTitle: 'かぐや様は告らせたい-ウルトラロマンティック-',
+      rating: 8.9,
+      releaseYear: 2022,
+      genres: ['Romance', 'Comedy', 'School'],
+      description: 'Pertarungan kecerdasan cinta antara Miyuki Shirogane dan Kaguya Shinomiya.',
+      posterUrl: 'https://media.kitsu.app/anime/poster_images/44384/large.jpg',
+      backdropUrl: 'https://media.kitsu.app/anime/poster_images/44384/large.jpg',
     ),
     AnimeItem(
       id: '41992',
@@ -361,6 +415,17 @@ class AnimeApiClient {
       description: 'Mata-mata Twilight menyamar membentuk keluarga palsu demi misi perdamaian.',
       posterUrl: 'https://media.kitsu.app/anime/poster_images/41992/large.jpg',
       backdropUrl: 'https://media.kitsu.app/anime/poster_images/41992/large.jpg',
+    ),
+    AnimeItem(
+      id: '42538',
+      title: 'Mushoku Tensei: Jobless Reincarnation',
+      japaneseTitle: '無職転生 ～異世界行ったら本気だす～',
+      rating: 8.4,
+      releaseYear: 2021,
+      genres: ['Isekai', 'Fantasy', 'Adventure'],
+      description: 'Pria pengangguran 34 tahun bereinkarnasi ke dunia sihir sebagai Rudeus Greyrat.',
+      posterUrl: 'https://media.kitsu.app/anime/poster_images/42538/large.jpg',
+      backdropUrl: 'https://media.kitsu.app/anime/poster_images/42538/large.jpg',
     ),
   ];
 }
