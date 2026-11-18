@@ -42,8 +42,15 @@ class AnimeStreamService {
       return apiClient.fetchAnimeByCategory(genre, limit: limit);
     }
 
-    // Default to trending / popular from live API
-    return apiClient.fetchTrendingAnime(limit: limit);
+    switch (filter) {
+      case 'latest':
+        return apiClient.fetchLatestAnime(limit: limit);
+      case 'top_rated':
+        return apiClient.fetchTopRatedAnime(limit: limit);
+      case 'popular':
+      default:
+        return apiClient.fetchTrendingAnime(limit: limit);
+    }
   }
 
   /// Fetches detailed metadata and all available episodes for an anime.
@@ -68,40 +75,6 @@ class AnimeStreamService {
       await Future.delayed(networkDelay);
     }
     return 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
-  }
-
-  AnimeDetail _generateFallbackDetail(String id) {
-    final titleFormatted = id
-        .split('-')
-        .map((w) => w.isNotEmpty ? '${w[0].toUpperCase()}${w.substring(1)}' : '')
-        .join(' ');
-
-    final episodes = List.generate(
-      12,
-      (index) => EpisodeItem(
-        id: '$id-eps-${index + 1}',
-        episodeNumber: index + 1,
-        title: 'Episode ${index + 1} Sub Indo',
-        releaseDate: '2025-01-${10 + index}',
-        streamUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-      ),
-    );
-
-    return AnimeDetail(
-      id: id,
-      title: titleFormatted.isEmpty ? 'Anime Detail' : titleFormatted,
-      japaneseTitle: 'アニメ詳細',
-      rating: 8.5,
-      releaseYear: 2025,
-      genres: const ['Action', 'Fantasy', 'Adventure'],
-      synopsis: 'Petualangan epik di dunia penuh misteri dan aksi tak terduga. Ikuti kisah perjuangan para karakter utama dalam menghadapi berbagai rintangan demi mencapai impian mereka.',
-      posterUrl: 'https://avac.moe/img/anime/large/58567.jpg',
-      backdropUrl: 'https://avac.moe/img/anime/large/58567.jpg',
-      status: 'Ongoing',
-      studio: 'Mappa / Ufotable',
-      totalEpisodes: 12,
-      episodes: episodes,
-    );
   }
 
   static final Map<String, AnimeDetail> _curatedDetails = {
