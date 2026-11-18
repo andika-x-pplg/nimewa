@@ -34,12 +34,31 @@ class _AnimeWatchScreenState extends State<AnimeWatchScreen> {
   late String _selectedServer;
   bool _isControlsVisible = true;
   bool _isFullscreen = false;
+  String? _serverErrorMessage;
 
   @override
   void initState() {
     super.initState();
     _currentEpisode = widget.initialEpisode;
     _selectedServer = availableServers.first;
+  }
+
+  bool _isServerAvailable(String server) {
+    return server != 'Server 2 (Backup)';
+  }
+
+  void _onServerSelected(String server) {
+    setState(() {
+      _selectedServer = server;
+      if (!_isServerAvailable(server)) {
+        _isPlaying = false;
+        _serverErrorMessage =
+            'Server 2 sedang gangguan / maintenance. Silakan beralih ke Server 1 atau Server 3 yang aktif.';
+      } else {
+        _serverErrorMessage = null;
+        _isPlaying = true;
+      }
+    });
   }
 
   int get _currentEpisodeIndex {
@@ -153,8 +172,8 @@ class _AnimeWatchScreenState extends State<AnimeWatchScreen> {
           // Background simulation layer
           _buildVideoBackdrop(),
 
-          // Center loading or playing simulation visual
-          if (!_isPlaying)
+          // Center pause indicator visual
+          if (_serverErrorMessage == null && !_isPlaying)
             Center(
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
@@ -181,14 +200,64 @@ class _AnimeWatchScreenState extends State<AnimeWatchScreen> {
             ),
 
           // Controls overlay
-          AnimatedOpacity(
-            opacity: _isControlsVisible ? 1.0 : 0.0,
-            duration: const Duration(milliseconds: 200),
-            child: IgnorePointer(
-              ignoring: !_isControlsVisible,
-              child: _buildControlsOverlay(),
+          if (_serverErrorMessage == null)
+            AnimatedOpacity(
+              opacity: _isControlsVisible ? 1.0 : 0.0,
+              duration: const Duration(milliseconds: 200),
+              child: IgnorePointer(
+                ignoring: !_isControlsVisible,
+                child: _buildControlsOverlay(),
+              ),
             ),
-          ),
+
+          // In-player error banner overlay (on top of everything)
+          if (_serverErrorMessage != null)
+            Center(
+              child: Container(
+                key: const Key('in_player_server_error_banner'),
+                margin: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF181206).withValues(alpha: 0.95),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFFFFB800)),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(Icons.warning_amber_rounded, color: Color(0xFFFFB800), size: 22),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            _serverErrorMessage!,
+                            style: AppTypography.bodySmall.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    ElevatedButton.icon(
+                      key: const Key('btn_switch_to_active_server'),
+                      onPressed: () => _onServerSelected('Server 1 (Fast HD)'),
+                      icon: const Icon(Icons.swap_horiz_rounded, size: 16),
+                      label: const Text('Ganti ke Server 1 (Aktif)'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.accentBlue,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
         ],
       ),
     );
@@ -539,14 +608,11 @@ class _AnimeWatchScreenState extends State<AnimeWatchScreen> {
           child: Row(
             children: availableServers.map((server) {
               final isSelected = server == _selectedServer;
+              final isAvailable = _isServerAvailable(server);
               return Padding(
                 padding: const EdgeInsets.only(right: 8.0),
                 child: InkWell(
-                  onTap: () {
-                    setState(() {
-                      _selectedServer = server;
-                    });
-                  },
+                  onTap: () => _onServerSelected(server),
                   borderRadius: BorderRadius.circular(8),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 180),
@@ -562,6 +628,15 @@ class _AnimeWatchScreenState extends State<AnimeWatchScreen> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
+                        Container(
+                          width: 6,
+                          height: 6,
+                          margin: const EdgeInsets.only(right: 6),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: isAvailable ? const Color(0xFF00E676) : const Color(0xFFFFB800),
+                          ),
+                        ),
                         Icon(
                           Icons.dns_rounded,
                           size: 14,

@@ -200,7 +200,7 @@ void main() {
       expect(find.textContaining('Solo Leveling · Ep 1'), findsOneWidget);
     });
 
-    testWidgets('switching server changes selected server', (tester) async {
+    testWidgets('switching server changes selected server and alerts if server is in maintenance', (tester) async {
       tester.view.physicalSize = const Size(500, 1200);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
@@ -209,23 +209,29 @@ void main() {
       await tester.pumpWidget(createWatchScreen());
       await tester.pumpAndSettle();
 
-      // Tap Server 2
+      // Tap Server 2 (Backup) - in maintenance
       final server2 = find.text('Server 2 (Backup)');
       await tester.ensureVisible(server2);
       await tester.tap(server2);
       await tester.pumpAndSettle();
 
-      // Tap Server 3
+      // Verify in-player warning banner is visible
+      expect(find.byKey(const Key('in_player_server_error_banner')), findsOneWidget);
+      expect(find.textContaining('Server 2 sedang gangguan / maintenance'), findsOneWidget);
+
+      // Tap "Ganti ke Server 1" from inside the player banner
+      await tester.tap(find.byKey(const Key('btn_switch_to_active_server')));
+      await tester.pumpAndSettle();
+
+      // Warning banner is now dismissed
+      expect(find.byKey(const Key('in_player_server_error_banner')), findsNothing);
+
+      // Tap Server 3 (Otaku)
       final server3 = find.text('Server 3 (Otaku)');
       await tester.ensureVisible(server3);
       await tester.tap(server3);
       await tester.pumpAndSettle();
-
-      // Tap Server 1
-      final server1 = find.text('Server 1 (Fast HD)');
-      await tester.ensureVisible(server1);
-      await tester.tap(server1);
-      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('in_player_server_error_banner')), findsNothing);
     });
 
     testWidgets('tapping video surface toggles controls overlay visibility', (tester) async {
