@@ -1,13 +1,56 @@
+import '../mock/mock_anime_data.dart';
+import '../mock/mock_explore_data.dart';
 import '../models/anime_detail.dart';
+import '../models/anime_item.dart';
 import '../models/episode_item.dart';
 
 /// Service providing anime details, episode lists, and streaming endpoints.
 /// Supports both online Sub Indo endpoints and built-in fallback catalogs.
 class AnimeStreamService {
+  final Duration networkDelay;
+
+  const AnimeStreamService({
+    this.networkDelay = const Duration(milliseconds: 50),
+  });
+
+  /// Fetches spotlight anime for home hero carousel.
+  Future<List<AnimeItem>> getSpotlightAnime() async {
+    if (networkDelay > Duration.zero) {
+      await Future.delayed(networkDelay);
+    }
+    return List.from(mockPopularAnime);
+  }
+
+  /// Fetches explore anime catalog with reactive filtering and search query.
+  Future<List<AnimeItem>> getExploreAnimeList({
+    required String filter,
+    String? genre,
+    String? query,
+  }) async {
+    if (networkDelay > Duration.zero) {
+      await Future.delayed(networkDelay);
+    }
+
+    final baseList = getExploreAnime(filter: filter, genre: genre);
+    final cleanQuery = query?.trim().toLowerCase();
+
+    if (cleanQuery == null || cleanQuery.isEmpty) {
+      return baseList;
+    }
+
+    return baseList.where((anime) {
+      final matchesTitle = anime.title.toLowerCase().contains(cleanQuery);
+      final matchesGenres = anime.genres.any((g) => g.toLowerCase().contains(cleanQuery));
+      return matchesTitle || matchesGenres;
+    }).toList();
+  }
+
   /// Fetches detailed metadata and all available episodes for an anime.
   Future<AnimeDetail> getAnimeDetail(String animeId) async {
     // Simulate slight async response time as if calling a network API
-    await Future.delayed(const Duration(milliseconds: 100));
+    if (networkDelay > Duration.zero) {
+      await Future.delayed(networkDelay);
+    }
 
     final cleanId = animeId.toLowerCase().trim();
 
@@ -21,7 +64,9 @@ class AnimeStreamService {
 
   /// Fetches video streaming URL for a specific episode.
   Future<String> getEpisodeStreamUrl(String episodeId) async {
-    await Future.delayed(const Duration(milliseconds: 50));
+    if (networkDelay > Duration.zero) {
+      await Future.delayed(networkDelay);
+    }
     return 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
   }
 

@@ -52,6 +52,19 @@ void main() {
 
     expect(find.byType(AnimeGridCard), findsNWidgets(6));
     expect(find.text('Kaguya-sama: Love is War - Ultra Romantic'), findsOneWidget);
+
+    // Search query dynamically filters list
+    await tester.enterText(find.byType(TextField), 'Kaguya');
+    await tester.pumpAndSettle();
+
+    expect(find.text('Kaguya-sama: Love is War - Ultra Romantic'), findsOneWidget);
+
+    // Search query with no match shows empty state gracefully
+    await tester.enterText(find.byType(TextField), 'xyznonexistentanime');
+    await tester.pumpAndSettle();
+
+    expect(find.text('Tidak ada anime yang cocok.'), findsOneWidget);
+    expect(find.byIcon(Icons.search_off_rounded), findsOneWidget);
   });
 }
 

@@ -33,6 +33,42 @@ void main() {
       expect(streamUrl, isNotEmpty);
       expect(streamUrl.startsWith('http'), isTrue);
     });
+
+    test('getSpotlightAnime returns list of curated spotlight anime items', () async {
+      final spotlight = await service.getSpotlightAnime();
+      expect(spotlight, isNotEmpty);
+      expect(spotlight.length, greaterThanOrEqualTo(5));
+      expect(spotlight.first.title, contains('Tokyo Revengers'));
+    });
+
+    test('getExploreAnimeList filters by tab and genre accurately', () async {
+      final popularList = await service.getExploreAnimeList(filter: 'popular');
+      expect(popularList.length, equals(6));
+      expect(popularList.first.title, contains('Solo Leveling'));
+
+      final latestList = await service.getExploreAnimeList(filter: 'latest');
+      expect(latestList.length, equals(6));
+      expect(latestList.first.title, contains('Kaiju No. 8'));
+
+      final romanceList = await service.getExploreAnimeList(filter: 'popular', genre: 'Romance');
+      expect(romanceList.length, equals(6));
+      expect(romanceList.any((a) => a.title.contains('Kaguya-sama')), isTrue);
+    });
+
+    test('getExploreAnimeList searches dynamically with query matching title or genre', () async {
+      final searchResult = await service.getExploreAnimeList(
+        filter: 'popular',
+        query: 'Frieren',
+      );
+      expect(searchResult.length, equals(1));
+      expect(searchResult.first.title, contains('Frieren'));
+
+      final emptyResult = await service.getExploreAnimeList(
+        filter: 'popular',
+        query: 'nonexistentanimequery123xyz',
+      );
+      expect(emptyResult, isEmpty);
+    });
   });
 }
 

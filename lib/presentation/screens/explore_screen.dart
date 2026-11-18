@@ -3,14 +3,17 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../data/mock/mock_explore_data.dart';
 import '../../data/models/anime_item.dart';
+import '../../data/services/anime_stream_service.dart';
 import '../widgets/anime_grid_card.dart';
 
 /// Screen for exploring anime with filters and 2-column grid.
 class ExploreScreen extends StatefulWidget {
+  final AnimeStreamService? streamService;
   final void Function(AnimeItem anime)? onAnimeTap;
 
   const ExploreScreen({
     super.key,
+    this.streamService,
     this.onAnimeTap,
   });
 
@@ -19,9 +22,14 @@ class ExploreScreen extends StatefulWidget {
 }
 
 class _ExploreScreenState extends State<ExploreScreen> {
+  late final AnimeStreamService _streamService;
   String _selectedFilter = 'popular'; // 'popular', 'latest', 'top_rated'
   String _selectedGenre = 'Semua';
   final TextEditingController _searchController = TextEditingController();
+
+  List<AnimeItem> _animeList = [];
+  bool _isLoading = false;
+  String? _errorMessage;
 
   static const List<Map<String, String>> _filterTabs = [
     {'key': 'popular', 'label': 'Popular'},
@@ -39,19 +47,47 @@ class _ExploreScreenState extends State<ExploreScreen> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _streamService = widget.streamService ?? const AnimeStreamService();
+    _animeList = getExploreAnime(filter: _selectedFilter, genre: _selectedGenre);
+    _fetchCatalog(isInitial: true);
+  }
+
+  @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
   }
 
-  List<AnimeItem> get _displayedAnime {
-    final list = getExploreAnime(
-      filter: _selectedFilter,
-      genre: _selectedGenre,
-    );
-    final query = _searchController.text.trim().toLowerCase();
-    if (query.isEmpty) return list;
-    return list.where((a) => a.title.toLowerCase().contains(query)).toList();
+  Future<void> _fetchCatalog({bool isInitial = false}) async {
+    if (!isInitial) {
+      setState(() {
+        _isLoading = true;
+        _errorMessage = null;
+      });
+    }
+
+    try {
+      final list = await _streamService.getExploreAnimeList(
+        filter: _selectedFilter,
+        genre: _selectedGenre,
+        query: _searchController.text,
+      );
+      if (mounted) {
+        setState(() {
+          _animeList = list;
+          _isLoading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _errorMessage = 'Gagal memuat katalog anime.';
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   String get _sectionTitle {
@@ -71,8 +107,6 @@ class _ExploreScreenState extends State<ExploreScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final animeList = _displayedAnime;
-
     return Scaffold(
       backgroundColor: AppColors.bgPrimary,
       body: SafeArea(
@@ -89,9 +123,9 @@ class _ExploreScreenState extends State<ExploreScreen> {
               const SizedBox(height: 20),
               _buildGenreChips(),
               const SizedBox(height: 20),
-              _buildSectionHeader(animeList.length),
+              _buildSectionHeader(_animeList.length),
               const SizedBox(height: 14),
-              _buildAnimeGrid(animeList),
+              _buildContent(),
               const SizedBox(height: 24),
             ],
           ),
@@ -150,7 +184,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                 Expanded(
                   child: TextField(
                     controller: _searchController,
-                    onChanged: (_) => setState(() {}),
+                    onChanged: (_) => _fetchCatalog(),
                     style: AppTypography.bodyMedium.copyWith(
                       color: AppColors.textPrimary,
                     ),
@@ -171,7 +205,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                   GestureDetector(
                     onTap: () {
                       _searchController.clear();
-                      setState(() {});
+                      _fetchCatalog();
                     },
                     child: const Icon(
                       Icons.close_rounded,
@@ -227,6 +261,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                     _selectedFilter = tab['key']!;
                     _selectedGenre = 'Semua';
                   });
+                  _fetchCatalog();
                 },
                 borderRadius: BorderRadius.circular(20),
                 child: AnimatedContainer(
@@ -286,6 +321,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                       setState(() {
                         _selectedGenre = genre;
                       });
+                      _fetchCatalog();
                     },
                     borderRadius: BorderRadius.circular(16),
                     child: AnimatedContainer(
@@ -341,8 +377,45 @@ class _ExploreScreenState extends State<ExploreScreen> {
     );
   }
 
-  Widget _buildAnimeGrid(List<AnimeItem> list) {
-    if (list.isEmpty) {
+  Widget _buildContent() {
+    if (_errorMessage != null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 40.0),
+          child: Column(
+            children: [
+              const Icon(
+                Icons.error_outline_rounded,
+                color: AppColors.textMuted,
+                size: 40,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                _errorMessage!,
+                style: AppTypography.bodyMedium.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 12),
+              OutlinedButton(
+                onPressed: () => _fetchCatalog(),
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: AppColors.accentBlue),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                ),
+                child: Text('Coba Lagi', style: AppTypography.labelMedium.copyWith(color: AppColors.accentBlue)),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (_isLoading) {
+      return _buildSkeletonGrid();
+    }
+
+    if (_animeList.isEmpty) {
       return Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 40.0),
@@ -369,7 +442,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: list.length,
+      itemCount: _animeList.length,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         childAspectRatio: 0.58,
@@ -377,10 +450,71 @@ class _ExploreScreenState extends State<ExploreScreen> {
         mainAxisSpacing: 16,
       ),
       itemBuilder: (context, index) {
-        final item = list[index];
+        final item = _animeList[index];
         return AnimeGridCard(
           item: item,
           onTap: () => widget.onAnimeTap?.call(item),
+        );
+      },
+    );
+  }
+
+  Widget _buildSkeletonGrid() {
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: 6,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 0.58,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 16,
+      ),
+      itemBuilder: (context, index) {
+        return Container(
+          decoration: BoxDecoration(
+            color: AppColors.surfaceCard,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColors.borderSubtle),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Container(
+                  decoration: const BoxDecoration(
+                    color: AppColors.surfaceElevated,
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      height: 14,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: AppColors.surfaceElevated,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      height: 10,
+                      width: 60,
+                      decoration: BoxDecoration(
+                        color: AppColors.surfaceElevated,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         );
       },
     );
