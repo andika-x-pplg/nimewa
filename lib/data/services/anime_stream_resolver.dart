@@ -172,48 +172,48 @@ class AnimeStreamResolver {
   }
 
   // --- Demon Slayer Season 1 (26 Episodes) ---
-  static const Map<int, String> _knyHashes = {
-    1: '95AC736C',
-    2: 'DAC40433',
-    3: '846022E3',
-    4: 'A4AF13C0',
-    5: '68585199',
-    6: '65A976C0',
-    7: '3FDB7136',
-    8: 'C3563CC0',
-    9: '11CF9FC7',
-    10: '549EA6E2',
-    11: 'E4168B8D',
-    12: '8C58F91F',
-    13: '2B4E3D55',
-    14: '840B36BE',
-    15: '3E62A9A7',
-    16: 'B882E834',
-    17: '2306EC8B',
-    18: '2095C8DA',
-    19: 'FB1D831E',
-    20: 'ABDB7E7A',
-    21: '8F9242A3',
-    22: 'C146CF99',
-    23: '1301EB8C',
-    24: '8C166865',
-    25: 'CA19719E',
-    26: '31CF53D6',
-  };
+  static const List<String> _knyMobileFiles = [
+    'S01/Demon Slayer Kimetsu no Yaiba - S01E01 - Grausamkeit - mobile.mp4',
+    'S01/Demon Slayer Kimetsu no Yaiba - S01E02 - Lehrmeister Urokodaki Sakonji - mobile.mp4',
+    'S01/Demon Slayer Kimetsu no Yaiba - S01E03 - Sabito und Makomo - mobile.mp4',
+    'S01/Demon Slayer Kimetsu no Yaiba - S01E04 - Das letzte Auswahlverfahren - mobile.mp4',
+    'S01/Demon Slayer Kimetsu no Yaiba - S01E05 - Wähle deinen Stahl - mobile.mp4',
+    'S01/Demon Slayer Kimetsu no Yaiba - S01E06 - Der Schwertkämpfer mit dem Dämon - mobile.mp4',
+    'S01/Demon Slayer Kimetsu no Yaiba - S01E07 - Kibutsuji Muzan - mobile.mp4',
+    'S01/Demon Slayer Kimetsu no Yaiba - S01E08 - Der faszinierende Duft von Blut - mobile.mp4',
+    'S01/Demon Slayer Kimetsu no Yaiba - S01E09 - Der Balldämon und der Pfeildämon - mobile.mp4',
+    'S01/Demon Slayer Kimetsu no Yaiba - S01E10 - Immer zusammen - mobile.mp4',
+    'S01/Demon Slayer Kimetsu no Yaiba - S01E11 - Das Trommel-Anwesen - mobile.mp4',
+    "S01/Demon Slayer Kimetsu no Yaiba - S01E12 - Das Wildschwein fletscht die Zähne und Zen'itsu schläft - mobile.mp4",
+    'S01/Demon Slayer Kimetsu no Yaiba - S01E13 - Wichtiger als das eigene Leben - mobile.mp4',
+    'S01/Demon Slayer Kimetsu no Yaiba - S01E14 - Das Haus mit dem Glyzinien-Wappen - mobile.mp4',
+    'S01/Demon Slayer Kimetsu no Yaiba - S01E15 - Der Natagumo-Berg - mobile.mp4',
+    'S01/Demon Slayer Kimetsu no Yaiba - S01E16 - Vor jemand anderem als sich selbst - mobile.mp4',
+    'S01/Demon Slayer Kimetsu no Yaiba - S01E17 - Nur eine einzige Sache meistern - mobile.mp4',
+    'S01/Demon Slayer Kimetsu no Yaiba - S01E18 - Falsche Bande - mobile.mp4',
+    'S01/Demon Slayer Kimetsu no Yaiba - S01E19 - Die Feuergottheit - mobile.mp4',
+    'S01/Demon Slayer Kimetsu no Yaiba - S01E20 - Zusammengesammelte Familie - mobile.mp4',
+    'S01/Demon Slayer Kimetsu no Yaiba - S01E21 - Regelverstoß - mobile.mp4',
+    'S01/Demon Slayer Kimetsu no Yaiba - S01E22 - Meister - mobile.mp4',
+    'S01/Demon Slayer Kimetsu no Yaiba - S01E23 - Versammlung der Säulen - mobile.mp4',
+    'S01/Demon Slayer Kimetsu no Yaiba - S01E24 - Rehabilitationstraining - mobile.mp4',
+    'S01/Demon Slayer Kimetsu no Yaiba - S01E25 - Tsuguko Tsuyuri Kanao - mobile.mp4',
+    'S01/Demon Slayer Kimetsu no Yaiba - S01E26 - Eine neue Mission - mobile.mp4',
+  ];
 
   static List<_AnimeStreamEntry> _buildKnySeason1() {
     const s1Cruelty =
         'https://archive.org/download/rai-demon-slayer-kimetsu-no-yaiba-season-1-episode-1-cruelty-hindi-360-p-sd-1/%5BRAI%5D%20Demon%20Slayer-%20Kimetsu%20No%20Yaiba%20Season%201%20Episode%201%20-%20Cruelty%20Hindi_360P%20SD%20%281%29.mp4';
     return List.generate(26, (index) {
       final epNum = index + 1;
-      final pad = epNum.toString().padLeft(2, '0');
-      final hash = _knyHashes[epNum]!;
-      final s3Url =
-          'https://archive.org/download/japanese-trainer-kny-s01/%5BErai-raws%5D%20Kimetsu%20no%20Yaiba%20-%20$pad%20%5B1080p%5D%5BHEVC%5D%5B$hash%5D.mkv';
+      final fileName = _knyMobileFiles[index];
+      final encodedPath = Uri.encodeComponent(fileName).replaceAll('%2F', '/');
+      final mobileUrl =
+          'https://archive.org/download/anicolldemonslayerkimetsunoyaibadl19241080bray_puddingS01.Gemischt/$encodedPath';
 
       return _AnimeStreamEntry(
-        server1Url: epNum == 1 ? s1Cruelty : s3Url,
-        server3Url: s3Url,
+        server1Url: epNum == 1 ? s1Cruelty : mobileUrl,
+        server3Url: mobileUrl,
       );
     });
   }
@@ -396,17 +396,31 @@ class AnimeStreamResolver {
     });
   }
 
-  // --- Spy x Family Season 1 (25 Episodes) ---
+  // --- Spy x Family Season 1 (12 Episodes) ---
+  static const List<String> _spyFamilyFiles = [
+    'Spy.x.Family.2022.DL.1080p.BluRay_WebHD/S01_ABJ/SPY x FAMILY - S01E01 - Operation Strix .ia.mp4',
+    'Spy.x.Family.2022.DL.1080p.BluRay_WebHD/S01_ABJ/SPY x FAMILY - S01E02 - Eine Frau muss her .ia.mp4',
+    'Spy.x.Family.2022.DL.1080p.BluRay_WebHD/S01_ABJ/SPY x FAMILY - S01E03 - Der große Prüfungsplan .ia.mp4',
+    'Spy.x.Family.2022.DL.1080p.BluRay_WebHD/S01_ABJ/SPY x FAMILY - S01E04 - Elterngespräch an der Eliteschule .ia.mp4',
+    'Spy.x.Family.2022.DL.1080p.BluRay_WebHD/S01_ABJ/SPY x FAMILY - S01E05 - Bestanden oder durchgefallen .ia.mp4',
+    'Spy.x.Family.2022.DL.1080p.BluRay_WebHD/S01_ABJ/SPY x FAMILY - S01E06 - Der Gute-Freunde-Plan .ia.mp4',
+    'Spy.x.Family.2022.DL.1080p.BluRay_WebHD/S01_ABJ/SPY x FAMILY - S01E07 - Der Sohn der Zielperson .ia.mp4',
+    'Spy.x.Family.2022.DL.1080p.BluRay_WebHD/S01_ABJ/SPY x FAMILY - S01E08 - Der Anti-Geheimpolizei-Verhüllungsplan .ia.mp4',
+    'Spy.x.Family.2022.DL.1080p.BluRay_WebHD/S01_ABJ/SPY x FAMILY - S01E09 - Die Turteltäubchen-Tarnung .ia.mp4',
+    'Spy.x.Family.2022.DL.1080p.BluRay_WebHD/S01_ABJ/SPY x FAMILY - S01E10 - Der große Völkerball-Plan .ia.mp4',
+    'Spy.x.Family.2022.DL.1080p.BluRay_WebHD/S01_ABJ/SPY x FAMILY - S01E11 - Stella .ia.mp4',
+    'Spy.x.Family.2022.DL.1080p.BluRay_WebHD/S01_ABJ/SPY x FAMILY - S01E12 - Penguin Park .ia.mp4',
+  ];
+
   static List<_AnimeStreamEntry> _buildSpyFamilySeason1() {
-    const ep1Server1 =
-        'https://archive.org/download/spy-x-family-ep-1/spy%20x%20family%20ep%201.mp4';
-    return List.generate(25, (index) {
-      final epNum = index + 1;
-      final pad = epNum.toString().padLeft(2, '0');
-      final mkvUrl = 'https://archive.org/download/spy-x-family-s01/E$pad.mkv';
+    return List.generate(_spyFamilyFiles.length, (index) {
+      final fileName = _spyFamilyFiles[index];
+      final encoded = Uri.encodeComponent(fileName).replaceAll('%2F', '/');
+      final url =
+          'https://archive.org/download/anispyxfamilyusdl221080bray_whdmob.Gemischt/$encoded';
       return _AnimeStreamEntry(
-        server1Url: epNum == 1 ? ep1Server1 : mkvUrl,
-        server3Url: mkvUrl,
+        server1Url: url,
+        server3Url: url,
       );
     });
   }

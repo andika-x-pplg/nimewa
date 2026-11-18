@@ -23,8 +23,8 @@ void main() {
         server: 'Server 3 (Otaku)',
         episodeNumber: 1,
       );
-      expect(ep1Server3, contains('Kimetsu%20no%20Yaiba%20-%2001'));
-      expect(ep1Server3, contains('.mkv'));
+      expect(ep1Server3, contains('S01E01'));
+      expect(ep1Server3, contains('.mp4'));
 
       final ep2Server1 = AnimeStreamResolver.resolveStreamUrl(
         animeId: '41370',
@@ -32,9 +32,10 @@ void main() {
         server: 'Server 1 (Fast HD)',
         episodeNumber: 2,
       );
-      // Episode 2 must return authentic Season 1 Episode 2
+      // Episode 2 must return authentic Season 1 Episode 2 in playable MP4 format
       expect(ep2Server1, contains('02'));
-      expect(ep2Server1, contains('DAC40433'));
+      expect(ep2Server1, contains('Lehrmeister'));
+      expect(ep2Server1, contains('.mp4'));
       expect(ep2Server1, isNot(equals(ep1Server1)));
 
       final ep10Server1 = AnimeStreamResolver.resolveStreamUrl(
@@ -43,9 +44,10 @@ void main() {
         server: 'Server 1 (Fast HD)',
         episodeNumber: 10,
       );
-      // Episode 10 must return authentic Season 1 Episode 10 (not Season 2!)
+      // Episode 10 must return authentic Season 1 Episode 10 in playable MP4 format
       expect(ep10Server1, contains('10'));
-      expect(ep10Server1, contains('549EA6E2'));
+      expect(ep10Server1, contains('Immer%20zusammen'));
+      expect(ep10Server1, contains('.mp4'));
       expect(ep10Server1, isNot(contains('GATON%202.3'))); // Not Season 2!
       expect(ep10Server1, isNot(equals(ep2Server1)));
 
@@ -235,6 +237,27 @@ void main() {
       );
       expect(mha, contains('Boku_no_Hero_Academia'));
       expect(mha, contains('001'));
+    });
+
+    test('resolves Spy x Family Season 1 episodes accurately in MP4 format', () {
+      final ep1 = AnimeStreamResolver.resolveStreamUrl(
+        animeId: '41992',
+        animeTitle: 'Spy x Family',
+        server: 'Server 1 (Fast HD)',
+        episodeNumber: 1,
+      );
+      expect(ep1, contains('SPY%20x%20FAMILY%20-%20S01E01'));
+      expect(ep1, contains('.mp4'));
+
+      final ep12 = AnimeStreamResolver.resolveStreamUrl(
+        animeId: '41992',
+        animeTitle: 'Spy x Family',
+        server: 'Server 1 (Fast HD)',
+        episodeNumber: 12,
+      );
+      expect(ep12, contains('SPY%20x%20FAMILY%20-%20S01E12'));
+      expect(ep12, contains('.mp4'));
+      expect(ep12, isNot(equals(ep1)));
     });
 
     test('never returns generic dummy 3D trailers for unknown titles', () {
