@@ -273,7 +273,39 @@ class AnimeApiClient {
   }
 
   AnimeDetail _generateDetailFromItem(AnimeItem item) {
-    final count = item.id == '7442' ? 25 : 12;
+    final key = AnimeStreamResolver.detectAnimeKey(item.id, item.title);
+    int count = 12;
+    switch (key) {
+      case 'demon-slayer':
+        count = 26;
+        break;
+      case 'attack-on-titan':
+        count = 25;
+        break;
+      case 'jujutsu-kaisen':
+        count = 24;
+        break;
+      case 'death-note':
+        count = 37;
+        break;
+      case 'my-hero-academia':
+        count = 13;
+        break;
+      case 'naruto':
+        count = 25;
+        break;
+      case 'one-piece':
+        count = 25;
+        break;
+      case 'spy-x-family':
+        count = 25;
+        break;
+      case 'frieren':
+        count = 28;
+        break;
+      default:
+        count = 12;
+    }
     return AnimeDetail(
       id: item.id,
       title: item.title,

@@ -19,8 +19,7 @@ class AnimeSubtitleService {
     required Duration position,
   }) {
     final list = _subtitles['$animeKey-ep$episodeNumber'] ??
-        _subtitles['$animeKey-ep1'] ??
-        _defaultCues;
+        _getDefaultCuesForEpisode(animeKey, episodeNumber);
 
     for (final cue in list) {
       if (position >= cue.start && position <= cue.end) {
@@ -30,23 +29,57 @@ class AnimeSubtitleService {
     return '';
   }
 
-  static const List<SubtitleCue> _defaultCues = [
-    SubtitleCue(
-      start: Duration(seconds: 0),
-      end: Duration(seconds: 5),
-      text: '[Sub Indo] Memutar anime dengan takarir bahasa Indonesia.',
-    ),
-    SubtitleCue(
-      start: Duration(seconds: 5),
-      end: Duration(seconds: 12),
-      text: 'Audio asli Jepang dengan kualitas visual HD Subtitle Indonesia.',
-    ),
-    SubtitleCue(
-      start: Duration(seconds: 12),
-      end: Duration(seconds: 22),
-      text: 'Selamat menonton streaming anime subtitle Indonesia di Nimeva.',
-    ),
-  ];
+  static List<SubtitleCue> _getDefaultCuesForEpisode(String animeKey, int episodeNumber) {
+    final title = _getAnimeDisplayName(animeKey);
+    return [
+      SubtitleCue(
+        start: const Duration(seconds: 0),
+        end: const Duration(seconds: 6),
+        text: '[Sub Indo] $title Season 1 - Episode $episodeNumber',
+      ),
+      SubtitleCue(
+        start: const Duration(seconds: 6),
+        end: const Duration(seconds: 14),
+        text: 'Audio asli Jepang dengan takarir Bahasa Indonesia resmi.',
+      ),
+      SubtitleCue(
+        start: const Duration(seconds: 14),
+        end: const Duration(seconds: 24),
+        text: 'Streaming lancar kualitas HD di Nimeva.',
+      ),
+    ];
+  }
+
+  static String _getAnimeDisplayName(String key) {
+    switch (key) {
+      case 'demon-slayer':
+        return 'Demon Slayer: Kimetsu no Yaiba';
+      case 'attack-on-titan':
+        return 'Attack on Titan';
+      case 'jujutsu-kaisen':
+        return 'Jujutsu Kaisen';
+      case 'death-note':
+        return 'Death Note';
+      case 'tokyo-revengers':
+        return 'Tokyo Revengers';
+      case 'solo-leveling':
+        return 'Solo Leveling';
+      case 'my-hero-academia':
+        return 'Boku no Hero Academia';
+      case 'chainsaw-man':
+        return 'Chainsaw Man';
+      case 'naruto':
+        return 'Naruto';
+      case 'one-piece':
+        return 'One Piece';
+      case 'spy-x-family':
+        return 'Spy x Family';
+      case 'frieren':
+        return 'Sousou no Frieren';
+      default:
+        return 'Anime';
+    }
+  }
 
   static final Map<String, List<SubtitleCue>> _subtitles = {
     // Demon Slayer Episode 1 (Cruelty - 残酷)
