@@ -216,11 +216,34 @@ void main() {
 
     test('resolves Tokyo Revengers, Frieren, and My Hero Academia without collisions', () {
       final tokyo = AnimeStreamResolver.resolveStreamUrl(
+        animeId: 'tokyo-revengers',
+        animeTitle: 'Tokyo Revengers',
+        server: 'Server 1 (Fast HD)',
+      );
+      expect(tokyo, contains('Tokyo.Revengers'));
+
+      final tokyoS2 = AnimeStreamResolver.resolveStreamUrl(
+        animeId: 'tokyo-revengers-s2',
+        animeTitle: 'Tokyo Revengers Season 2',
+        server: 'Server 1 (Fast HD)',
+      );
+      expect(tokyoS2, contains('tokyo-revengers-s2-darkrai'));
+      expect(tokyoS2, contains('S2'));
+
+      final tokyoS3 = AnimeStreamResolver.resolveStreamUrl(
+        animeId: 'tokyo-revengers-s3',
+        animeTitle: 'Tokyo Revengers Season 3',
+        server: 'Server 1 (Fast HD)',
+      );
+      expect(tokyoS3, contains('tokyo-revengers-s3-darkrai'));
+      expect(tokyoS3, contains('S3'));
+
+      final tokyoS4 = AnimeStreamResolver.resolveStreamUrl(
         animeId: 'tokyo-revengers-s4',
         animeTitle: 'Tokyo Revengers: Season 4',
         server: 'Server 1 (Fast HD)',
       );
-      expect(tokyo, contains('Tokyo.Revengers'));
+      expect(tokyoS4, isNot(contains('S01')));
 
       final frieren = AnimeStreamResolver.resolveStreamUrl(
         animeId: 'frieren-s2',

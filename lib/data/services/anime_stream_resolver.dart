@@ -806,17 +806,35 @@ class AnimeStreamResolver {
     });
   }
 
-  static List<_AnimeStreamEntry> _buildTokyoRevengersS2() => _buildSeason2Fallback();
-  static List<_AnimeStreamEntry> _buildTokyoRevengersS3() => _buildSeason3Fallback();
-  static List<_AnimeStreamEntry> _buildTokyoRevengersS4() {
-    return List.generate(12, (index) {
+  static List<_AnimeStreamEntry> _buildTokyoRevengersS2() {
+    return List.generate(13, (index) {
       final epNum = index + 1;
       final pad = epNum.toString().padLeft(2, '0');
+      final fileName = epNum == 13
+          ? 'Tokyo Revengers S2 cap 13 Final.mp4'
+          : 'Tokyo Revengers S2 cap $pad.ia.mp4';
+      final encoded = Uri.encodeComponent(fileName);
       final url =
-          'https://archive.org/download/tokyo.-revengers-latino/Tokyo.Revengers.S01E$pad.mp4';
+          'https://archive.org/download/tokyo-revengers-s2-darkrai/$encoded';
       return _AnimeStreamEntry(server1Url: url, server3Url: url);
     });
   }
+
+  static List<_AnimeStreamEntry> _buildTokyoRevengersS3() {
+    return List.generate(13, (index) {
+      final epNum = index + 1;
+      final pad = epNum.toString().padLeft(2, '0');
+      final fileName = epNum >= 12
+          ? 'Tokyo Revengers S3 cap 12-13.mp4'
+          : 'Tokyo Revengers S3 cap $pad.mp4';
+      final encoded = Uri.encodeComponent(fileName);
+      final url =
+          'https://archive.org/download/tokyo-revengers-s3-darkrai/$encoded';
+      return _AnimeStreamEntry(server1Url: url, server3Url: url);
+    });
+  }
+
+  static List<_AnimeStreamEntry> _buildTokyoRevengersS4() => _buildSeason4Fallback();
 
   // --- Solo Leveling Season 1 (12 Episodes, ~24m each) ---
   static List<_AnimeStreamEntry> _buildSoloLevelingSeason1() {
