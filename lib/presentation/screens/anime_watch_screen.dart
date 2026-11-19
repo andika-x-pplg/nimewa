@@ -28,6 +28,7 @@ class _AnimeWatchScreenState extends State<AnimeWatchScreen> {
     'Server 1 (Fast HD)',
     'Server 2 (Backup)',
     'Server 3 (Otaku)',
+    'Server 4 (Consumet Cloud)',
   ];
 
   late EpisodeItem _currentEpisode;
@@ -82,7 +83,24 @@ class _AnimeWatchScreenState extends State<AnimeWatchScreen> {
   Future<void> _initializePlayer() async {
     if (!_isServerAvailable(_selectedServer)) return;
 
-    final url = _getStreamUrlForServer(_selectedServer, _currentEpisode);
+    String url = _getStreamUrlForServer(_selectedServer, _currentEpisode);
+    if (_selectedServer.contains('Consumet')) {
+      try {
+        final asyncUrl = await AnimeStreamResolver.resolveStreamUrlAsync(
+          animeId: widget.anime.id,
+          animeTitle: widget.anime.title,
+          server: _selectedServer,
+          episodeNumber: _currentEpisode.episodeNumber,
+          existingStreamUrl: _currentEpisode.streamUrl,
+        ).timeout(const Duration(seconds: 4));
+        if (asyncUrl.isNotEmpty) {
+          url = asyncUrl;
+        }
+      } catch (_) {
+        // Retain fallback url
+      }
+    }
+
     _videoController?.removeListener(_videoListener);
     await _videoController?.dispose();
 

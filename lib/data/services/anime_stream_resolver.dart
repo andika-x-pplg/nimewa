@@ -1,8 +1,52 @@
+import 'consumet_api_client.dart';
+
 /// Resolver that maps anime IDs, titles, and episode numbers to real, authentic
 /// anime video streams across available servers, strictly adhering to canonical
 /// anime seasons and sequential episode progression.
 class AnimeStreamResolver {
   const AnimeStreamResolver();
+
+  /// Shared instance of ConsumetApiClient for online stream lookup.
+  static ConsumetApiClient consumetClient = ConsumetApiClient();
+
+  /// Asynchronously resolves direct stream URL, prioritizing online Consumet providers
+  /// for the latest episodes, with instant automatic fallback to authentic local streams.
+  static Future<String> resolveStreamUrlAsync({
+    required String animeId,
+    required String animeTitle,
+    required String server,
+    int episodeNumber = 1,
+    String existingStreamUrl = '',
+    ConsumetApiClient? client,
+  }) async {
+    final apiClient = client ?? consumetClient;
+    final season = extractSeasonNumber(animeId, animeTitle);
+
+    // Attempt online lookup from Consumet if not requesting specific local otaku/archive server
+    final isStrictLocal = server.contains('Server 3') || server.toLowerCase().contains('otaku');
+    if (!isStrictLocal) {
+      try {
+        final onlineUrl = await apiClient.resolveLatestStream(
+          title: animeTitle,
+          episodeNumber: episodeNumber,
+          seasonNumber: season,
+        );
+        if (onlineUrl != null && onlineUrl.isNotEmpty) {
+          return onlineUrl;
+        }
+      } catch (_) {
+        // Fall through to reliable local stream
+      }
+    }
+
+    return resolveStreamUrl(
+      animeId: animeId,
+      animeTitle: animeTitle,
+      server: server,
+      episodeNumber: episodeNumber,
+      existingStreamUrl: existingStreamUrl,
+    );
+  }
 
   /// Resolves direct stream URL based on anime identifier, title, episode number, and server.
   static String resolveStreamUrl({
