@@ -429,7 +429,7 @@ class _AnimeDetailScreenState extends State<AnimeDetailScreen> {
               ),
             ),
             Text(
-              '${episodes.length} Episode',
+              detail != null ? '${episodes.length} Episode' : (widget.previewItem?.episodeInfo ?? 'Memuat...'),
               style: AppTypography.bodySmall.copyWith(
                 color: AppColors.textMuted,
               ),
@@ -437,7 +437,23 @@ class _AnimeDetailScreenState extends State<AnimeDetailScreen> {
           ],
         ),
         const SizedBox(height: 12),
-        if (episodes.isEmpty)
+        if (detail == null)
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: AppColors.surfaceCard,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: AppColors.borderSubtle),
+            ),
+            child: const Center(
+              child: SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(color: AppColors.accentBlue, strokeWidth: 2),
+              ),
+            ),
+          )
+        else if (episodes.isEmpty)
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
@@ -462,9 +478,7 @@ class _AnimeDetailScreenState extends State<AnimeDetailScreen> {
               final episode = episodes[index];
               return InkWell(
                 onTap: () {
-                  if (detail != null) {
-                    _openWatchScreen(detail, episode);
-                  }
+                  _openWatchScreen(detail, episode);
                 },
                 borderRadius: BorderRadius.circular(10),
                 child: Container(

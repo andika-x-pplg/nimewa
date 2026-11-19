@@ -24,7 +24,7 @@ const List<AnimeItem> popularAnimeList = [
     description: 'Permainan mematikan Culling Game dimulai di seluruh Jepang.',
     posterUrl: 'https://avac.moe/img/anime/large/51009.jpg',
     backdropUrl: 'https://avac.moe/img/anime/large/51009.jpg',
-    episodeInfo: 'SUB · EP 12',
+    episodeInfo: 'SUB · EP 4 (Ongoing)',
     statusLabel: 'Ongoing',
   ),
   AnimeItem(
@@ -37,8 +37,8 @@ const List<AnimeItem> popularAnimeList = [
     description: 'Perjalanan panjang sang penyihir elf Frieren menuju Ende berlanjut.',
     posterUrl: 'https://avac.moe/img/anime/large/52991.jpg',
     backdropUrl: 'https://avac.moe/img/anime/large/52991.jpg',
-    episodeInfo: 'SUB · EP 24',
-    statusLabel: 'Tamat',
+    episodeInfo: 'SUB · EP 6 (Ongoing)',
+    statusLabel: 'Ongoing',
   ),
   AnimeItem(
     id: 'dandadan',
@@ -118,8 +118,8 @@ const List<AnimeItem> latestAnimeList = [
     description: 'Ichigo dan Gotei 13 menyerbu Istana Jiwa melawan Yhwach.',
     posterUrl: 'https://avac.moe/img/anime/large/269.jpg',
     backdropUrl: 'https://avac.moe/img/anime/large/269.jpg',
-    episodeInfo: 'SUB · EP 13',
-    statusLabel: 'Ongoing',
+    episodeInfo: 'SUB · 14 EPS (Tamat)',
+    statusLabel: 'Tamat',
   ),
   AnimeItem(
     id: 'blue-lock-vs-u20',
@@ -131,7 +131,7 @@ const List<AnimeItem> latestAnimeList = [
     description: 'Taruhan hidup mati tim Blue Lock melawan timnas U-20 Jepang.',
     posterUrl: 'https://avac.moe/img/anime/large/49596.jpg',
     backdropUrl: 'https://avac.moe/img/anime/large/49596.jpg',
-    episodeInfo: 'SUB · EP 7',
+    episodeInfo: 'SUB · EP 7 (Ongoing)',
     statusLabel: 'Ongoing',
   ),
   AnimeItem(
@@ -144,7 +144,7 @@ const List<AnimeItem> latestAnimeList = [
     description: 'Operasi Strix berlanjut dengan misi baru keluarga Forger yang penuh rahasia kocak.',
     posterUrl: 'https://avac.moe/img/anime/large/50265.jpg',
     backdropUrl: 'https://avac.moe/img/anime/large/50265.jpg',
-    episodeInfo: 'SUB · EP 5',
+    episodeInfo: 'SUB · EP 5 (Ongoing)',
     statusLabel: 'Ongoing',
   ),
   AnimeItem(
@@ -157,7 +157,7 @@ const List<AnimeItem> latestAnimeList = [
     description: 'Pertarungan pamungkas para pahlawan melawan All For One dan Shigaraki.',
     posterUrl: 'https://avac.moe/img/anime/large/31964.jpg',
     backdropUrl: 'https://avac.moe/img/anime/large/31964.jpg',
-    episodeInfo: 'SUB · EP 6',
+    episodeInfo: 'SUB · EP 6 (Ongoing)',
     statusLabel: 'Ongoing',
   ),
 ];
@@ -173,7 +173,7 @@ const List<AnimeItem> topRatedAnimeList = [
     description: 'Dua bersaudara Elric mencari Batu Bertuah untuk memulihkan tubuh mereka.',
     posterUrl: 'https://avac.moe/img/anime/large/5114.jpg',
     backdropUrl: 'https://avac.moe/img/anime/large/5114.jpg',
-    episodeInfo: 'SUB · EP 64',
+    episodeInfo: 'SUB · 64 EPS (Tamat)',
     statusLabel: 'Tamat',
   ),
   AnimeItem(
@@ -186,7 +186,7 @@ const List<AnimeItem> topRatedAnimeList = [
     description: 'Okabe Rintarou menemukan cara mengirim pesan ke masa lalu.',
     posterUrl: 'https://avac.moe/img/anime/large/9253.jpg',
     backdropUrl: 'https://avac.moe/img/anime/large/9253.jpg',
-    episodeInfo: 'SUB · EP 24',
+    episodeInfo: 'SUB · 24 EPS (Tamat)',
     statusLabel: 'Tamat',
   ),
   AnimeItem(
@@ -199,7 +199,7 @@ const List<AnimeItem> topRatedAnimeList = [
     description: 'Gon Freecss memulai petualangan berbahaya untuk menjadi Hunter berlisensi.',
     posterUrl: 'https://avac.moe/img/anime/large/11061.jpg',
     backdropUrl: 'https://avac.moe/img/anime/large/11061.jpg',
-    episodeInfo: 'SUB · EP 148',
+    episodeInfo: 'SUB · 148 EPS (Tamat)',
     statusLabel: 'Tamat',
   ),
   AnimeItem(
@@ -225,7 +225,7 @@ const List<AnimeItem> topRatedAnimeList = [
     description: 'Pertempuran terakhir umat manusia melawan ancaman Titan dan takdir Rumbling.',
     posterUrl: 'https://avac.moe/img/anime/large/16498.jpg',
     backdropUrl: 'https://avac.moe/img/anime/large/16498.jpg',
-    episodeInfo: 'SUB · FINAL',
+    episodeInfo: 'SUB · 25 EPS (Tamat)',
     statusLabel: 'Tamat',
   ),
   AnimeItem(
@@ -238,7 +238,7 @@ const List<AnimeItem> topRatedAnimeList = [
     description: 'Light Yagami menemukan buku catatan supranatural yang dapat membunuh siapapun.',
     posterUrl: 'https://avac.moe/img/anime/large/1535.jpg',
     backdropUrl: 'https://avac.moe/img/anime/large/1535.jpg',
-    episodeInfo: 'SUB · EP 37',
+    episodeInfo: 'SUB · 37 EPS (Tamat)',
     statusLabel: 'Tamat',
   ),
 ];
@@ -254,7 +254,7 @@ const List<AnimeItem> romanceAnimeList = [
     description: 'Perang cinta penuh gengsi di ruang OSIS Shuchiin Academy.',
     posterUrl: 'https://avac.moe/img/anime/large/37999.jpg',
     backdropUrl: 'https://avac.moe/img/anime/large/37999.jpg',
-    episodeInfo: 'SUB · EP 13',
+    episodeInfo: 'SUB · 13 EPS (Tamat)',
     statusLabel: 'Tamat',
   ),
   AnimeItem(
@@ -267,7 +267,7 @@ const List<AnimeItem> romanceAnimeList = [
     description: 'Momen-momen manis masa SMA Hori dan Miyamura.',
     posterUrl: 'https://avac.moe/img/anime/large/42897.jpg',
     backdropUrl: 'https://avac.moe/img/anime/large/42897.jpg',
-    episodeInfo: 'SUB · EP 13',
+    episodeInfo: 'SUB · 13 EPS (Tamat)',
     statusLabel: 'Tamat',
   ),
   AnimeItem(
@@ -293,7 +293,7 @@ const List<AnimeItem> romanceAnimeList = [
     description: 'Hubungan Sawako dan Kazehaya melangkah ke jenjang yang lebih mendalam.',
     posterUrl: 'https://avac.moe/img/anime/large/6045.jpg',
     backdropUrl: 'https://avac.moe/img/anime/large/6045.jpg',
-    episodeInfo: 'SUB · EP 6',
+    episodeInfo: 'SUB · 6 EPS (Tamat)',
     statusLabel: 'Tamat',
   ),
   AnimeItem(
@@ -306,7 +306,7 @@ const List<AnimeItem> romanceAnimeList = [
     description: 'Futaba bertemu kembali dengan cinta pertamanya Kou yang telah banyak berubah.',
     posterUrl: 'https://avac.moe/img/anime/large/21995.jpg',
     backdropUrl: 'https://avac.moe/img/anime/large/21995.jpg',
-    episodeInfo: 'SUB · EP 12',
+    episodeInfo: 'SUB · 12 EPS (Tamat)',
     statusLabel: 'Tamat',
   ),
   AnimeItem(
@@ -319,7 +319,7 @@ const List<AnimeItem> romanceAnimeList = [
     description: 'Pianis berbakat Kousei menemukan kembali warna hidupnya lewat biola Kaori.',
     posterUrl: 'https://avac.moe/img/anime/large/23273.jpg',
     backdropUrl: 'https://avac.moe/img/anime/large/23273.jpg',
-    episodeInfo: 'SUB · EP 22',
+    episodeInfo: 'SUB · 22 EPS (Tamat)',
     statusLabel: 'Tamat',
   ),
 ];
@@ -335,7 +335,7 @@ const List<AnimeItem> isekaiAnimeList = [
     description: 'Rudeus Greyrat menjalani babak baru kehidupannya di dunia sihir.',
     posterUrl: 'https://avac.moe/img/anime/large/39535.jpg',
     backdropUrl: 'https://avac.moe/img/anime/large/39535.jpg',
-    episodeInfo: 'SUB · EP 12',
+    episodeInfo: 'SUB · EP 6 (Ongoing)',
     statusLabel: 'Ongoing',
   ),
   AnimeItem(
@@ -348,7 +348,7 @@ const List<AnimeItem> isekaiAnimeList = [
     description: 'Subaru dan Emilia tiba di kota air Priestella menghadapi Uskup Dosa Besar.',
     posterUrl: 'https://avac.moe/img/anime/large/31240.jpg',
     backdropUrl: 'https://avac.moe/img/anime/large/31240.jpg',
-    episodeInfo: 'SUB · EP 16',
+    episodeInfo: 'SUB · EP 16 (Ongoing)',
     statusLabel: 'Ongoing',
   ),
   AnimeItem(
@@ -361,7 +361,7 @@ const List<AnimeItem> isekaiAnimeList = [
     description: 'Rimuru Tempest memperluas federasi monster Jura Tempest.',
     posterUrl: 'https://avac.moe/img/anime/large/37430.jpg',
     backdropUrl: 'https://avac.moe/img/anime/large/37430.jpg',
-    episodeInfo: 'SUB · EP 18',
+    episodeInfo: 'SUB · EP 18 (Ongoing)',
     statusLabel: 'Ongoing',
   ),
   AnimeItem(
@@ -400,7 +400,7 @@ const List<AnimeItem> isekaiAnimeList = [
     description: 'Naofumi Iwatani melanjutkan perjuangannya melindungi dunia dari ancaman Wave.',
     posterUrl: 'https://avac.moe/img/anime/large/35790.jpg',
     backdropUrl: 'https://avac.moe/img/anime/large/35790.jpg',
-    episodeInfo: 'SUB · EP 4',
+    episodeInfo: 'SUB · EP 4 (Ongoing)',
     statusLabel: 'Ongoing',
   ),
 ];
@@ -416,7 +416,7 @@ const List<AnimeItem> sportsAnimeList = [
     description: 'Hinata Shoyo dan tim bola voli Karasuno terbang menuju kejuaraan nasional.',
     posterUrl: 'https://avac.moe/img/anime/large/20583.jpg',
     backdropUrl: 'https://avac.moe/img/anime/large/20583.jpg',
-    episodeInfo: 'SUB · TAMAT',
+    episodeInfo: 'SUB · 25 EPS (Tamat)',
     statusLabel: 'Tamat',
   ),
   AnimeItem(
@@ -429,7 +429,7 @@ const List<AnimeItem> sportsAnimeList = [
     description: 'Program gila 300 striker muda bersaing menjadi penyerang terbaik dunia.',
     posterUrl: 'https://avac.moe/img/anime/large/49596.jpg',
     backdropUrl: 'https://avac.moe/img/anime/large/49596.jpg',
-    episodeInfo: 'SUB · EP 24',
+    episodeInfo: 'SUB · 24 EPS (Tamat)',
     statusLabel: 'Tamat',
   ),
   AnimeItem(
@@ -442,7 +442,7 @@ const List<AnimeItem> sportsAnimeList = [
     description: 'Pemain bayangan keenam Kuroko Tetsuya bertekad membawa Seirin menumbangkan Generasi Keajaiban.',
     posterUrl: 'https://avac.moe/img/anime/large/11771.jpg',
     backdropUrl: 'https://avac.moe/img/anime/large/11771.jpg',
-    episodeInfo: 'SUB · TAMAT',
+    episodeInfo: 'SUB · 25 EPS (Tamat)',
     statusLabel: 'Tamat',
   ),
 ];
@@ -458,7 +458,7 @@ const List<AnimeItem> mysteryAnimeList = [
     description: 'Light Yagami dan detektif L bertarung akal dalam misteri pembunuhan misterius.',
     posterUrl: 'https://avac.moe/img/anime/large/1535.jpg',
     backdropUrl: 'https://avac.moe/img/anime/large/1535.jpg',
-    episodeInfo: 'SUB · EP 37',
+    episodeInfo: 'SUB · 37 EPS (Tamat)',
     statusLabel: 'Tamat',
   ),
   AnimeItem(
@@ -471,7 +471,7 @@ const List<AnimeItem> mysteryAnimeList = [
     description: 'Satoru Fujinuma terlempar kembali ke masa SD untuk mencegah pembunuhan berantai temannya.',
     posterUrl: 'https://avac.moe/img/anime/large/31043.jpg',
     backdropUrl: 'https://avac.moe/img/anime/large/31043.jpg',
-    episodeInfo: 'SUB · EP 12',
+    episodeInfo: 'SUB · 12 EPS (Tamat)',
     statusLabel: 'Tamat',
   ),
   AnimeItem(
@@ -484,7 +484,7 @@ const List<AnimeItem> mysteryAnimeList = [
     description: 'Dokter Kenzo Tenma mengejar mantan pasiennya yang kini menjadi pembunuh berdarah dingin.',
     posterUrl: 'https://avac.moe/img/anime/large/19.jpg',
     backdropUrl: 'https://avac.moe/img/anime/large/19.jpg',
-    episodeInfo: 'SUB · EP 74',
+    episodeInfo: 'SUB · 74 EPS (Tamat)',
     statusLabel: 'Tamat',
   ),
 ];
@@ -500,7 +500,7 @@ const List<AnimeItem> horrorAnimeList = [
     description: 'Kaneki Ken berubah menjadi separuh ghoul setelah transplantasi organ misterius.',
     posterUrl: 'https://avac.moe/img/anime/large/22319.jpg',
     backdropUrl: 'https://avac.moe/img/anime/large/22319.jpg',
-    episodeInfo: 'SUB · EP 12',
+    episodeInfo: 'SUB · 12 EPS (Tamat)',
     statusLabel: 'Tamat',
   ),
   AnimeItem(
@@ -513,7 +513,7 @@ const List<AnimeItem> horrorAnimeList = [
     description: 'Parasit alien menginfeksi tangan kanan Shinichi Izumi dalam perang bertahan hidup.',
     posterUrl: 'https://avac.moe/img/anime/large/22535.jpg',
     backdropUrl: 'https://avac.moe/img/anime/large/22535.jpg',
-    episodeInfo: 'SUB · EP 24',
+    episodeInfo: 'SUB · 24 EPS (Tamat)',
     statusLabel: 'Tamat',
   ),
 ];
@@ -529,7 +529,7 @@ const List<AnimeItem> mechaAnimeList = [
     description: 'Lelouch Lamperouge memimpin pemberontakan melawan Kekaisaran Britannia dengan kekuatan Geass.',
     posterUrl: 'https://avac.moe/img/anime/large/1575.jpg',
     backdropUrl: 'https://avac.moe/img/anime/large/1575.jpg',
-    episodeInfo: 'SUB · EP 25',
+    episodeInfo: 'SUB · 25 EPS (Tamat)',
     statusLabel: 'Tamat',
   ),
   AnimeItem(
@@ -542,7 +542,7 @@ const List<AnimeItem> mechaAnimeList = [
     description: 'Perjuangan para pemuda distrik ke-86 bertarung di balik mesin perang tanpa nama.',
     posterUrl: 'https://avac.moe/img/anime/large/41457.jpg',
     backdropUrl: 'https://avac.moe/img/anime/large/41457.jpg',
-    episodeInfo: 'SUB · EP 23',
+    episodeInfo: 'SUB · 23 EPS (Tamat)',
     statusLabel: 'Tamat',
   ),
 ];

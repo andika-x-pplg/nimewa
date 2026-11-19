@@ -38,7 +38,83 @@ void main() {
       expect(detail.id, isNotEmpty);
       expect(detail.title, isNotEmpty);
       expect(detail.episodes, isNotEmpty);
-      expect(detail.totalEpisodes, greaterThan(0));
+      expect(detail.totalEpisodes, 25);
+      expect(detail.episodes.length, 25);
+      expect(detail.status, 'Tamat');
+    });
+
+    test('resolveAnimeMetadata correctly differentiates finished, movie, and ongoing metadata', () {
+      // 1. Finished series with authentic count
+      final finishedMeta = AnimeApiClient.resolveAnimeMetadata(
+        id: '41370',
+        title: 'Kimetsu no Yaiba',
+        rawStatus: 'finished',
+        subtype: 'TV',
+        rawEpisodeCount: 26,
+        startDate: '2019-04-06',
+      );
+      expect(finishedMeta.episodeInfo, 'SUB · 26 EPS (Tamat)');
+      expect(finishedMeta.statusLabel, 'Tamat');
+      expect(finishedMeta.displayEpisodes, 26);
+      expect(finishedMeta.totalEpisodes, 26);
+
+      // 2. Long running finished series (HxH)
+      final hxhMeta = AnimeApiClient.resolveAnimeMetadata(
+        id: '6448',
+        title: 'Hunter x Hunter (2011)',
+        rawStatus: 'finished',
+        subtype: 'TV',
+        rawEpisodeCount: 148,
+        startDate: '2011-10-02',
+      );
+      expect(hxhMeta.episodeInfo, 'SUB · 148 EPS (Tamat)');
+      expect(hxhMeta.statusLabel, 'Tamat');
+      expect(hxhMeta.displayEpisodes, 148);
+
+      // 3. Movie
+      final movieMeta = AnimeApiClient.resolveAnimeMetadata(
+        id: '11614',
+        title: 'Kimi no Na wa.',
+        rawStatus: 'finished',
+        subtype: 'movie',
+        rawEpisodeCount: 1,
+        startDate: '2016-08-26',
+      );
+      expect(movieMeta.episodeInfo, 'SUB · MOVIE');
+      expect(movieMeta.displayEpisodes, 1);
+      expect(movieMeta.totalEpisodes, 1);
+
+      // 4. New ongoing seasonal anime (not generic 12)
+      final ongoingMeta = AnimeApiClient.resolveAnimeMetadata(
+        id: 'new-2026-anime',
+        title: 'New Aired Fantasy Anime',
+        rawStatus: 'current',
+        subtype: 'TV',
+        rawEpisodeCount: 12,
+        startDate: '2026-01-01',
+      );
+      expect(ongoingMeta.statusLabel, 'Ongoing');
+      expect(ongoingMeta.episodeInfo.contains('(Ongoing)'), isTrue);
+      expect(ongoingMeta.episodeInfo, isNot('SUB · EP 12'));
+    });
+
+    test('cachedTrendingAnime items have authentic and specific episode info', () {
+      for (final item in AnimeApiClient.cachedTrendingAnime) {
+        expect(item.episodeInfo, isNotEmpty);
+        expect(item.episodeInfo, isNot('SUB · EP 12')); // No generic defaults
+      }
+
+      final soloLeveling = AnimeApiClient.cachedTrendingAnime.firstWhere((a) => a.id == '46231');
+      expect(soloLeveling.episodeInfo, 'SUB · EP 8 (Ongoing)');
+      expect(soloLeveling.statusLabel, 'Ongoing');
+
+      final knyMovie = AnimeApiClient.cachedTrendingAnime.firstWhere((a) => a.id == '42765');
+      expect(knyMovie.episodeInfo, 'SUB · MOVIE');
+      expect(knyMovie.statusLabel, 'Tayang');
+
+      final aot = AnimeApiClient.cachedTrendingAnime.firstWhere((a) => a.id == '7442');
+      expect(aot.episodeInfo, 'SUB · 25 EPS (Tamat)');
+      expect(aot.statusLabel, 'Tamat');
     });
   });
 }

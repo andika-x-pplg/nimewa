@@ -133,22 +133,25 @@ class AnimeApiClient {
       // Fallback
     }
 
-    // Match in cached catalog or generate authentic detail
+    // Match in cached catalog or all catalog or generate authentic detail
     final match = cachedTrendingAnime.firstWhere(
       (a) => a.id == id,
-      orElse: () => AnimeItem(
-        id: id,
-        title: id
-            .split('-')
-            .map((w) => w.isNotEmpty ? '${w[0].toUpperCase()}${w.substring(1)}' : '')
-            .join(' '),
-        japaneseTitle: 'アニメ詳細',
-        rating: 8.0,
-        releaseYear: 2025,
-        genres: const ['Action', 'Fantasy'],
-        description: 'Anime berkualitas tinggi dengan teks bahasa Indonesia.',
-        posterUrl: 'https://media.kitsu.app/anime/poster_images/7442/large.jpg',
-        backdropUrl: 'https://media.kitsu.app/anime/poster_images/7442/large.jpg',
+      orElse: () => allCatalogAnime.firstWhere(
+        (a) => a.id == id,
+        orElse: () => AnimeItem(
+          id: id,
+          title: id
+              .split('-')
+              .map((w) => w.isNotEmpty ? '${w[0].toUpperCase()}${w.substring(1)}' : '')
+              .join(' '),
+          japaneseTitle: 'アニメ詳細',
+          rating: 8.0,
+          releaseYear: 2025,
+          genres: const ['Action', 'Fantasy'],
+          description: 'Anime berkualitas tinggi dengan teks bahasa Indonesia.',
+          posterUrl: 'https://media.kitsu.app/anime/poster_images/7442/large.jpg',
+          backdropUrl: 'https://media.kitsu.app/anime/poster_images/7442/large.jpg',
+        ),
       ),
     );
 
@@ -219,6 +222,20 @@ class AnimeApiClient {
         }
       }
 
+      final rawStatus = attrs['status']?.toString();
+      final subtype = attrs['subtype']?.toString();
+      final rawEpisodeCount = attrs['episodeCount'] as int?;
+
+      final meta = resolveAnimeMetadata(
+        id: id,
+        title: title,
+        rawStatus: rawStatus,
+        subtype: subtype,
+        rawEpisodeCount: rawEpisodeCount,
+        startDate: startDate,
+        releaseYear: year,
+      );
+
       if (id.isNotEmpty && posterUrl.isNotEmpty) {
         result.add(
           AnimeItem(
@@ -231,11 +248,146 @@ class AnimeApiClient {
             description: synopsis.isNotEmpty ? synopsis : 'Nonton streaming anime kualitas HD Sub Indo.',
             posterUrl: posterUrl,
             backdropUrl: backdropUrl,
+            episodeInfo: meta.episodeInfo,
+            statusLabel: meta.statusLabel,
           ),
         );
       }
     }
     return result;
+  }
+
+  /// Resolves authentic episode count, status label, and formatted episode string
+  /// based on real Kitsu API attributes or known canonical anime data.
+  static ({
+    String episodeInfo,
+    String statusLabel,
+    int displayEpisodes,
+    int totalEpisodes,
+  }) resolveAnimeMetadata({
+    required String id,
+    required String title,
+    String? rawStatus,
+    String? subtype,
+    int? rawEpisodeCount,
+    String? startDate,
+    int releaseYear = 2026,
+  }) {
+    final status = (rawStatus ?? 'finished').toLowerCase().trim();
+    final type = (subtype ?? 'tv').toLowerCase().trim();
+    final lowerTitle = title.toLowerCase();
+
+    final isMovie = type == 'movie' ||
+        lowerTitle.contains('movie') ||
+        lowerTitle.contains('film') ||
+        lowerTitle.contains('reze arc') ||
+        lowerTitle.contains('infinity castle') ||
+        (rawEpisodeCount == 1 && type != 'tv');
+
+    if (isMovie) {
+      final statusLabel = (status == 'current' || status == 'upcoming') ? 'Tayang' : 'Tamat';
+      return (
+        episodeInfo: 'SUB · MOVIE',
+        statusLabel: statusLabel,
+        displayEpisodes: 1,
+        totalEpisodes: 1,
+      );
+    }
+
+    final isOngoing = status == 'current' ||
+        status == 'upcoming' ||
+        (status != 'finished' && releaseYear >= 2025);
+
+    if (isOngoing) {
+      int currentEp = 4; // realistic baseline for airing anime
+      if (lowerTitle.contains('one piece')) {
+        currentEp = 1120;
+      } else if (lowerTitle.contains('detective conan') || lowerTitle.contains('meitantei conan')) {
+        currentEp = 1130;
+      } else if (lowerTitle.contains('solo leveling')) {
+        currentEp = 8;
+      } else if (lowerTitle.contains('dandadan')) {
+        currentEp = 10;
+      } else if (lowerTitle.contains('re:zero') || lowerTitle.contains('rezero')) {
+        currentEp = 16;
+      } else if (lowerTitle.contains('slime datta ken') || lowerTitle.contains('tensura')) {
+        currentEp = 18;
+      } else if (lowerTitle.contains('sakamoto days')) {
+        currentEp = 7;
+      } else if (lowerTitle.contains('tokyo revengers')) {
+        currentEp = 6;
+      } else if (lowerTitle.contains('frieren')) {
+        currentEp = 6;
+      } else if (lowerTitle.contains('kaiju no. 8') || lowerTitle.contains('kaiju no 8')) {
+        currentEp = 5;
+      } else if (lowerTitle.contains('spy x family')) {
+        currentEp = 4;
+      } else if (lowerTitle.contains('hero academia')) {
+        currentEp = 7;
+      } else if (startDate != null && startDate.isNotEmpty) {
+        try {
+          final start = DateTime.parse(startDate);
+          final now = DateTime.now();
+          if (now.isAfter(start)) {
+            final weeks = (now.difference(start).inDays / 7).floor() + 1;
+            final maxAllowed = rawEpisodeCount ?? 24;
+            currentEp = weeks.clamp(1, maxAllowed);
+          } else {
+            currentEp = 1;
+          }
+        } catch (_) {
+          currentEp = (rawEpisodeCount != null && rawEpisodeCount > 0)
+              ? (rawEpisodeCount <= 12 ? (rawEpisodeCount / 2).ceil() : 6)
+              : 4;
+        }
+      } else if (rawEpisodeCount != null && rawEpisodeCount > 0) {
+        currentEp = (rawEpisodeCount <= 12) ? (rawEpisodeCount / 2).ceil() : 6;
+      }
+
+      final total = rawEpisodeCount ?? (currentEp > 12 ? currentEp : 12);
+      return (
+        episodeInfo: 'SUB · EP $currentEp (Ongoing)',
+        statusLabel: 'Ongoing',
+        displayEpisodes: currentEp,
+        totalEpisodes: total,
+      );
+    }
+
+    // Finished / Tamat
+    final canonical = getCanonicalEpisodeCount(id, title);
+    final count = rawEpisodeCount ?? canonical ?? 12;
+
+    return (
+      episodeInfo: 'SUB · $count EPS (Tamat)',
+      statusLabel: 'Tamat',
+      displayEpisodes: count,
+      totalEpisodes: count,
+    );
+  }
+
+  /// Canonical episode counts for famous anime franchises.
+  static int? getCanonicalEpisodeCount(String id, String title) {
+    final clean = '${id.toLowerCase()} ${title.toLowerCase()}';
+    if (clean.contains('kimetsu') || clean.contains('demon slayer')) return 26;
+    if (clean.contains('attack on titan') || clean.contains('shingeki')) return 25;
+    if (clean.contains('death note')) return 37;
+    if (clean.contains('hunter x hunter') || clean.contains('hunterxhunter')) return 148;
+    if (clean.contains('fullmetal alchemist') || clean.contains('hagane no renkinjutsushi')) return 64;
+    if (clean.contains('steins;gate') || clean.contains('steins gate')) return 24;
+    if (clean.contains('code geass')) return 25;
+    if (clean.contains('cowboy bebop')) return 26;
+    if (clean.contains('monster')) return 74;
+    if (clean.contains('shigatsu wa kimi no uso') || clean.contains('your lie in april')) return 22;
+    if (clean.contains('frieren')) return 28;
+    if (clean.contains('jujutsu kaisen')) return 24;
+    if (clean.contains('chainsaw man')) return 12;
+    if (clean.contains('spy x family')) return 25;
+    if (clean.contains('parasyte')) return 24;
+    if (clean.contains('tokyo ghoul')) return 12;
+    if (clean.contains('86') || clean.contains('eighty six')) return 23;
+    if (clean.contains('bleach')) return 24;
+    if (clean.contains('naruto')) return 25;
+    return null;
   }
 
   AnimeDetail _parseAnimeDetail(Map<String, dynamic> raw) {
@@ -262,16 +414,30 @@ class AnimeApiClient {
         posterUrl;
 
     final synopsis = attrs['synopsis']?.toString() ?? '';
-    final statusRaw = attrs['status']?.toString() ?? 'finished';
-    final status = statusRaw == 'current' ? 'Ongoing' : 'Completed';
-    final episodeCount = attrs['episodeCount'] as int? ?? 12;
+    final rawStatus = attrs['status']?.toString();
+    final subtype = attrs['subtype']?.toString();
+    final rawEpisodeCount = attrs['episodeCount'] as int?;
+    final startDate = attrs['startDate']?.toString();
+    final year = int.tryParse((startDate ?? '2026').split('-').first) ?? 2026;
+
+    final meta = resolveAnimeMetadata(
+      id: id,
+      title: title,
+      rawStatus: rawStatus,
+      subtype: subtype,
+      rawEpisodeCount: rawEpisodeCount,
+      startDate: startDate,
+      releaseYear: year,
+    );
 
     final episodes = List.generate(
-      episodeCount,
+      meta.displayEpisodes,
       (index) => EpisodeItem(
         id: '$id-eps-${index + 1}',
         episodeNumber: index + 1,
-        title: 'Episode ${index + 1} Sub Indo',
+        title: meta.totalEpisodes == 1 && meta.episodeInfo.contains('MOVIE')
+            ? 'Full Movie Sub Indo'
+            : 'Episode ${index + 1} Sub Indo',
         releaseDate: '2025-01-${(index + 1).toString().padLeft(2, '0')}',
         streamUrl: AnimeStreamResolver.resolveStreamUrl(
           animeId: id,
@@ -287,52 +453,57 @@ class AnimeApiClient {
       title: title,
       japaneseTitle: japaneseTitle,
       rating: double.parse(rating.toStringAsFixed(1)),
-      releaseYear: 2025,
+      releaseYear: year,
       genres: const ['Action', 'Fantasy', 'Adventure'],
       synopsis: synopsis.isNotEmpty ? synopsis : 'Anime berkualitas tinggi dengan teks bahasa Indonesia.',
       posterUrl: posterUrl,
       backdropUrl: backdropUrl,
-      status: status,
-      studio: 'Mappa / Ufotable / A-1',
-      totalEpisodes: episodeCount,
+      status: meta.statusLabel,
+      studio: 'Animation Studio',
+      totalEpisodes: meta.totalEpisodes,
       episodes: episodes,
     );
   }
 
   AnimeDetail _generateDetailFromItem(AnimeItem item) {
-    final key = AnimeStreamResolver.detectAnimeKey(item.id, item.title);
-    int count = 12;
-    switch (key) {
-      case 'demon-slayer':
-        count = 26;
-        break;
-      case 'attack-on-titan':
-        count = 25;
-        break;
-      case 'jujutsu-kaisen':
-        count = 24;
-        break;
-      case 'death-note':
-        count = 37;
-        break;
-      case 'my-hero-academia':
-        count = 13;
-        break;
-      case 'naruto':
-        count = 25;
-        break;
-      case 'one-piece':
-        count = 25;
-        break;
-      case 'spy-x-family':
-        count = 25;
-        break;
-      case 'frieren':
-        count = 28;
-        break;
-      default:
-        count = 12;
+    // 1. Try to extract count from item.episodeInfo
+    int? parsedCount;
+    final match = RegExp(r'(\d+)').firstMatch(item.episodeInfo);
+    if (match != null) {
+      parsedCount = int.tryParse(match.group(1)!);
     }
+    if (item.episodeInfo.toUpperCase().contains('MOVIE')) {
+      parsedCount = 1;
+    }
+
+    final canonical = getCanonicalEpisodeCount(item.id, item.title);
+    final count = parsedCount ?? canonical ?? 12;
+
+    final isOngoing = item.statusLabel.toLowerCase() == 'ongoing' ||
+        item.episodeInfo.toLowerCase().contains('ongoing');
+    final isMovie = item.episodeInfo.toUpperCase().contains('MOVIE') ||
+        item.title.toLowerCase().contains('movie');
+
+    final status = isMovie
+        ? (isOngoing ? 'Tayang' : 'Tamat')
+        : (isOngoing ? 'Ongoing' : 'Tamat');
+
+    final episodeList = List.generate(
+      count,
+      (i) => EpisodeItem(
+        id: '${item.id}-eps-${i + 1}',
+        episodeNumber: i + 1,
+        title: isMovie ? 'Full Movie Sub Indo' : 'Episode ${i + 1} Sub Indo',
+        releaseDate: '2025-01-${(i + 1).toString().padLeft(2, '0')}',
+        streamUrl: AnimeStreamResolver.resolveStreamUrl(
+          animeId: item.id,
+          animeTitle: item.title,
+          server: 'Server 1 (Fast HD)',
+          episodeNumber: i + 1,
+        ),
+      ),
+    );
+
     return AnimeDetail(
       id: item.id,
       title: item.title,
@@ -343,24 +514,10 @@ class AnimeApiClient {
       synopsis: item.description,
       posterUrl: item.posterUrl,
       backdropUrl: item.backdropUrl,
-      status: 'Completed',
+      status: status,
       studio: 'Animation Studio',
       totalEpisodes: count,
-      episodes: List.generate(
-        count,
-        (i) => EpisodeItem(
-          id: '${item.id}-eps-${i + 1}',
-          episodeNumber: i + 1,
-          title: 'Episode ${i + 1} Sub Indo',
-          releaseDate: '2025-01-${(i + 1).toString().padLeft(2, '0')}',
-          streamUrl: AnimeStreamResolver.resolveStreamUrl(
-            animeId: item.id,
-            animeTitle: item.title,
-            server: 'Server 1 (Fast HD)',
-            episodeNumber: i + 1,
-          ),
-        ),
-      ),
+      episodes: episodeList,
     );
   }
 
@@ -376,6 +533,8 @@ class AnimeApiClient {
       description: 'Sung Jinwoo bangkit sebagai Shadow Monarch dan melampaui batas kekuatan manusia.',
       posterUrl: 'https://media.kitsu.app/anime/46231/poster_image/large-cdadff31f42490b9f48a035939a01a92.jpeg',
       backdropUrl: 'https://media.kitsu.app/anime/46231/poster_image/large-cdadff31f42490b9f48a035939a01a92.jpeg',
+      episodeInfo: 'SUB · EP 8 (Ongoing)',
+      statusLabel: 'Ongoing',
     ),
     AnimeItem(
       id: '42765',
@@ -387,6 +546,8 @@ class AnimeApiClient {
       description: 'Pertempuran puncak Korps Pembasmi Iblis di dalam Kastil Tanpa Batas.',
       posterUrl: 'https://media.kitsu.app/anime/poster_images/42765/large.jpg',
       backdropUrl: 'https://media.kitsu.app/anime/poster_images/42765/large.jpg',
+      episodeInfo: 'SUB · MOVIE',
+      statusLabel: 'Tayang',
     ),
     AnimeItem(
       id: '52991',
@@ -398,6 +559,8 @@ class AnimeApiClient {
       description: 'Perjalanan penyihir elf Frieren memahami arti hidup dan waktu manusia.',
       posterUrl: 'https://avac.moe/img/anime/large/52991.jpg',
       backdropUrl: 'https://avac.moe/img/anime/large/52991.jpg',
+      episodeInfo: 'SUB · EP 6 (Ongoing)',
+      statusLabel: 'Ongoing',
     ),
     AnimeItem(
       id: '43806',
@@ -409,6 +572,8 @@ class AnimeApiClient {
       description: 'Yuji Itadori dan kawan-kawan terjun ke dalam medan Culling Game yang mematikan.',
       posterUrl: 'https://media.kitsu.app/anime/poster_images/43806/large.jpg',
       backdropUrl: 'https://media.kitsu.app/anime/poster_images/43806/large.jpg',
+      episodeInfo: 'SUB · EP 4 (Ongoing)',
+      statusLabel: 'Ongoing',
     ),
     AnimeItem(
       id: '40321',
@@ -420,6 +585,8 @@ class AnimeApiClient {
       description: 'Denji bertemu gadis misterius bernama Reze di tengah malam hujan.',
       posterUrl: 'https://media.kitsu.app/anime/poster_images/40321/large.jpg',
       backdropUrl: 'https://media.kitsu.app/anime/poster_images/40321/large.jpg',
+      episodeInfo: 'SUB · MOVIE',
+      statusLabel: 'Tayang',
     ),
     AnimeItem(
       id: '48671',
@@ -431,6 +598,8 @@ class AnimeApiClient {
       description: 'Kafka Hibino bertransformasi menjadi Kaiju dan berjuang di Pasukan Pertahanan.',
       posterUrl: 'https://media.kitsu.app/anime/48671/poster_image/large-6156a7475d03dbb788ab1a9ce6c7f962.jpeg',
       backdropUrl: 'https://media.kitsu.app/anime/48671/poster_image/large-6156a7475d03dbb788ab1a9ce6c7f962.jpeg',
+      episodeInfo: 'SUB · EP 5 (Ongoing)',
+      statusLabel: 'Ongoing',
     ),
     AnimeItem(
       id: '41992',
@@ -442,6 +611,8 @@ class AnimeApiClient {
       description: 'Mata-mata Twilight menyamar membentuk keluarga palsu demi misi perdamaian.',
       posterUrl: 'https://media.kitsu.app/anime/poster_images/41992/large.jpg',
       backdropUrl: 'https://media.kitsu.app/anime/poster_images/41992/large.jpg',
+      episodeInfo: 'SUB · EP 4 (Ongoing)',
+      statusLabel: 'Ongoing',
     ),
     AnimeItem(
       id: '11469',
@@ -453,6 +624,8 @@ class AnimeApiClient {
       description: 'Pertarungan pamungkas para pahlawan melawan All For One dan Shigaraki.',
       posterUrl: 'https://media.kitsu.app/anime/poster_images/11469/large.jpg',
       backdropUrl: 'https://media.kitsu.app/anime/poster_images/11469/large.jpg',
+      episodeInfo: 'SUB · EP 7 (Ongoing)',
+      statusLabel: 'Ongoing',
     ),
     AnimeItem(
       id: '42249',
@@ -464,6 +637,8 @@ class AnimeApiClient {
       description: 'Takemichi melompati waktu untuk menyelamatkan kekasih dan teman-temannya.',
       posterUrl: 'https://avac.moe/img/anime/large/42249.jpg',
       backdropUrl: 'https://avac.moe/img/anime/large/42249.jpg',
+      episodeInfo: 'SUB · EP 6 (Ongoing)',
+      statusLabel: 'Ongoing',
     ),
     AnimeItem(
       id: '7442',
@@ -475,6 +650,8 @@ class AnimeApiClient {
       description: 'Pertarungan umat manusia melawan para Titan raksasa yang mengancam kepunahan.',
       posterUrl: 'https://media.kitsu.app/anime/poster_images/7442/large.jpg',
       backdropUrl: 'https://media.kitsu.app/anime/poster_images/7442/large.jpg',
+      episodeInfo: 'SUB · 25 EPS (Tamat)',
+      statusLabel: 'Tamat',
     ),
   ];
 }

@@ -67,6 +67,23 @@ class AnimeStreamService {
       return _curatedDetails[cleanId]!;
     }
 
+    // Map known API ID aliases to curated details
+    if (cleanId == '41370' || cleanId == 'kny') {
+      return _curatedDetails['demon-slayer']!;
+    }
+    if (cleanId == '7442' || cleanId == 'aot') {
+      return _curatedDetails['attack-on-titan']!;
+    }
+    if (cleanId == '1376') {
+      return _curatedDetails['death-note']!;
+    }
+    if (cleanId == '6448' || cleanId == 'hxh') {
+      return _curatedDetails['hunter-x-hunter']!;
+    }
+    if (cleanId == '3936' || cleanId == 'fma') {
+      return _curatedDetails['fullmetal-alchemist']!;
+    }
+
     // Fetch from live API
     return apiClient.fetchAnimeDetail(cleanId);
   }
@@ -130,9 +147,9 @@ class AnimeStreamService {
       backdropUrl: 'https://avac.moe/img/anime/large/42249.jpg',
       status: 'Ongoing',
       studio: 'LIDENFILMS',
-      totalEpisodes: 13,
+      totalEpisodes: 12,
       episodes: List.generate(
-        13,
+        6,
         (index) => EpisodeItem(
           id: 'tokyo-revengers-s4-eps-${index + 1}',
           episodeNumber: index + 1,
@@ -141,6 +158,151 @@ class AnimeStreamService {
           streamUrl: AnimeStreamResolver.resolveStreamUrl(
             animeId: 'tokyo-revengers-s4',
             animeTitle: 'Tokyo Revengers',
+            server: 'Server 1 (Fast HD)',
+            episodeNumber: index + 1,
+          ),
+        ),
+      ),
+    ),
+    'demon-slayer': AnimeDetail(
+      id: 'demon-slayer',
+      title: 'Demon Slayer: Kimetsu no Yaiba',
+      japaneseTitle: '鬼滅の刃',
+      rating: 8.9,
+      releaseYear: 2019,
+      genres: const ['Action', 'Fantasy', 'Historical'],
+      synopsis: 'Tanjiro Kamado bertekad menjadi Pembasmi Iblis demi menyelamatkan adik tercintanya, Nezuko, yang telah berubah menjadi iblis.',
+      posterUrl: 'https://media.kitsu.app/anime/poster_images/41370/large.jpg',
+      backdropUrl: 'https://media.kitsu.app/anime/poster_images/41370/large.jpg',
+      status: 'Tamat',
+      studio: 'ufotable',
+      totalEpisodes: 26,
+      episodes: List.generate(
+        26,
+        (index) => EpisodeItem(
+          id: 'demon-slayer-eps-${index + 1}',
+          episodeNumber: index + 1,
+          title: 'Episode ${index + 1} Sub Indo',
+          releaseDate: '2019-04-${(index + 1).toString().padLeft(2, '0')}',
+          streamUrl: AnimeStreamResolver.resolveStreamUrl(
+            animeId: 'demon-slayer',
+            animeTitle: 'Demon Slayer',
+            server: 'Server 1 (Fast HD)',
+            episodeNumber: index + 1,
+          ),
+        ),
+      ),
+    ),
+    'attack-on-titan': AnimeDetail(
+      id: 'attack-on-titan',
+      title: 'Attack on Titan (Shingeki no Kyojin)',
+      japaneseTitle: '進撃の巨人',
+      rating: 8.8,
+      releaseYear: 2013,
+      genres: const ['Action', 'Fantasy', 'Mystery'],
+      synopsis: 'Eren Yeager dan Korps Survei bertarung membebaskan manusia dari teror raksasa pemakan manusia di balik dinding pertahanan.',
+      posterUrl: 'https://media.kitsu.app/anime/poster_images/7442/large.jpg',
+      backdropUrl: 'https://media.kitsu.app/anime/poster_images/7442/large.jpg',
+      status: 'Tamat',
+      studio: 'Wit Studio / MAPPA',
+      totalEpisodes: 25,
+      episodes: List.generate(
+        25,
+        (index) => EpisodeItem(
+          id: 'attack-on-titan-eps-${index + 1}',
+          episodeNumber: index + 1,
+          title: 'Episode ${index + 1} Sub Indo',
+          releaseDate: '2013-04-${(index + 1).toString().padLeft(2, '0')}',
+          streamUrl: AnimeStreamResolver.resolveStreamUrl(
+            animeId: 'attack-on-titan',
+            animeTitle: 'Attack on Titan',
+            server: 'Server 1 (Fast HD)',
+            episodeNumber: index + 1,
+          ),
+        ),
+      ),
+    ),
+    'death-note': AnimeDetail(
+      id: 'death-note',
+      title: 'Death Note',
+      japaneseTitle: 'デスノート',
+      rating: 9.0,
+      releaseYear: 2006,
+      genres: const ['Mystery', 'Psychological', 'Supernatural'],
+      synopsis: 'Light Yagami menggunakan buku catatan kematian untuk menciptakan dunia baru tanpa kejahatan, namun dihadang oleh detektif jenius L.',
+      posterUrl: 'https://media.kitsu.app/anime/poster_images/1376/large.jpg',
+      backdropUrl: 'https://media.kitsu.app/anime/poster_images/1376/large.jpg',
+      status: 'Tamat',
+      studio: 'Madhouse',
+      totalEpisodes: 37,
+      episodes: List.generate(
+        37,
+        (index) => EpisodeItem(
+          id: 'death-note-eps-${index + 1}',
+          episodeNumber: index + 1,
+          title: 'Episode ${index + 1} Sub Indo',
+          releaseDate: '2006-10-${(index + 1).toString().padLeft(2, '0')}',
+          streamUrl: AnimeStreamResolver.resolveStreamUrl(
+            animeId: 'death-note',
+            animeTitle: 'Death Note',
+            server: 'Server 1 (Fast HD)',
+            episodeNumber: index + 1,
+          ),
+        ),
+      ),
+    ),
+    'hunter-x-hunter': AnimeDetail(
+      id: 'hunter-x-hunter',
+      title: 'Hunter x Hunter (2011)',
+      japaneseTitle: 'HUNTER×HUNTER',
+      rating: 9.0,
+      releaseYear: 2011,
+      genres: const ['Action', 'Adventure', 'Fantasy'],
+      synopsis: 'Gon Freecss memulai petualangan berbahaya untuk menjadi Hunter berlisensi dan menemukan keberadaan ayahnya, Ging.',
+      posterUrl: 'https://media.kitsu.app/anime/poster_images/6448/large.jpg',
+      backdropUrl: 'https://media.kitsu.app/anime/poster_images/6448/large.jpg',
+      status: 'Tamat',
+      studio: 'Madhouse',
+      totalEpisodes: 148,
+      episodes: List.generate(
+        148,
+        (index) => EpisodeItem(
+          id: 'hunter-x-hunter-eps-${index + 1}',
+          episodeNumber: index + 1,
+          title: 'Episode ${index + 1} Sub Indo',
+          releaseDate: '2011-10-${(index + 1).toString().padLeft(2, '0')}',
+          streamUrl: AnimeStreamResolver.resolveStreamUrl(
+            animeId: 'hunter-x-hunter',
+            animeTitle: 'Hunter x Hunter',
+            server: 'Server 1 (Fast HD)',
+            episodeNumber: index + 1,
+          ),
+        ),
+      ),
+    ),
+    'fullmetal-alchemist': AnimeDetail(
+      id: 'fullmetal-alchemist',
+      title: 'Fullmetal Alchemist: Brotherhood',
+      japaneseTitle: '鋼の錬金術師 FULLMETAL ALCHEMIST',
+      rating: 9.1,
+      releaseYear: 2009,
+      genres: const ['Action', 'Adventure', 'Drama', 'Fantasy'],
+      synopsis: 'Edward dan Alphonse Elric mencari Batu Bertuah untuk memulihkan tubuh mereka yang hilang akibat transmutasi manusia terlarang.',
+      posterUrl: 'https://media.kitsu.app/anime/poster_images/3936/large.jpg',
+      backdropUrl: 'https://media.kitsu.app/anime/poster_images/3936/large.jpg',
+      status: 'Tamat',
+      studio: 'Bones',
+      totalEpisodes: 64,
+      episodes: List.generate(
+        64,
+        (index) => EpisodeItem(
+          id: 'fullmetal-alchemist-eps-${index + 1}',
+          episodeNumber: index + 1,
+          title: 'Episode ${index + 1} Sub Indo',
+          releaseDate: '2009-04-${(index + 1).toString().padLeft(2, '0')}',
+          streamUrl: AnimeStreamResolver.resolveStreamUrl(
+            animeId: 'fullmetal-alchemist',
+            animeTitle: 'Fullmetal Alchemist',
             server: 'Server 1 (Fast HD)',
             episodeNumber: index + 1,
           ),
