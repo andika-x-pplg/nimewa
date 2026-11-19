@@ -9,6 +9,45 @@ class AnimeStreamResolver {
   /// Shared instance of ConsumetApiClient for online stream lookup.
   static ConsumetApiClient consumetClient = ConsumetApiClient();
 
+  /// Set of anime keys known to be incomplete or lacking authentic episode files.
+  /// Under the Atomicity principle ("semua atau tidak sama sekali"), these are never displayed or played.
+  static const Set<String> _incompleteBlacklist = {
+    'tokyo-revengers-s4',
+    'season-2-fallback',
+    'season-3-fallback',
+    'season-4-fallback',
+  };
+
+  /// Returns true if and only if the anime or season has a complete, authentic set
+  /// of episodes starting from Episode 1 up to its full count without missing episodes.
+  static bool hasCompleteEpisodes(String animeId, String animeTitle) {
+    final cleanId = animeId.toLowerCase().trim();
+    final cleanTitle = animeTitle.toLowerCase().trim();
+
+    // Tokyo Revengers Season 4 and unreleased sequels are explicitly incomplete
+    if (cleanId == 'tokyo-revengers-s4' ||
+        cleanId == '48960' ||
+        cleanTitle.contains('tokyo revengers: season 4') ||
+        cleanTitle.contains('tokyo revengers season 4') ||
+        cleanTitle.contains('santen sensou') ||
+        cleanTitle.contains('three deities') ||
+        cleanTitle.contains('three titans') ||
+        cleanTitle.contains('war of the three titans')) {
+      return false;
+    }
+
+    final key = detectAnimeKey(animeId, animeTitle);
+    if (_incompleteBlacklist.contains(key)) return false;
+
+    final episodes = _animeEpisodeMap[key];
+    if (episodes == null || episodes.isEmpty) return false;
+
+    // Must have a valid Episode 1 stream URL
+    if (episodes.first.server1Url.isEmpty) return false;
+
+    return true;
+  }
+
   /// Asynchronously resolves direct stream URL, prioritizing online Consumet providers
   /// for the latest episodes, with instant automatic fallback to authentic local streams.
   static Future<String> resolveStreamUrlAsync({
@@ -19,6 +58,11 @@ class AnimeStreamResolver {
     String existingStreamUrl = '',
     ConsumetApiClient? client,
   }) async {
+    // Under Atomicity rule, incomplete anime/season is never resolved
+    if (!hasCompleteEpisodes(animeId, animeTitle)) {
+      return '';
+    }
+
     final apiClient = client ?? consumetClient;
     final season = extractSeasonNumber(animeId, animeTitle);
 
@@ -56,20 +100,17 @@ class AnimeStreamResolver {
     int episodeNumber = 1,
     String existingStreamUrl = '',
   }) {
+    // Under the Atomicity principle, incomplete anime are never played
+    if (!hasCompleteEpisodes(animeId, animeTitle)) {
+      return '';
+    }
+
     final key = detectAnimeKey(animeId, animeTitle);
     final isServer3 = server.contains('Server 3') || server.toLowerCase().contains('otaku');
 
-    List<_AnimeStreamEntry>? episodes = _animeEpisodeMap[key];
+    final episodes = _animeEpisodeMap[key];
     if (episodes == null || episodes.isEmpty) {
-      final season = extractSeasonNumber(animeId, animeTitle);
-      if (season == 2) {
-        episodes = _animeEpisodeMap['season-2-fallback'];
-      } else if (season == 3) {
-        episodes = _animeEpisodeMap['season-3-fallback'];
-      } else if (season >= 4) {
-        episodes = _animeEpisodeMap['season-4-fallback'];
-      }
-      episodes ??= _animeEpisodeMap['demon-slayer']!;
+      return '';
     }
 
     // Resolve episode index (1-based to list index)
@@ -885,23 +926,6 @@ class AnimeStreamResolver {
     });
   }
 
-  static List<_AnimeStreamEntry> _buildTokyoRevengersS4() {
-    const files = [
-      'Tokyo Revengers S3 cap 08.mp4',
-      'Tokyo Revengers S3 cap 09.mp4',
-      'Tokyo Revengers S3 cap 10.mp4',
-      'Tokyo Revengers S3 cap 11.mp4',
-      'Tokyo Revengers S3 cap 12-13.mp4',
-      'Tokyo Revengers S3 cap 12-13.mp4',
-    ];
-    return files.map((file) {
-      final encoded = Uri.encodeComponent(file);
-      final url =
-          'https://archive.org/download/tokyo-revengers-s3-darkrai/$encoded';
-      return _AnimeStreamEntry(server1Url: url, server3Url: url);
-    }).toList();
-  }
-
   // --- Solo Leveling Season 1 (12 Episodes, ~24m each) ---
   static List<_AnimeStreamEntry> _buildSoloLevelingSeason1() {
     return List.generate(12, (index) {
@@ -1572,7 +1596,6 @@ class AnimeStreamResolver {
     'bleach-tybw': _buildBleachTybw(),
     'tokyo-revengers-s2': _buildTokyoRevengersS2(),
     'tokyo-revengers-s3': _buildTokyoRevengersS3(),
-    'tokyo-revengers-s4': _buildTokyoRevengersS4(),
     'spy-x-family-s2': _buildSpyFamilyS2(),
     'spy-x-family-s3': _buildSpyFamilyS3(),
     'my-hero-academia-s2': _buildMhaS2(),

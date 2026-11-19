@@ -238,12 +238,16 @@ void main() {
       expect(tokyoS3, contains('tokyo-revengers-s3-darkrai'));
       expect(tokyoS3, contains('S3'));
 
+      expect(
+        AnimeStreamResolver.hasCompleteEpisodes('tokyo-revengers-s4', 'Tokyo Revengers: Season 4'),
+        isFalse,
+      );
       final tokyoS4 = AnimeStreamResolver.resolveStreamUrl(
         animeId: 'tokyo-revengers-s4',
         animeTitle: 'Tokyo Revengers: Season 4',
         server: 'Server 1 (Fast HD)',
       );
-      expect(tokyoS4, isNot(contains('S01')));
+      expect(tokyoS4, isEmpty);
 
       final frieren = AnimeStreamResolver.resolveStreamUrl(
         animeId: 'frieren-s2',
@@ -561,42 +565,53 @@ void main() {
       expect(s4, isNot(contains('S01E01')));
     });
 
-    test('season-specific routing: generic Season 2 anime never plays Season 1 stream', () {
+    test('atomicity rule: incomplete or arbitrary anime has hasCompleteEpisodes false and resolves to empty', () {
+      expect(
+        AnimeStreamResolver.hasCompleteEpisodes('arbitrary-anime-s2', 'My Random Anime Season 2'),
+        isFalse,
+      );
       final genericS2 = AnimeStreamResolver.resolveStreamUrl(
         animeId: 'arbitrary-anime-s2',
         animeTitle: 'My Random Anime Season 2',
         server: 'Server 1 (Fast HD)',
         episodeNumber: 1,
       );
-      expect(genericS2, contains('S02'));
-      expect(genericS2, isNot(contains('Cruelty')));
-      expect(genericS2, isNot(contains('S01')));
-    });
+      expect(genericS2, isEmpty);
 
-    test('season-specific routing: generic Season 3 anime never plays Season 1 or Season 2 stream', () {
+      expect(
+        AnimeStreamResolver.hasCompleteEpisodes('arbitrary-anime-s3', 'My Random Anime Season 3'),
+        isFalse,
+      );
       final genericS3 = AnimeStreamResolver.resolveStreamUrl(
         animeId: 'arbitrary-anime-s3',
         animeTitle: 'My Random Anime Season 3',
         server: 'Server 1 (Fast HD)',
         episodeNumber: 1,
       );
-      expect(genericS3, contains('S03'));
-      expect(genericS3, contains('S03E01'));
-      expect(genericS3, isNot(contains('S01/')));
-      expect(genericS3, isNot(contains('S01E')));
-      expect(genericS3, isNot(contains('/S02/')));
-      expect(genericS3, isNot(contains('S02E')));
+      expect(genericS3, isEmpty);
     });
 
-    test('season-specific routing: generic Season 4 anime never plays Season 1 stream', () {
-      final genericS4 = AnimeStreamResolver.resolveStreamUrl(
-        animeId: 'arbitrary-anime-s4',
-        animeTitle: 'My Random Anime Season 4',
+    test('atomicity rule: authentic complete seasons have hasCompleteEpisodes true and play real streams', () {
+      expect(
+        AnimeStreamResolver.hasCompleteEpisodes('demon-slayer-s2', 'Kimetsu no Yaiba Entertainment District Arc'),
+        isTrue,
+      );
+      final knyS2 = AnimeStreamResolver.resolveStreamUrl(
+        animeId: 'demon-slayer-s2',
+        animeTitle: 'Kimetsu no Yaiba Entertainment District Arc',
         server: 'Server 1 (Fast HD)',
         episodeNumber: 1,
       );
-      expect(genericS4, isNot(contains('S01')));
-      expect(genericS4, isNot(contains('Cruelty')));
+      expect(knyS2, contains('S02'));
+
+      expect(
+        AnimeStreamResolver.hasCompleteEpisodes('tokyo-revengers-s2', 'Tokyo Revengers Season 2'),
+        isTrue,
+      );
+      expect(
+        AnimeStreamResolver.hasCompleteEpisodes('tokyo-revengers-s3', 'Tokyo Revengers Season 3'),
+        isTrue,
+      );
     });
   });
 

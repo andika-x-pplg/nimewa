@@ -217,8 +217,8 @@ const List<AnimeItem> topRatedAnimeList = [
   ),
   AnimeItem(
     id: 'attack-on-titan-final',
-    title: 'Shingeki no Kyojin: The Final Season',
-    japaneseTitle: '進撃の巨人',
+    title: 'Attack on Titan: The Final Season',
+    japaneseTitle: '進撃の巨人 (Shingeki no Kyojin)',
     rating: 9.1,
     releaseYear: 2023,
     genres: ['Action', 'Drama', 'Suspense'],

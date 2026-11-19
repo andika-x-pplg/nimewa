@@ -20,7 +20,8 @@ class AnimeStreamService {
     if (networkDelay > Duration.zero) {
       await Future.delayed(networkDelay);
     }
-    return apiClient.fetchTrendingAnime(limit: 10);
+    final items = await apiClient.fetchTrendingAnime(limit: 10);
+    return items.where((item) => AnimeStreamResolver.hasCompleteEpisodes(item.id, item.title)).toList();
   }
 
   /// Fetches explore anime catalog with reactive filtering, search query, and pagination.
@@ -35,24 +36,29 @@ class AnimeStreamService {
       await Future.delayed(networkDelay);
     }
 
+    List<AnimeItem> items;
     final cleanQuery = query?.trim();
     if (cleanQuery != null && cleanQuery.isNotEmpty) {
-      return apiClient.searchAnime(cleanQuery, limit: limit, offset: offset);
+      items = await apiClient.searchAnime(cleanQuery, limit: limit, offset: offset);
+    } else if (genre != null && genre != 'Semua' && genre.isNotEmpty) {
+      items = await apiClient.fetchAnimeByCategory(genre, limit: limit, offset: offset);
+    } else {
+      switch (filter) {
+        case 'latest':
+          items = await apiClient.fetchLatestAnime(limit: limit, offset: offset);
+          break;
+        case 'top_rated':
+          items = await apiClient.fetchTopRatedAnime(limit: limit, offset: offset);
+          break;
+        case 'popular':
+        default:
+          items = await apiClient.fetchTrendingAnime(limit: limit, offset: offset);
+          break;
+      }
     }
 
-    if (genre != null && genre != 'Semua' && genre.isNotEmpty) {
-      return apiClient.fetchAnimeByCategory(genre, limit: limit, offset: offset);
-    }
-
-    switch (filter) {
-      case 'latest':
-        return apiClient.fetchLatestAnime(limit: limit, offset: offset);
-      case 'top_rated':
-        return apiClient.fetchTopRatedAnime(limit: limit, offset: offset);
-      case 'popular':
-      default:
-        return apiClient.fetchTrendingAnime(limit: limit, offset: offset);
-    }
+    // Atomicity principle: all or nothing, only return anime with complete episodes
+    return items.where((item) => AnimeStreamResolver.hasCompleteEpisodes(item.id, item.title)).toList();
   }
 
   /// Fetches detailed metadata and all available episodes for an anime.
@@ -68,8 +74,11 @@ class AnimeStreamService {
     }
 
     // Map known API ID aliases to curated details
-    if (cleanId == 'tokyo-revengers-s4' || cleanId == '48960' || cleanId == '42249') {
-      return _curatedDetails['tokyo-revengers-s4']!;
+    if (cleanId == 'tokyo-revengers-s3' || cleanId == 'tokyo-revengers-tenjiku') {
+      return _curatedDetails['tokyo-revengers-s3']!;
+    }
+    if (cleanId == 'tokyo-revengers-s2' || cleanId == 'tokyo-revengers-seiya') {
+      return _curatedDetails['tokyo-revengers-s2']!;
     }
     if (cleanId == '41370' || cleanId == 'kny') {
       return _curatedDetails['demon-slayer']!;
@@ -138,29 +147,29 @@ class AnimeStreamService {
         ),
       ),
     ),
-    'tokyo-revengers-s4': AnimeDetail(
-      id: 'tokyo-revengers-s4',
-      title: 'Tokyo Revengers: Season 4',
-      japaneseTitle: '東京リベンジャーズ',
-      rating: 7.8,
-      releaseYear: 2025,
+    'tokyo-revengers-s3': AnimeDetail(
+      id: 'tokyo-revengers-s3',
+      title: 'Tokyo Revengers: Tenjiku Arc',
+      japaneseTitle: '東京リベンジャーズ 天竺編',
+      rating: 8.3,
+      releaseYear: 2023,
       genres: const ['Action', 'Drama', 'Delinquents', 'Supernatural'],
-      synopsis: 'Pasca pertempuran berdarah Kanto Incident dan Arc Tenjiku, Takemichi Hanagaki kembali menghadapi labirin takdir baru. Tekadnya untuk menyelamatkan Mikey dan teman-temannya kembali diuji dalam skala yang lebih berbahaya.',
+      synopsis: 'Pertarungan sengit antara Tokyo Manji Gang dan geng Tenjiku pimpinan Izana Kurokawa dalam insiden Kanto Incident.',
       posterUrl: 'https://avac.moe/img/anime/large/42249.jpg',
       backdropUrl: 'https://avac.moe/img/anime/large/42249.jpg',
-      status: 'Ongoing',
+      status: 'Tamat',
       studio: 'LIDENFILMS',
-      totalEpisodes: 12,
+      totalEpisodes: 13,
       episodes: List.generate(
-        6,
+        13,
         (index) => EpisodeItem(
-          id: 'tokyo-revengers-s4-eps-${index + 1}',
+          id: 'tokyo-revengers-s3-eps-${index + 1}',
           episodeNumber: index + 1,
-          title: 'Episode ${index + 1} - Takdir Tak Terelakkan',
-          releaseDate: '2025-01-${(index + 1) * 7}',
+          title: 'Episode ${index + 1} - Insiden Kanto',
+          releaseDate: '2023-10-${((index + 1) % 28) + 1}',
           streamUrl: AnimeStreamResolver.resolveStreamUrl(
-            animeId: 'tokyo-revengers-s4',
-            animeTitle: 'Tokyo Revengers Season 4',
+            animeId: 'tokyo-revengers-s3',
+            animeTitle: 'Tokyo Revengers Season 3',
             server: 'Server 1 (Fast HD)',
             episodeNumber: index + 1,
           ),

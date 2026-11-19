@@ -145,8 +145,10 @@ class AnimeSubtitleService {
         return 'Sousou no Frieren Season 2';
       case 'bleach-tybw':
         return 'Bleach: Thousand-Year Blood War';
-      case 'tokyo-revengers-s4':
-        return 'Tokyo Revengers Season 4';
+      case 'tokyo-revengers-s2':
+        return 'Tokyo Revengers Season 2';
+      case 'tokyo-revengers-s3':
+        return 'Tokyo Revengers Season 3';
       case 'spy-x-family-s3':
         return 'Spy x Family Season 3';
       case 'my-hero-academia-s8':

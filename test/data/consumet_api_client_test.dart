@@ -125,8 +125,8 @@ void main() {
       final mockClient = _FakeConsumetClient(fakeStreamUrl: mockStreamUrl);
 
       final streamUrl = await AnimeStreamResolver.resolveStreamUrlAsync(
-        animeId: 'tokyo-revengers-s4',
-        animeTitle: 'Tokyo Revengers: Season 4',
+        animeId: 'demon-slayer',
+        animeTitle: 'Demon Slayer',
         server: 'Server 4 (Consumet Cloud)',
         episodeNumber: 1,
         client: mockClient,
@@ -151,7 +151,7 @@ void main() {
       expect(streamUrl, contains('.mp4'));
     });
 
-    test('falls back to Season 4 fallback for Tokyo Revengers S4 when online is null', () async {
+    test('rejects incomplete Season 4 anime when online is null per Atomicity rule', () async {
       final nullClient = _FakeConsumetClient(fakeStreamUrl: null);
 
       final streamUrl = await AnimeStreamResolver.resolveStreamUrlAsync(
@@ -162,8 +162,8 @@ void main() {
         client: nullClient,
       );
 
-      expect(streamUrl, isNot(contains('S01')));
-      expect(streamUrl, contains('.mp4'));
+      // Per Atomicity rule ("Semua atau tidak sama sekali"), incomplete anime yields empty stream
+      expect(streamUrl, isEmpty);
     });
   });
 }

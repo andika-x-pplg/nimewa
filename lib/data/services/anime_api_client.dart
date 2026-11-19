@@ -23,11 +23,19 @@ class AnimeApiClient {
     int? seasonYear = 2026,
   }) async {
     final yearFilter = seasonYear != null ? '&filter[seasonYear]=$seasonYear' : '';
-    final url = '$baseUrl/anime?sort=-user_count$yearFilter&page[limit]=$limit&page[offset]=$offset';
+    final fetchLimit = limit + 10;
+    final url = '$baseUrl/anime?sort=-user_count$yearFilter&page[limit]=$fetchLimit&page[offset]=$offset';
     try {
       final json = await _get(url);
       final list = _parseAnimeList(json);
-      if (list.isNotEmpty) return list.take(limit).toList();
+      if (list.length >= limit) return list.take(limit).toList();
+      if (list.isNotEmpty) {
+        final remaining = limit - list.length;
+        final backfill = cachedTrendingAnime
+            .where((c) => !list.any((item) => item.id == c.id))
+            .take(remaining);
+        return [...list, ...backfill];
+      }
     } catch (_) {
       // Graceful fallback to cached authentic catalog
     }
@@ -40,10 +48,12 @@ class AnimeApiClient {
     int limit = 20,
     int offset = 0,
   }) async {
-    final url = '$baseUrl/anime?sort=-startDate&page[limit]=$limit&page[offset]=$offset';
+    final fetchLimit = limit + 10;
+    final url = '$baseUrl/anime?sort=-startDate&page[limit]=$fetchLimit&page[offset]=$offset';
     try {
       final json = await _get(url);
       final list = _parseAnimeList(json);
+      if (list.length >= limit) return list.take(limit).toList();
       if (list.isNotEmpty) return list;
     } catch (_) {
       // Fallback
@@ -56,10 +66,12 @@ class AnimeApiClient {
     int limit = 20,
     int offset = 0,
   }) async {
-    final url = '$baseUrl/anime?sort=-averageRating&page[limit]=$limit&page[offset]=$offset';
+    final fetchLimit = limit + 10;
+    final url = '$baseUrl/anime?sort=-averageRating&page[limit]=$fetchLimit&page[offset]=$offset';
     try {
       final json = await _get(url);
       final list = _parseAnimeList(json);
+      if (list.length >= limit) return list.take(limit).toList();
       if (list.isNotEmpty) return list;
     } catch (_) {
       // Fallback
@@ -78,21 +90,24 @@ class AnimeApiClient {
       return fetchTrendingAnime(limit: limit, offset: offset);
     }
 
-    final url = '$baseUrl/anime?filter[text]=${Uri.encodeComponent(cleanQuery)}&page[limit]=$limit&page[offset]=$offset';
+    final fetchLimit = limit + 10;
+    final url = '$baseUrl/anime?filter[text]=${Uri.encodeComponent(cleanQuery)}&page[limit]=$fetchLimit&page[offset]=$offset';
     try {
       final json = await _get(url);
       final list = _parseAnimeList(json);
-      if (list.isNotEmpty) return list;
+      if (list.isNotEmpty) return list.take(limit).toList();
     } catch (_) {
       // Graceful local query matching against fallback catalog
     }
 
-    final combined = allCatalogAnime;
+    final combined = [...cachedTrendingAnime, ...allCatalogAnime];
     final filtered = combined
         .where((a) =>
             a.title.toLowerCase().contains(cleanQuery.toLowerCase()) ||
             a.japaneseTitle.toLowerCase().contains(cleanQuery.toLowerCase()) ||
+            a.description.toLowerCase().contains(cleanQuery.toLowerCase()) ||
             a.genres.any((g) => g.toLowerCase().contains(cleanQuery.toLowerCase())))
+        .where((a) => AnimeStreamResolver.hasCompleteEpisodes(a.id, a.title))
         .toList();
     if (offset >= filtered.length) return [];
     return filtered.skip(offset).take(limit).toList();
@@ -109,10 +124,12 @@ class AnimeApiClient {
       return fetchTrendingAnime(limit: limit, offset: offset, seasonYear: null);
     }
 
-    final url = '$baseUrl/anime?filter[categories]=${Uri.encodeComponent(cleanCategory)}&page[limit]=$limit&page[offset]=$offset';
+    final fetchLimit = limit + 10;
+    final url = '$baseUrl/anime?filter[categories]=${Uri.encodeComponent(cleanCategory)}&page[limit]=$fetchLimit&page[offset]=$offset';
     try {
       final json = await _get(url);
       final list = _parseAnimeList(json, category: category);
+      if (list.length >= limit) return list.take(limit).toList();
       if (list.isNotEmpty) return list;
     } catch (_) {
       // Fallback
@@ -236,7 +253,7 @@ class AnimeApiClient {
         releaseYear: year,
       );
 
-      if (id.isNotEmpty && posterUrl.isNotEmpty) {
+      if (id.isNotEmpty && posterUrl.isNotEmpty && AnimeStreamResolver.hasCompleteEpisodes(id, title)) {
         result.add(
           AnimeItem(
             id: id,
@@ -649,17 +666,17 @@ class AnimeApiClient {
       statusLabel: 'Ongoing',
     ),
     AnimeItem(
-      id: 'tokyo-revengers-s4',
-      title: 'Tokyo Revengers: Season 4',
-      japaneseTitle: '東京リベンジャーズ',
-      rating: 8.0,
-      releaseYear: 2026,
+      id: 'tokyo-revengers-s3',
+      title: 'Tokyo Revengers: Tenjiku Arc',
+      japaneseTitle: '東京リベンジャーズ 天竺編',
+      rating: 8.3,
+      releaseYear: 2023,
       genres: ['Action', 'Drama', 'Delinquents'],
-      description: 'Takemichi melompati waktu untuk menyelamatkan kekasih dan teman-temannya.',
+      description: 'Pertarungan besar antara Tokyo Manji Gang dan geng Tenjiku pimpinan Izana Kurokawa.',
       posterUrl: 'https://avac.moe/img/anime/large/42249.jpg',
       backdropUrl: 'https://avac.moe/img/anime/large/42249.jpg',
-      episodeInfo: 'SUB · EP 6 (Ongoing)',
-      statusLabel: 'Ongoing',
+      episodeInfo: 'SUB · 13 EPS (Tamat)',
+      statusLabel: 'Tamat',
     ),
     AnimeItem(
       id: '7442',
