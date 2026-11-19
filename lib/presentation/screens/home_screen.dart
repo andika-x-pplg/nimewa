@@ -130,6 +130,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return SpotlightCarousel(
       items: _spotlightItems,
+      sectionBadge: 'HOT SPOTLIGHT 2026',
+      sectionTitle: 'ANIME POPULER 2026',
       onWatchNow: _openAnimeDetail,
     );
   }

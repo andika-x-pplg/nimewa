@@ -76,6 +76,12 @@ class AnimeSubtitleService {
         return 'Spy x Family';
       case 'frieren':
         return 'Sousou no Frieren';
+      case 'bleach':
+        return 'Bleach';
+      case 'hunter-x-hunter':
+        return 'Hunter x Hunter';
+      case 'fullmetal-alchemist':
+        return 'Fullmetal Alchemist: Brotherhood';
       default:
         return 'Anime';
     }

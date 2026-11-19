@@ -16,9 +16,14 @@ class AnimeApiClient {
     this.timeout = const Duration(seconds: 6),
   });
 
-  /// Fetches top trending anime (up to 10 items) for home spotlight carousel.
-  Future<List<AnimeItem>> fetchTrendingAnime({int limit = 10}) async {
-    final url = '$baseUrl/trending/anime?limit=$limit';
+  /// Fetches top trending anime for home spotlight carousel (Popular 2026 by default).
+  Future<List<AnimeItem>> fetchTrendingAnime({
+    int limit = 10,
+    int offset = 0,
+    int? seasonYear = 2026,
+  }) async {
+    final yearFilter = seasonYear != null ? '&filter[seasonYear]=$seasonYear' : '';
+    final url = '$baseUrl/anime?sort=-user_count$yearFilter&page[limit]=$limit&page[offset]=$offset';
     try {
       final json = await _get(url);
       final list = _parseAnimeList(json);
@@ -26,43 +31,54 @@ class AnimeApiClient {
     } catch (_) {
       // Graceful fallback to cached authentic catalog
     }
-    return cachedTrendingAnime.take(limit).toList();
+    if (offset >= cachedTrendingAnime.length) return [];
+    return cachedTrendingAnime.skip(offset).take(limit).toList();
   }
 
-  /// Fetches latest anime releases sorted by release date.
-  Future<List<AnimeItem>> fetchLatestAnime({int limit = 6}) async {
-    final url = '$baseUrl/anime?sort=-startDate&page[limit]=$limit';
+  /// Fetches latest anime releases sorted by release date with pagination.
+  Future<List<AnimeItem>> fetchLatestAnime({
+    int limit = 20,
+    int offset = 0,
+  }) async {
+    final url = '$baseUrl/anime?sort=-startDate&page[limit]=$limit&page[offset]=$offset';
     try {
       final json = await _get(url);
       final list = _parseAnimeList(json);
-      if (list.isNotEmpty) return list.take(limit).toList();
+      if (list.isNotEmpty) return list;
     } catch (_) {
       // Fallback
     }
-    return latestAnimeList.take(limit).toList();
+    return getExploreAnime(filter: 'latest', limit: limit, offset: offset);
   }
 
-  /// Fetches top rated anime sorted by score.
-  Future<List<AnimeItem>> fetchTopRatedAnime({int limit = 6}) async {
-    final url = '$baseUrl/anime?sort=-averageRating&page[limit]=$limit';
+  /// Fetches top rated anime sorted by score with pagination.
+  Future<List<AnimeItem>> fetchTopRatedAnime({
+    int limit = 20,
+    int offset = 0,
+  }) async {
+    final url = '$baseUrl/anime?sort=-averageRating&page[limit]=$limit&page[offset]=$offset';
     try {
       final json = await _get(url);
       final list = _parseAnimeList(json);
-      if (list.isNotEmpty) return list.take(limit).toList();
+      if (list.isNotEmpty) return list;
     } catch (_) {
       // Fallback
     }
-    return topRatedAnimeList.take(limit).toList();
+    return getExploreAnime(filter: 'top_rated', limit: limit, offset: offset);
   }
 
-  /// Searches anime by keyword.
-  Future<List<AnimeItem>> searchAnime(String query, {int limit = 10}) async {
+  /// Searches anime by keyword with pagination.
+  Future<List<AnimeItem>> searchAnime(
+    String query, {
+    int limit = 20,
+    int offset = 0,
+  }) async {
     final cleanQuery = query.trim();
     if (cleanQuery.isEmpty) {
-      return fetchTrendingAnime(limit: limit);
+      return fetchTrendingAnime(limit: limit, offset: offset);
     }
 
-    final url = '$baseUrl/anime?filter[text]=${Uri.encodeComponent(cleanQuery)}&page[limit]=$limit';
+    final url = '$baseUrl/anime?filter[text]=${Uri.encodeComponent(cleanQuery)}&page[limit]=$limit&page[offset]=$offset';
     try {
       final json = await _get(url);
       final list = _parseAnimeList(json);
@@ -71,33 +87,38 @@ class AnimeApiClient {
       // Graceful local query matching against fallback catalog
     }
 
-    final combined = [...cachedTrendingAnime, ...popularAnimeList, ...latestAnimeList, ...romanceAnimeList];
-    final seen = <String>{};
-    return combined
+    final combined = allCatalogAnime;
+    final filtered = combined
         .where((a) =>
-            seen.add(a.title.toLowerCase()) &&
-            a.title.toLowerCase().contains(cleanQuery.toLowerCase()))
-        .take(limit)
+            a.title.toLowerCase().contains(cleanQuery.toLowerCase()) ||
+            a.japaneseTitle.toLowerCase().contains(cleanQuery.toLowerCase()) ||
+            a.genres.any((g) => g.toLowerCase().contains(cleanQuery.toLowerCase())))
         .toList();
+    if (offset >= filtered.length) return [];
+    return filtered.skip(offset).take(limit).toList();
   }
 
-  /// Fetches anime filtered by category / genre.
-  Future<List<AnimeItem>> fetchAnimeByCategory(String category, {int limit = 10}) async {
+  /// Fetches anime filtered by category / genre with pagination.
+  Future<List<AnimeItem>> fetchAnimeByCategory(
+    String category, {
+    int limit = 20,
+    int offset = 0,
+  }) async {
     final cleanCategory = category.trim().toLowerCase();
     if (cleanCategory == 'semua' || cleanCategory.isEmpty) {
-      return fetchTrendingAnime(limit: limit);
+      return fetchTrendingAnime(limit: limit, offset: offset, seasonYear: null);
     }
 
-    final url = '$baseUrl/anime?filter[categories]=${Uri.encodeComponent(cleanCategory)}&page[limit]=$limit';
+    final url = '$baseUrl/anime?filter[categories]=${Uri.encodeComponent(cleanCategory)}&page[limit]=$limit&page[offset]=$offset';
     try {
       final json = await _get(url);
-      final list = _parseAnimeList(json);
+      final list = _parseAnimeList(json, category: category);
       if (list.isNotEmpty) return list;
     } catch (_) {
       // Fallback
     }
 
-    return getExploreAnime(filter: 'popular', genre: category).take(limit).toList();
+    return getExploreAnime(filter: 'popular', genre: category, limit: limit, offset: offset);
   }
 
   /// Fetches complete anime detail with exact episodes from API.
@@ -152,7 +173,7 @@ class AnimeApiClient {
     }
   }
 
-  List<AnimeItem> _parseAnimeList(Map<String, dynamic> json) {
+  List<AnimeItem> _parseAnimeList(Map<String, dynamic> json, {String? category}) {
     final data = json['data'] as List<dynamic>?;
     if (data == null) return [];
 
@@ -186,11 +207,17 @@ class AnimeApiClient {
           posterUrl;
 
       final synopsis = attrs['synopsis']?.toString() ?? '';
-      final startDate = attrs['startDate']?.toString() ?? '2025';
-      final year = int.tryParse(startDate.split('-').first) ?? 2025;
+      final startDate = attrs['startDate']?.toString() ?? '2026';
+      final year = int.tryParse(startDate.split('-').first) ?? 2026;
 
       // Extract genres / categories or default
       final genres = <String>['Action', 'Fantasy'];
+      if (category != null && category.isNotEmpty && category.toLowerCase() != 'semua') {
+        final formattedCat = category[0].toUpperCase() + category.substring(1);
+        if (!genres.contains(formattedCat)) {
+          genres.insert(0, formattedCat);
+        }
+      }
 
       if (id.isNotEmpty && posterUrl.isNotEmpty) {
         result.add(
@@ -337,138 +364,117 @@ class AnimeApiClient {
     );
   }
 
+  /// Top 10 Popular Anime of 2026 (Strictly ordered, deterministic, never shuffled).
   static const List<AnimeItem> cachedTrendingAnime = [
-    AnimeItem(
-      id: '7442',
-      title: 'Attack on Titan',
-      japaneseTitle: '進撃の巨人',
-      rating: 8.5,
-      releaseYear: 2013,
-      genres: ['Action', 'Fantasy', 'Mystery'],
-      description: 'Pertarungan umat manusia melawan para Titan raksasa yang mengancam kepunahan.',
-      posterUrl: 'https://media.kitsu.app/anime/poster_images/7442/large.jpg',
-      backdropUrl: 'https://media.kitsu.app/anime/poster_images/7442/large.jpg',
-    ),
-    AnimeItem(
-      id: '11469',
-      title: 'Boku no Hero Academia',
-      japaneseTitle: '僕のヒーローアカデミア',
-      rating: 8.3,
-      releaseYear: 2016,
-      genres: ['Action', 'Super Power', 'School'],
-      description: 'Izuku Midoriya berjuang menjadi pahlawan nomor satu di dunia penuh Quirk.',
-      posterUrl: 'https://media.kitsu.app/anime/poster_images/11469/large.jpg',
-      backdropUrl: 'https://media.kitsu.app/anime/poster_images/11469/large.jpg',
-    ),
     AnimeItem(
       id: '46231',
       title: 'Solo Leveling: Arise from the Shadow',
       japaneseTitle: '俺だけレベルアップな件',
       rating: 8.8,
-      releaseYear: 2024,
+      releaseYear: 2026,
       genres: ['Action', 'Fantasy', 'Supernatural'],
       description: 'Sung Jinwoo bangkit sebagai Shadow Monarch dan melampaui batas kekuatan manusia.',
       posterUrl: 'https://media.kitsu.app/anime/46231/poster_image/large-cdadff31f42490b9f48a035939a01a92.jpeg',
       backdropUrl: 'https://media.kitsu.app/anime/46231/poster_image/large-cdadff31f42490b9f48a035939a01a92.jpeg',
     ),
     AnimeItem(
-      id: '42249',
-      title: 'Tokyo Revengers',
-      japaneseTitle: '東京リベンジャーズ',
-      rating: 7.9,
-      releaseYear: 2021,
-      genres: ['Action', 'Drama', 'Delinquents'],
-      description: 'Takemichi melompati waktu untuk menyelamatkan kekasih dan teman-temannya.',
-      posterUrl: 'https://avac.moe/img/anime/large/42249.jpg',
-      backdropUrl: 'https://avac.moe/img/anime/large/42249.jpg',
-    ),
-    AnimeItem(
-      id: '43806',
-      title: 'Jujutsu Kaisen',
-      japaneseTitle: '呪術廻戦',
-      rating: 8.7,
-      releaseYear: 2020,
-      genres: ['Action', 'Supernatural', 'Fantasy'],
-      description: 'Yuji Itadori menelan jari Sukuna dan bergabung ke SMK Jujutsu Tokyo.',
-      posterUrl: 'https://media.kitsu.app/anime/poster_images/43806/large.jpg',
-      backdropUrl: 'https://media.kitsu.app/anime/poster_images/43806/large.jpg',
-    ),
-    AnimeItem(
       id: '42765',
-      title: 'Kimetsu no Yaiba',
-      japaneseTitle: '鬼滅の刃',
-      rating: 8.6,
-      releaseYear: 2019,
+      title: 'Kimetsu no Yaiba: Infinity Castle',
+      japaneseTitle: '鬼滅の刃 無限城編',
+      rating: 9.1,
+      releaseYear: 2026,
       genres: ['Action', 'Historical', 'Supernatural'],
-      description: 'Tanjiro Kamado berjuang menyelamatkan Nezuko dan membasmi iblis kejam.',
+      description: 'Pertempuran puncak Korps Pembasmi Iblis di dalam Kastil Tanpa Batas.',
       posterUrl: 'https://media.kitsu.app/anime/poster_images/42765/large.jpg',
       backdropUrl: 'https://media.kitsu.app/anime/poster_images/42765/large.jpg',
     ),
     AnimeItem(
-      id: '40321',
-      title: 'Chainsaw Man',
-      japaneseTitle: 'チェンソーマン',
-      rating: 8.4,
-      releaseYear: 2022,
-      genres: ['Action', 'Supernatural', 'Gore'],
-      description: 'Denji bangkit kembali sebagai manusia gergaji mesin pemburu iblis.',
-      posterUrl: 'https://media.kitsu.app/anime/poster_images/40321/large.jpg',
-      backdropUrl: 'https://media.kitsu.app/anime/poster_images/40321/large.jpg',
-    ),
-    AnimeItem(
       id: '52991',
-      title: 'Sousou no Frieren',
+      title: 'Sousou no Frieren Season 2',
       japaneseTitle: '葬送のフリーレン',
       rating: 9.3,
-      releaseYear: 2023,
+      releaseYear: 2026,
       genres: ['Fantasy', 'Adventure', 'Drama'],
       description: 'Perjalanan penyihir elf Frieren memahami arti hidup dan waktu manusia.',
       posterUrl: 'https://avac.moe/img/anime/large/52991.jpg',
       backdropUrl: 'https://avac.moe/img/anime/large/52991.jpg',
     ),
     AnimeItem(
+      id: '43806',
+      title: 'Jujutsu Kaisen: Culling Game',
+      japaneseTitle: '呪術廻戦',
+      rating: 8.9,
+      releaseYear: 2026,
+      genres: ['Action', 'Supernatural', 'Fantasy'],
+      description: 'Yuji Itadori dan kawan-kawan terjun ke dalam medan Culling Game yang mematikan.',
+      posterUrl: 'https://media.kitsu.app/anime/poster_images/43806/large.jpg',
+      backdropUrl: 'https://media.kitsu.app/anime/poster_images/43806/large.jpg',
+    ),
+    AnimeItem(
+      id: '40321',
+      title: 'Chainsaw Man: Reze Arc',
+      japaneseTitle: 'チェンソーマン レゼ篇',
+      rating: 8.9,
+      releaseYear: 2026,
+      genres: ['Action', 'Supernatural', 'Romance'],
+      description: 'Denji bertemu gadis misterius bernama Reze di tengah malam hujan.',
+      posterUrl: 'https://media.kitsu.app/anime/poster_images/40321/large.jpg',
+      backdropUrl: 'https://media.kitsu.app/anime/poster_images/40321/large.jpg',
+    ),
+    AnimeItem(
       id: '48671',
       title: 'Kaiju No. 8 Season 2',
       japaneseTitle: '怪獣8号',
-      rating: 8.2,
-      releaseYear: 2024,
+      rating: 8.5,
+      releaseYear: 2026,
       genres: ['Action', 'Sci-Fi', 'Military'],
       description: 'Kafka Hibino bertransformasi menjadi Kaiju dan berjuang di Pasukan Pertahanan.',
       posterUrl: 'https://media.kitsu.app/anime/48671/poster_image/large-6156a7475d03dbb788ab1a9ce6c7f962.jpeg',
       backdropUrl: 'https://media.kitsu.app/anime/48671/poster_image/large-6156a7475d03dbb788ab1a9ce6c7f962.jpeg',
     ),
     AnimeItem(
-      id: '44384',
-      title: 'Kaguya-sama: Love is War - Ultra Romantic',
-      japaneseTitle: 'かぐや様は告らせたい-ウルトラロマンティック-',
-      rating: 8.9,
-      releaseYear: 2022,
-      genres: ['Romance', 'Comedy', 'School'],
-      description: 'Pertarungan kecerdasan cinta antara Miyuki Shirogane dan Kaguya Shinomiya.',
-      posterUrl: 'https://media.kitsu.app/anime/poster_images/44384/large.jpg',
-      backdropUrl: 'https://media.kitsu.app/anime/poster_images/44384/large.jpg',
-    ),
-    AnimeItem(
       id: '41992',
-      title: 'Spy x Family',
+      title: 'Spy x Family Season 3',
       japaneseTitle: 'SPY×FAMILY',
-      rating: 8.5,
-      releaseYear: 2022,
+      rating: 8.6,
+      releaseYear: 2026,
       genres: ['Comedy', 'Action', 'Family'],
       description: 'Mata-mata Twilight menyamar membentuk keluarga palsu demi misi perdamaian.',
       posterUrl: 'https://media.kitsu.app/anime/poster_images/41992/large.jpg',
       backdropUrl: 'https://media.kitsu.app/anime/poster_images/41992/large.jpg',
     ),
     AnimeItem(
-      id: '42538',
-      title: 'Mushoku Tensei: Jobless Reincarnation',
-      japaneseTitle: '無職転生 ～異世界行ったら本気だす～',
-      rating: 8.4,
-      releaseYear: 2021,
-      genres: ['Isekai', 'Fantasy', 'Adventure'],
-      description: 'Pria pengangguran 34 tahun bereinkarnasi ke dunia sihir sebagai Rudeus Greyrat.',
-      posterUrl: 'https://media.kitsu.app/anime/poster_images/42538/large.jpg',
-      backdropUrl: 'https://media.kitsu.app/anime/poster_images/42538/large.jpg',
+      id: '11469',
+      title: 'Boku no Hero Academia: Final Season',
+      japaneseTitle: '僕のヒーローアカデミア',
+      rating: 8.7,
+      releaseYear: 2026,
+      genres: ['Action', 'Super Power', 'School'],
+      description: 'Pertarungan pamungkas para pahlawan melawan All For One dan Shigaraki.',
+      posterUrl: 'https://media.kitsu.app/anime/poster_images/11469/large.jpg',
+      backdropUrl: 'https://media.kitsu.app/anime/poster_images/11469/large.jpg',
+    ),
+    AnimeItem(
+      id: '42249',
+      title: 'Tokyo Revengers: Season 4',
+      japaneseTitle: '東京リベンジャーズ',
+      rating: 8.0,
+      releaseYear: 2026,
+      genres: ['Action', 'Drama', 'Delinquents'],
+      description: 'Takemichi melompati waktu untuk menyelamatkan kekasih dan teman-temannya.',
+      posterUrl: 'https://avac.moe/img/anime/large/42249.jpg',
+      backdropUrl: 'https://avac.moe/img/anime/large/42249.jpg',
+    ),
+    AnimeItem(
+      id: '7442',
+      title: 'Attack on Titan',
+      japaneseTitle: '進撃の巨人',
+      rating: 8.8,
+      releaseYear: 2026,
+      genres: ['Action', 'Fantasy', 'Mystery'],
+      description: 'Pertarungan umat manusia melawan para Titan raksasa yang mengancam kepunahan.',
+      posterUrl: 'https://media.kitsu.app/anime/poster_images/7442/large.jpg',
+      backdropUrl: 'https://media.kitsu.app/anime/poster_images/7442/large.jpg',
     ),
   ];
 }

@@ -260,6 +260,33 @@ void main() {
       expect(ep12, isNot(equals(ep1)));
     });
 
+    test('resolves Bleach, Hunter x Hunter, and Fullmetal Alchemist to authentic MP4 streams', () {
+      final bleach = AnimeStreamResolver.resolveStreamUrl(
+        animeId: 'bleach-tybw-part3',
+        animeTitle: 'Bleach: Sennen Kessen-hen Part 3',
+        server: 'Server 1 (Fast HD)',
+        episodeNumber: 1,
+      );
+      expect(bleach, contains('.mp4'));
+      expect(bleach, contains('getvid'));
+
+      final hxh = AnimeStreamResolver.resolveStreamUrl(
+        animeId: 'hunter-x-hunter',
+        animeTitle: 'Hunter x Hunter',
+        server: 'Server 1 (Fast HD)',
+      );
+      expect(hxh, contains('turner_video_6095'));
+      expect(hxh, contains('.mp4'));
+
+      final fmab = AnimeStreamResolver.resolveStreamUrl(
+        animeId: 'fullmetal-alchemist',
+        animeTitle: 'Fullmetal Alchemist: Brotherhood',
+        server: 'Server 1 (Fast HD)',
+      );
+      expect(fmab, contains('turner_video_134430'));
+      expect(fmab, contains('.mp4'));
+    });
+
     test('never returns generic dummy 3D trailers for unknown titles', () {
       final fallback = AnimeStreamResolver.resolveStreamUrl(
         animeId: 'unknown-anime-999',

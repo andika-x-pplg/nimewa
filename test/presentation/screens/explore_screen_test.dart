@@ -34,23 +34,23 @@ void main() {
     expect(find.text('Action'), findsOneWidget);
     expect(find.text('Romance'), findsOneWidget);
 
-    // Verify exactly 6 anime cards are displayed initially (Popular)
-    expect(find.byType(AnimeGridCard), findsNWidgets(6));
-    expect(find.text('Solo Leveling: Arise from the Shadow'), findsOneWidget);
+    // Verify multiple anime cards are displayed from API/catalog (more than 6, unlimited)
+    expect(find.byType(AnimeGridCard), findsWidgets);
+    // Verify "6 anime" or counter label is completely removed
+    expect(find.text('6 anime'), findsNothing);
 
     // Tap "Latest" tab and verify dynamic content switch
     await tester.tap(find.text('Latest'));
     await tester.pumpAndSettle();
 
-    expect(find.byType(AnimeGridCard), findsNWidgets(6));
+    expect(find.byType(AnimeGridCard), findsWidgets);
     expect(find.text('Kaiju No. 8 Season 2'), findsOneWidget);
-    expect(find.text('Solo Leveling: Arise from the Shadow'), findsNothing);
 
     // Tap "Romance" genre chip and verify dynamic content switch
     await tester.tap(find.text('Romance'));
     await tester.pumpAndSettle();
 
-    expect(find.byType(AnimeGridCard), findsNWidgets(6));
+    expect(find.byType(AnimeGridCard), findsWidgets);
     expect(find.text('Kaguya-sama: Love is War - Ultra Romantic'), findsOneWidget);
 
     // Search query dynamically filters list

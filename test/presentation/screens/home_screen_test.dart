@@ -5,6 +5,7 @@ import 'package:nimeva/main.dart';
 import 'package:nimeva/presentation/screens/anime_detail_screen.dart';
 import 'package:nimeva/presentation/screens/anime_watch_screen.dart';
 import 'package:nimeva/presentation/screens/home_screen.dart';
+import 'package:nimeva/presentation/widgets/anime_grid_card.dart';
 import 'package:nimeva/presentation/widgets/custom_bottom_nav.dart';
 import 'package:nimeva/presentation/widgets/empty_continue_watching.dart';
 import 'package:nimeva/presentation/widgets/home_header.dart';
@@ -30,9 +31,9 @@ void main() {
       expect(find.text('dikzzz'), findsOneWidget);
       expect(find.text('D'), findsOneWidget);
 
-      // Verify Spotlight Carousel and first popular anime item
+      // Verify Spotlight Carousel and first popular anime item (2026 Popular Anime)
       expect(find.byType(SpotlightCarousel), findsOneWidget);
-      expect(find.textContaining('Attack on Titan'), findsOneWidget);
+      expect(find.textContaining('Solo Leveling'), findsOneWidget);
       expect(find.text('Tonton Sekarang'), findsOneWidget);
       expect(find.byIcon(Icons.add_rounded), findsOneWidget);
 
@@ -129,10 +130,10 @@ void main() {
       await tester.tap(find.text('Explore'));
       await tester.pumpAndSettle();
 
-      // Now ExploreScreen is rendered
+      // Now ExploreScreen is rendered with anime cards
       expect(find.text('Jelajah'), findsOneWidget);
       expect(find.text('Temukan anime favoritmu'), findsOneWidget);
-      expect(find.text('Solo Leveling: Arise from the Shadow'), findsOneWidget);
+      expect(find.byType(AnimeGridCard), findsWidgets);
 
       // Tap Home again
       await tester.tap(find.text('Home'));

@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
@@ -23,12 +24,15 @@ class ExploreScreen extends StatefulWidget {
 
 class _ExploreScreenState extends State<ExploreScreen> {
   late final AnimeStreamService _streamService;
+  late final ScrollController _scrollController;
   String _selectedFilter = 'popular'; // 'popular', 'latest', 'top_rated'
   String _selectedGenre = 'Semua';
   final TextEditingController _searchController = TextEditingController();
 
   List<AnimeItem> _animeList = [];
   bool _isLoading = false;
+  bool _isLoadingMore = false;
+  bool _hasMore = true;
   String? _errorMessage;
 
   static const List<Map<String, String>> _filterTabs = [
@@ -40,22 +44,47 @@ class _ExploreScreenState extends State<ExploreScreen> {
   static const List<String> _genres = [
     'Semua',
     'Action',
-    'Fantasy',
     'Romance',
-    'Sci-Fi',
+    'Fantasy',
+    'Comedy',
     'Isekai',
+    'Sci-Fi',
+    'Adventure',
+    'Drama',
+    'Horror',
+    'Mecha',
+    'Music',
+    'Mystery',
+    'Psychological',
+    'Seinen',
+    'Shounen',
+    'Slice of Life',
+    'Sports',
+    'Supernatural',
+    'Thriller',
   ];
 
   @override
   void initState() {
     super.initState();
+    _scrollController = ScrollController();
+    _scrollController.addListener(_onScroll);
     _streamService = widget.streamService ?? const AnimeStreamService();
-    _animeList = popularAnimeList;
+    _animeList = List.of(allCatalogAnime)..shuffle(Random());
     _fetchCatalog(isInitial: true);
+  }
+
+  void _onScroll() {
+    if (_scrollController.hasClients &&
+        _scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 250) {
+      _loadMore();
+    }
   }
 
   @override
   void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
     _searchController.dispose();
     super.dispose();
   }
@@ -65,6 +94,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
       setState(() {
         _isLoading = true;
         _errorMessage = null;
+        _hasMore = true;
       });
     }
 
@@ -73,11 +103,18 @@ class _ExploreScreenState extends State<ExploreScreen> {
         filter: _selectedFilter,
         genre: _selectedGenre,
         query: _searchController.text,
+        limit: 20,
+        offset: 0,
       );
       if (mounted) {
+        final displayList = List<AnimeItem>.of(list);
+        if (_searchController.text.trim().isEmpty) {
+          displayList.shuffle(Random());
+        }
         setState(() {
-          _animeList = list;
+          _animeList = displayList;
           _isLoading = false;
+          _hasMore = list.length >= 20;
         });
       }
     } catch (_) {
@@ -85,6 +122,47 @@ class _ExploreScreenState extends State<ExploreScreen> {
         setState(() {
           _errorMessage = 'Gagal memuat katalog anime.';
           _isLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _loadMore() async {
+    if (_isLoading || _isLoadingMore || !_hasMore) return;
+
+    setState(() {
+      _isLoadingMore = true;
+    });
+
+    try {
+      final nextBatch = await _streamService.getExploreAnimeList(
+        filter: _selectedFilter,
+        genre: _selectedGenre,
+        query: _searchController.text,
+        limit: 20,
+        offset: _animeList.length,
+      );
+
+      if (mounted) {
+        if (nextBatch.isEmpty) {
+          setState(() {
+            _hasMore = false;
+            _isLoadingMore = false;
+          });
+        } else {
+          final existingIds = _animeList.map((a) => a.id).toSet();
+          final uniqueNew = nextBatch.where((a) => !existingIds.contains(a.id)).toList();
+          setState(() {
+            _animeList.addAll(uniqueNew);
+            _isLoadingMore = false;
+            _hasMore = nextBatch.length >= 20;
+          });
+        }
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _isLoadingMore = false;
         });
       }
     }
@@ -111,6 +189,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
       backgroundColor: AppColors.bgPrimary,
       body: SafeArea(
         child: SingleChildScrollView(
+          controller: _scrollController,
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -123,9 +202,19 @@ class _ExploreScreenState extends State<ExploreScreen> {
               const SizedBox(height: 20),
               _buildGenreChips(),
               const SizedBox(height: 20),
-              _buildSectionHeader(_animeList.length),
+              _buildSectionHeader(),
               const SizedBox(height: 14),
               _buildContent(),
+              if (_isLoadingMore)
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16.0),
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: AppColors.accentBlue,
+                    ),
+                  ),
+                ),
               const SizedBox(height: 24),
             ],
           ),
@@ -355,25 +444,13 @@ class _ExploreScreenState extends State<ExploreScreen> {
     );
   }
 
-  Widget _buildSectionHeader(int count) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(
-          _sectionTitle,
-          style: AppTypography.titleMedium.copyWith(
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        Text(
-          '$count anime',
-          style: AppTypography.bodySmall.copyWith(
-            color: AppColors.textMuted,
-          ),
-        ),
-      ],
+  Widget _buildSectionHeader() {
+    return Text(
+      _sectionTitle,
+      style: AppTypography.titleMedium.copyWith(
+        color: AppColors.textPrimary,
+        fontWeight: FontWeight.bold,
+      ),
     );
   }
 

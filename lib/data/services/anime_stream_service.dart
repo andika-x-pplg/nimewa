@@ -23,12 +23,13 @@ class AnimeStreamService {
     return apiClient.fetchTrendingAnime(limit: 10);
   }
 
-  /// Fetches explore anime catalog with reactive filtering and search query.
+  /// Fetches explore anime catalog with reactive filtering, search query, and pagination.
   Future<List<AnimeItem>> getExploreAnimeList({
     required String filter,
     String? genre,
     String? query,
-    int limit = 6,
+    int limit = 20,
+    int offset = 0,
   }) async {
     if (networkDelay > Duration.zero) {
       await Future.delayed(networkDelay);
@@ -36,21 +37,21 @@ class AnimeStreamService {
 
     final cleanQuery = query?.trim();
     if (cleanQuery != null && cleanQuery.isNotEmpty) {
-      return apiClient.searchAnime(cleanQuery, limit: limit);
+      return apiClient.searchAnime(cleanQuery, limit: limit, offset: offset);
     }
 
     if (genre != null && genre != 'Semua' && genre.isNotEmpty) {
-      return apiClient.fetchAnimeByCategory(genre, limit: limit);
+      return apiClient.fetchAnimeByCategory(genre, limit: limit, offset: offset);
     }
 
     switch (filter) {
       case 'latest':
-        return apiClient.fetchLatestAnime(limit: limit);
+        return apiClient.fetchLatestAnime(limit: limit, offset: offset);
       case 'top_rated':
-        return apiClient.fetchTopRatedAnime(limit: limit);
+        return apiClient.fetchTopRatedAnime(limit: limit, offset: offset);
       case 'popular':
       default:
-        return apiClient.fetchTrendingAnime(limit: limit);
+        return apiClient.fetchTrendingAnime(limit: limit, offset: offset);
     }
   }
 

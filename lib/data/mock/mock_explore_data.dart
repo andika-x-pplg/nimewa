@@ -405,25 +405,201 @@ const List<AnimeItem> isekaiAnimeList = [
   ),
 ];
 
-/// Helper to get exactly 6 anime based on current filter or genre.
-List<AnimeItem> getExploreAnime({required String filter, String? genre}) {
+const List<AnimeItem> sportsAnimeList = [
+  AnimeItem(
+    id: 'haikyuu',
+    title: 'Haikyuu!!',
+    japaneseTitle: 'ハイキュー!!',
+    rating: 8.9,
+    releaseYear: 2020,
+    genres: ['Sports', 'Shounen', 'School'],
+    description: 'Hinata Shoyo dan tim bola voli Karasuno terbang menuju kejuaraan nasional.',
+    posterUrl: 'https://avac.moe/img/anime/large/20583.jpg',
+    backdropUrl: 'https://avac.moe/img/anime/large/20583.jpg',
+    episodeInfo: 'SUB · TAMAT',
+    statusLabel: 'Tamat',
+  ),
+  AnimeItem(
+    id: 'blue-lock',
+    title: 'Blue Lock',
+    japaneseTitle: 'ブルーロック',
+    rating: 8.3,
+    releaseYear: 2024,
+    genres: ['Sports', 'Action', 'Shounen', 'Thriller'],
+    description: 'Program gila 300 striker muda bersaing menjadi penyerang terbaik dunia.',
+    posterUrl: 'https://avac.moe/img/anime/large/49596.jpg',
+    backdropUrl: 'https://avac.moe/img/anime/large/49596.jpg',
+    episodeInfo: 'SUB · EP 24',
+    statusLabel: 'Tamat',
+  ),
+  AnimeItem(
+    id: 'kuroko-no-basket',
+    title: 'Kuroko no Basket',
+    japaneseTitle: '黒子のバスケ',
+    rating: 8.2,
+    releaseYear: 2015,
+    genres: ['Sports', 'Shounen', 'School'],
+    description: 'Pemain bayangan keenam Kuroko Tetsuya bertekad membawa Seirin menumbangkan Generasi Keajaiban.',
+    posterUrl: 'https://avac.moe/img/anime/large/11771.jpg',
+    backdropUrl: 'https://avac.moe/img/anime/large/11771.jpg',
+    episodeInfo: 'SUB · TAMAT',
+    statusLabel: 'Tamat',
+  ),
+];
+
+const List<AnimeItem> mysteryAnimeList = [
+  AnimeItem(
+    id: 'death-note',
+    title: 'Death Note',
+    japaneseTitle: 'デスノート',
+    rating: 9.0,
+    releaseYear: 2006,
+    genres: ['Mystery', 'Psychological', 'Supernatural', 'Thriller'],
+    description: 'Light Yagami dan detektif L bertarung akal dalam misteri pembunuhan misterius.',
+    posterUrl: 'https://avac.moe/img/anime/large/1535.jpg',
+    backdropUrl: 'https://avac.moe/img/anime/large/1535.jpg',
+    episodeInfo: 'SUB · EP 37',
+    statusLabel: 'Tamat',
+  ),
+  AnimeItem(
+    id: 'erased',
+    title: 'Boku dake ga Inai Machi (Erased)',
+    japaneseTitle: '僕だけがいない街',
+    rating: 8.5,
+    releaseYear: 2016,
+    genres: ['Mystery', 'Psychological', 'Supernatural', 'Thriller'],
+    description: 'Satoru Fujinuma terlempar kembali ke masa SD untuk mencegah pembunuhan berantai temannya.',
+    posterUrl: 'https://avac.moe/img/anime/large/31043.jpg',
+    backdropUrl: 'https://avac.moe/img/anime/large/31043.jpg',
+    episodeInfo: 'SUB · EP 12',
+    statusLabel: 'Tamat',
+  ),
+  AnimeItem(
+    id: 'monster',
+    title: 'Monster',
+    japaneseTitle: 'モンスター',
+    rating: 9.1,
+    releaseYear: 2004,
+    genres: ['Mystery', 'Drama', 'Psychological', 'Thriller', 'Seinen'],
+    description: 'Dokter Kenzo Tenma mengejar mantan pasiennya yang kini menjadi pembunuh berdarah dingin.',
+    posterUrl: 'https://avac.moe/img/anime/large/19.jpg',
+    backdropUrl: 'https://avac.moe/img/anime/large/19.jpg',
+    episodeInfo: 'SUB · EP 74',
+    statusLabel: 'Tamat',
+  ),
+];
+
+const List<AnimeItem> horrorAnimeList = [
+  AnimeItem(
+    id: 'tokyo-ghoul',
+    title: 'Tokyo Ghoul',
+    japaneseTitle: '東京喰種',
+    rating: 8.0,
+    releaseYear: 2014,
+    genres: ['Horror', 'Action', 'Psychological', 'Supernatural', 'Seinen'],
+    description: 'Kaneki Ken berubah menjadi separuh ghoul setelah transplantasi organ misterius.',
+    posterUrl: 'https://avac.moe/img/anime/large/22319.jpg',
+    backdropUrl: 'https://avac.moe/img/anime/large/22319.jpg',
+    episodeInfo: 'SUB · EP 12',
+    statusLabel: 'Tamat',
+  ),
+  AnimeItem(
+    id: 'parasyte',
+    title: 'Parasyte: The Maxim',
+    japaneseTitle: '寄生獣 セイの格率',
+    rating: 8.4,
+    releaseYear: 2014,
+    genres: ['Horror', 'Action', 'Sci-Fi', 'Psychological', 'Seinen'],
+    description: 'Parasit alien menginfeksi tangan kanan Shinichi Izumi dalam perang bertahan hidup.',
+    posterUrl: 'https://avac.moe/img/anime/large/22535.jpg',
+    backdropUrl: 'https://avac.moe/img/anime/large/22535.jpg',
+    episodeInfo: 'SUB · EP 24',
+    statusLabel: 'Tamat',
+  ),
+];
+
+const List<AnimeItem> mechaAnimeList = [
+  AnimeItem(
+    id: 'code-geass',
+    title: 'Code Geass: Hangyaku no Lelouch',
+    japaneseTitle: 'コードギアス 反逆のルルーシュ',
+    rating: 8.9,
+    releaseYear: 2006,
+    genres: ['Mecha', 'Action', 'Military', 'Sci-Fi', 'Super Power'],
+    description: 'Lelouch Lamperouge memimpin pemberontakan melawan Kekaisaran Britannia dengan kekuatan Geass.',
+    posterUrl: 'https://avac.moe/img/anime/large/1575.jpg',
+    backdropUrl: 'https://avac.moe/img/anime/large/1575.jpg',
+    episodeInfo: 'SUB · EP 25',
+    statusLabel: 'Tamat',
+  ),
+  AnimeItem(
+    id: 'eighty-six',
+    title: '86: Eighty Six',
+    japaneseTitle: '86-エイティシックス-',
+    rating: 8.6,
+    releaseYear: 2021,
+    genres: ['Mecha', 'Action', 'Drama', 'Military', 'Sci-Fi'],
+    description: 'Perjuangan para pemuda distrik ke-86 bertarung di balik mesin perang tanpa nama.',
+    posterUrl: 'https://avac.moe/img/anime/large/41457.jpg',
+    backdropUrl: 'https://avac.moe/img/anime/large/41457.jpg',
+    episodeInfo: 'SUB · EP 23',
+    statusLabel: 'Tamat',
+  ),
+];
+
+/// Master catalog containing all authentic anime items.
+final List<AnimeItem> allCatalogAnime = () {
+  final combined = [
+    ...popularAnimeList,
+    ...latestAnimeList,
+    ...topRatedAnimeList,
+    ...romanceAnimeList,
+    ...isekaiAnimeList,
+    ...sportsAnimeList,
+    ...mysteryAnimeList,
+    ...horrorAnimeList,
+    ...mechaAnimeList,
+  ];
+  final seen = <String>{};
+  return combined.where((item) => seen.add(item.id)).toList();
+}();
+
+/// Helper to get anime based on current filter or genre with pagination.
+List<AnimeItem> getExploreAnime({
+  required String filter,
+  String? genre,
+  int limit = 20,
+  int offset = 0,
+}) {
+  List<AnimeItem> pool;
   if (genre != null && genre.isNotEmpty && genre.toLowerCase() != 'semua' && genre.toLowerCase() != 'all') {
     final lowerGenre = genre.toLowerCase();
-    if (lowerGenre == 'romance') return romanceAnimeList;
-    if (lowerGenre == 'isekai') return isekaiAnimeList;
-    if (lowerGenre == 'fantasy') return topRatedAnimeList;
-    if (lowerGenre == 'action') return popularAnimeList;
-    if (lowerGenre == 'sci-fi') return latestAnimeList;
+    pool = allCatalogAnime.where((item) {
+      return item.genres.any((g) => g.toLowerCase() == lowerGenre) ||
+          item.description.toLowerCase().contains(lowerGenre);
+    }).toList();
+
+    if (pool.isEmpty) {
+      pool = allCatalogAnime.where((item) => item.genres.contains(genre)).toList();
+    }
+  } else {
+    switch (filter.toLowerCase()) {
+      case 'latest':
+        final latestPool = [...latestAnimeList, ...allCatalogAnime.where((a) => a.releaseYear >= 2025)];
+        final seen = <String>{};
+        pool = latestPool.where((a) => seen.add(a.id)).toList();
+        break;
+      case 'top_rated':
+      case 'top rated':
+        pool = List.of(allCatalogAnime)..sort((a, b) => b.rating.compareTo(a.rating));
+        break;
+      case 'popular':
+      default:
+        pool = allCatalogAnime;
+        break;
+    }
   }
 
-  switch (filter.toLowerCase()) {
-    case 'latest':
-      return latestAnimeList;
-    case 'top_rated':
-    case 'top rated':
-      return topRatedAnimeList;
-    case 'popular':
-    default:
-      return popularAnimeList;
-  }
+  if (offset >= pool.length) return [];
+  return pool.skip(offset).take(limit).toList();
 }

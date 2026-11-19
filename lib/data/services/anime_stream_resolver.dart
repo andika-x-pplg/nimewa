@@ -167,6 +167,34 @@ class AnimeStreamResolver {
       return 'spy-x-family';
     }
 
+    // Bleach
+    if (combined.contains('bleach') ||
+        combined.contains('ichigo') ||
+        combined.contains('shinigami') ||
+        combined.contains('ブリーチ') ||
+        id == 'bleach' ||
+        id == 'bleach-tybw-part3') {
+      return 'bleach';
+    }
+
+    // Hunter x Hunter
+    if (combined.contains('hunter x hunter') ||
+        combined.contains('hunterxhunter') ||
+        combined.contains('gon freecss') ||
+        combined.contains('ハンター×ハンター') ||
+        id == 'hunter-x-hunter') {
+      return 'hunter-x-hunter';
+    }
+
+    // Fullmetal Alchemist
+    if (combined.contains('fullmetal') ||
+        combined.contains('alchemist') ||
+        combined.contains('edward elric') ||
+        combined.contains('鋼の錬金術師') ||
+        id == 'fullmetal-alchemist') {
+      return 'fullmetal-alchemist';
+    }
+
     // Default to Demon Slayer authentic stream
     return 'demon-slayer';
   }
@@ -436,6 +464,43 @@ class AnimeStreamResolver {
     });
   }
 
+  // --- Bleach Season 1 (24 Episodes) ---
+  static List<_AnimeStreamEntry> _buildBleach() {
+    const ep1Url = 'https://archive.org/download/getvid-9_202404/getvid%20%289%29.mp4';
+    const ep2Url =
+        'https://archive.org/download/bleach-soul-society-arc-episode-1/Bleach_%20Soul%20Society%20Arc%20-%20Episode%201.mp4';
+    const ep3Url =
+        'https://archive.org/download/bleach-agent-shinigami-arc-episode-3/Bleach_%20Agent%20Shinigami%20Arc%20-%20Episode%203.mp4';
+    const ep4Url =
+        'https://archive.org/download/bleach-agent-shinigami-arc-episode-4/Bleach_%20Agent%20Shinigami%20Arc%20-%20Episode%204.mp4';
+
+    return List.generate(24, (index) {
+      String stream;
+      if (index == 0) {
+        stream = ep1Url;
+      } else if (index == 1) {
+        stream = ep2Url;
+      } else if (index == 2) {
+        stream = ep3Url;
+      } else {
+        stream = ep4Url;
+      }
+      return _AnimeStreamEntry(server1Url: stream, server3Url: stream);
+    });
+  }
+
+  // --- Hunter x Hunter (12 Episodes) ---
+  static List<_AnimeStreamEntry> _buildHxh() {
+    const url = 'https://archive.org/download/turner_video_6095/6095.mp4';
+    return List.generate(12, (index) => const _AnimeStreamEntry(server1Url: url, server3Url: url));
+  }
+
+  // --- Fullmetal Alchemist (12 Episodes) ---
+  static List<_AnimeStreamEntry> _buildFmab() {
+    const url = 'https://archive.org/download/turner_video_134430/134430.mp4';
+    return List.generate(12, (index) => const _AnimeStreamEntry(server1Url: url, server3Url: url));
+  }
+
   static final Map<String, List<_AnimeStreamEntry>> _animeEpisodeMap = {
     'demon-slayer': _buildKnySeason1(),
     'attack-on-titan': _buildAotSeason1(),
@@ -449,6 +514,9 @@ class AnimeStreamResolver {
     'one-piece': _buildOnePieceSeason1(),
     'spy-x-family': _buildSpyFamilySeason1(),
     'frieren': _buildFrierenSeason1(),
+    'bleach': _buildBleach(),
+    'hunter-x-hunter': _buildHxh(),
+    'fullmetal-alchemist': _buildFmab(),
   };
 }
 

@@ -38,15 +38,16 @@ void main() {
       final spotlight = await service.getSpotlightAnime();
       expect(spotlight, isNotEmpty);
       expect(spotlight.length, equals(10));
-      expect(spotlight.first.title, contains('Attack on Titan'));
+      expect(spotlight.first.title, isNotEmpty);
+      expect(spotlight.first.rating, greaterThan(0));
     });
 
     test('getExploreAnimeList filters by tab and genre accurately', () async {
-      final popularList = await service.getExploreAnimeList(filter: 'popular');
+      final popularList = await service.getExploreAnimeList(filter: 'popular', limit: 6);
       expect(popularList.length, equals(6));
       expect(popularList.first.title, isNotEmpty);
 
-      final latestList = await service.getExploreAnimeList(filter: 'latest');
+      final latestList = await service.getExploreAnimeList(filter: 'latest', limit: 6);
       expect(latestList.length, equals(6));
       expect(latestList.first.title, isNotEmpty);
 
