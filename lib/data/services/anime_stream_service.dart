@@ -68,6 +68,9 @@ class AnimeStreamService {
     }
 
     // Map known API ID aliases to curated details
+    if (cleanId == 'tokyo-revengers-s4' || cleanId == '48960' || cleanId == '42249') {
+      return _curatedDetails['tokyo-revengers-s4']!;
+    }
     if (cleanId == '41370' || cleanId == 'kny') {
       return _curatedDetails['demon-slayer']!;
     }
@@ -157,7 +160,7 @@ class AnimeStreamService {
           releaseDate: '2025-01-${(index + 1) * 7}',
           streamUrl: AnimeStreamResolver.resolveStreamUrl(
             animeId: 'tokyo-revengers-s4',
-            animeTitle: 'Tokyo Revengers',
+            animeTitle: 'Tokyo Revengers Season 4',
             server: 'Server 1 (Fast HD)',
             episodeNumber: index + 1,
           ),

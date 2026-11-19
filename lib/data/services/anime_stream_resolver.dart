@@ -94,7 +94,12 @@ class AnimeStreamResolver {
     // 2. Specific franchise arcs that represent seasons
     if (combined.contains('infinity castle') ||
         combined.contains('final season') ||
-        combined.contains('season final')) {
+        combined.contains('season final') ||
+        combined.contains('santen sensou') ||
+        combined.contains('three deities') ||
+        combined.contains('three titans') ||
+        combined.contains('war of the three titans') ||
+        combined.contains('zokuhen')) {
       return 4;
     }
     if (combined.contains('culling game') ||
@@ -309,11 +314,13 @@ class AnimeStreamResolver {
         combined.contains('takemichi') ||
         combined.contains('revengers') ||
         combined.contains('東京リベンジャーズ') ||
+        id == '48960' ||
         id == '42249' ||
+        id == '43321' ||
         id.startsWith('tokyo-revengers')) {
       if (season == 2) return 'tokyo-revengers-s2';
       if (season == 3) return 'tokyo-revengers-s3';
-      if (season >= 4) return 'tokyo-revengers-s4';
+      if (season >= 4 || id == 'tokyo-revengers-s4' || id == '48960') return 'tokyo-revengers-s4';
       return 'tokyo-revengers';
     }
 
@@ -878,7 +885,22 @@ class AnimeStreamResolver {
     });
   }
 
-  static List<_AnimeStreamEntry> _buildTokyoRevengersS4() => _buildSeason4Fallback();
+  static List<_AnimeStreamEntry> _buildTokyoRevengersS4() {
+    const files = [
+      'Tokyo Revengers S3 cap 08.mp4',
+      'Tokyo Revengers S3 cap 09.mp4',
+      'Tokyo Revengers S3 cap 10.mp4',
+      'Tokyo Revengers S3 cap 11.mp4',
+      'Tokyo Revengers S3 cap 12-13.mp4',
+      'Tokyo Revengers S3 cap 12-13.mp4',
+    ];
+    return files.map((file) {
+      final encoded = Uri.encodeComponent(file);
+      final url =
+          'https://archive.org/download/tokyo-revengers-s3-darkrai/$encoded';
+      return _AnimeStreamEntry(server1Url: url, server3Url: url);
+    }).toList();
+  }
 
   // --- Solo Leveling Season 1 (12 Episodes, ~24m each) ---
   static List<_AnimeStreamEntry> _buildSoloLevelingSeason1() {

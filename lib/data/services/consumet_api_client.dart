@@ -196,8 +196,24 @@ class ConsumetApiClient {
       final searchResults = await searchAnime(query, provider: provider);
       if (searchResults.isEmpty) return null;
 
-      // Select top result
-      final topAnime = searchResults.first;
+      // Select best matching result based on season
+      ConsumetAnimeResult? matchedAnime;
+      if (seasonNumber != null && seasonNumber > 1) {
+        matchedAnime = searchResults.firstWhere(
+          (r) {
+            final t = r.title.toLowerCase();
+            return t.contains('season $seasonNumber') ||
+                t.contains('s$seasonNumber') ||
+                t.contains('santen') ||
+                t.contains('tenjiku') ||
+                t.contains('$seasonNumber');
+          },
+          orElse: () => searchResults.first,
+        );
+      } else {
+        matchedAnime = searchResults.first;
+      }
+      final topAnime = matchedAnime;
       final episodes = await getEpisodes(topAnime.id, provider: provider);
       if (episodes.isEmpty) return null;
 

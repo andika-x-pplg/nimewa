@@ -649,7 +649,7 @@ class AnimeApiClient {
       statusLabel: 'Ongoing',
     ),
     AnimeItem(
-      id: '42249',
+      id: 'tokyo-revengers-s4',
       title: 'Tokyo Revengers: Season 4',
       japaneseTitle: '東京リベンジャーズ',
       rating: 8.0,
