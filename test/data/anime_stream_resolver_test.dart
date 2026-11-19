@@ -415,6 +415,166 @@ void main() {
       expect(fallback, isNot(contains('BigBuckBunny')));
       expect(fallback, contains('Cruelty'));
     });
+
+    test('season-specific routing: DandaDan S1 stays S1, S2 routes to S2', () {
+      // S1 — id=dandadan, title=Dandadan
+      final dddS1 = AnimeStreamResolver.resolveStreamUrl(
+        animeId: 'dandadan',
+        animeTitle: 'Dandadan',
+        server: 'Server 1 (Fast HD)',
+        episodeNumber: 1,
+      );
+      expect(dddS1, contains('S01-E01'));
+      expect(dddS1, isNot(contains('S02')));
+
+      // S2 — title contains Season 2
+      final dddS2 = AnimeStreamResolver.resolveStreamUrl(
+        animeId: 'dandadan',
+        animeTitle: 'Dandadan Season 2',
+        server: 'Server 1 (Fast HD)',
+        episodeNumber: 1,
+      );
+      expect(dddS2, contains('S02-E01'));
+
+      // S2 — id contains -s2
+      final dddS2byId = AnimeStreamResolver.resolveStreamUrl(
+        animeId: 'dandadan-s2',
+        animeTitle: 'Dandadan',
+        server: 'Server 1 (Fast HD)',
+        episodeNumber: 1,
+      );
+      expect(dddS2byId, contains('S02-E01'));
+    });
+
+    test('season-specific routing: JJK S3 by id routes to jujutsu-kaisen-s3', () {
+      final key = AnimeStreamResolver.detectAnimeKey('jujutsu-kaisen-s3', 'Jujutsu Kaisen');
+      expect(key, equals('jujutsu-kaisen-s3'));
+
+      final ep1 = AnimeStreamResolver.resolveStreamUrl(
+        animeId: 'jujutsu-kaisen-s3',
+        animeTitle: 'Jujutsu Kaisen',
+        server: 'Server 1 (Fast HD)',
+        episodeNumber: 1,
+      );
+      expect(ep1, contains('.mp4'));
+    });
+
+    test('season-specific routing: Solo Leveling S2 by id routes to solo-leveling-s2', () {
+      final key = AnimeStreamResolver.detectAnimeKey('solo-leveling-s2', 'Solo Leveling');
+      expect(key, equals('solo-leveling-s2'));
+
+      final ep1 = AnimeStreamResolver.resolveStreamUrl(
+        animeId: 'solo-leveling-s2',
+        animeTitle: 'Solo Leveling',
+        server: 'Server 1 (Fast HD)',
+        episodeNumber: 1,
+      );
+      expect(ep1, contains('.mp4'));
+    });
+
+    test('season-specific routing: Bleach TYBW by id routes to bleach-tybw', () {
+      final key = AnimeStreamResolver.detectAnimeKey('bleach-tybw-part3', 'Bleach: Thousand Year Blood War');
+      expect(key, equals('bleach-tybw'));
+
+      final ep1 = AnimeStreamResolver.resolveStreamUrl(
+        animeId: 'bleach-tybw-part3',
+        animeTitle: 'Bleach: Thousand Year Blood War',
+        server: 'Server 1 (Fast HD)',
+        episodeNumber: 1,
+      );
+      expect(ep1, contains('Bleach%20S01E01'));
+    });
+
+    test('season-specific routing: Frieren S2 by id routes to frieren-s2', () {
+      final key = AnimeStreamResolver.detectAnimeKey('frieren-s2', 'Sousou no Frieren');
+      expect(key, equals('frieren-s2'));
+
+      final ep1 = AnimeStreamResolver.resolveStreamUrl(
+        animeId: 'frieren-s2',
+        animeTitle: 'Sousou no Frieren Season 2',
+        server: 'Server 1 (Fast HD)',
+        episodeNumber: 1,
+      );
+      expect(ep1, contains('Frieren'));
+    });
+
+    test('season-specific routing: Frieren S1 (no season in title) stays frieren', () {
+      final key = AnimeStreamResolver.detectAnimeKey('frieren', 'Sousou no Frieren');
+      expect(key, equals('frieren'));
+    });
+
+    test('season-specific routing: Demon Slayer S1, S2, S3, S4 route to different stream collections', () {
+      final s1 = AnimeStreamResolver.resolveStreamUrl(
+        animeId: 'demon-slayer',
+        animeTitle: 'Demon Slayer: Kimetsu no Yaiba',
+        server: 'Server 1 (Fast HD)',
+        episodeNumber: 1,
+      );
+      final s2 = AnimeStreamResolver.resolveStreamUrl(
+        animeId: 'demon-slayer-s2',
+        animeTitle: 'Kimetsu no Yaiba: Entertainment District Arc',
+        server: 'Server 1 (Fast HD)',
+        episodeNumber: 1,
+      );
+      final s3 = AnimeStreamResolver.resolveStreamUrl(
+        animeId: 'demon-slayer-s3',
+        animeTitle: 'Kimetsu no Yaiba: Swordsmith Village Arc',
+        server: 'Server 1 (Fast HD)',
+        episodeNumber: 1,
+      );
+      final s4 = AnimeStreamResolver.resolveStreamUrl(
+        animeId: 'demon-slayer-s4',
+        animeTitle: 'Kimetsu no Yaiba Season 4 Hashira Training',
+        server: 'Server 1 (Fast HD)',
+        episodeNumber: 1,
+      );
+
+      // Verify each season has its distinct stream URL
+      expect(s1, contains('Cruelty'));
+      expect(s2, contains('S02'));
+      expect(s2, isNot(contains('S01')));
+      expect(s3, contains('S03'));
+      expect(s3, isNot(contains('S01')));
+      expect(s4, isNot(contains('S01E01')));
+    });
+
+    test('season-specific routing: generic Season 2 anime never plays Season 1 stream', () {
+      final genericS2 = AnimeStreamResolver.resolveStreamUrl(
+        animeId: 'arbitrary-anime-s2',
+        animeTitle: 'My Random Anime Season 2',
+        server: 'Server 1 (Fast HD)',
+        episodeNumber: 1,
+      );
+      expect(genericS2, contains('S02'));
+      expect(genericS2, isNot(contains('Cruelty')));
+      expect(genericS2, isNot(contains('S01')));
+    });
+
+    test('season-specific routing: generic Season 3 anime never plays Season 1 or Season 2 stream', () {
+      final genericS3 = AnimeStreamResolver.resolveStreamUrl(
+        animeId: 'arbitrary-anime-s3',
+        animeTitle: 'My Random Anime Season 3',
+        server: 'Server 1 (Fast HD)',
+        episodeNumber: 1,
+      );
+      expect(genericS3, contains('S03'));
+      expect(genericS3, contains('S03E01'));
+      expect(genericS3, isNot(contains('S01/')));
+      expect(genericS3, isNot(contains('S01E')));
+      expect(genericS3, isNot(contains('/S02/')));
+      expect(genericS3, isNot(contains('S02E')));
+    });
+
+    test('season-specific routing: generic Season 4 anime never plays Season 1 stream', () {
+      final genericS4 = AnimeStreamResolver.resolveStreamUrl(
+        animeId: 'arbitrary-anime-s4',
+        animeTitle: 'My Random Anime Season 4',
+        server: 'Server 1 (Fast HD)',
+        episodeNumber: 1,
+      );
+      expect(genericS4, isNot(contains('S01')));
+      expect(genericS4, isNot(contains('Cruelty')));
+    });
   });
 
   group('AnimeSubtitleService Tests', () {

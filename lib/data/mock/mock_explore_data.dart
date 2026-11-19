@@ -50,7 +50,7 @@ const List<AnimeItem> popularAnimeList = [
     description: 'Pertarungan heboh alien dan hantu bersama Momo dan Okarun.',
     posterUrl: 'https://avac.moe/img/anime/large/57334.jpg',
     backdropUrl: 'https://avac.moe/img/anime/large/57334.jpg',
-    episodeInfo: 'SUB · EP 10',
+    episodeInfo: 'SUB · EP 4 (Ongoing)',
     statusLabel: 'Ongoing',
   ),
   AnimeItem(
@@ -92,7 +92,7 @@ const List<AnimeItem> latestAnimeList = [
     description: 'Kafka Hibino terus berjuang di Pasukan Pertahanan menghadapi ancaman kaiju baru.',
     posterUrl: 'https://avac.moe/img/anime/large/52588.jpg',
     backdropUrl: 'https://avac.moe/img/anime/large/52588.jpg',
-    episodeInfo: 'SUB · EP 4',
+    episodeInfo: 'SUB · EP 4 (Ongoing)',
     statusLabel: 'Ongoing',
   ),
   AnimeItem(
@@ -105,7 +105,7 @@ const List<AnimeItem> latestAnimeList = [
     description: 'Aqua Hoshino semakin dekat mengungkap dalang di balik tragedi masa lalunya.',
     posterUrl: 'https://avac.moe/img/anime/large/52034.jpg',
     backdropUrl: 'https://avac.moe/img/anime/large/52034.jpg',
-    episodeInfo: 'SUB · EP 2',
+    episodeInfo: 'SUB · EP 2 (Ongoing)',
     statusLabel: 'Ongoing',
   ),
   AnimeItem(

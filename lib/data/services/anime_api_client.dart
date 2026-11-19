@@ -307,7 +307,7 @@ class AnimeApiClient {
       } else if (lowerTitle.contains('solo leveling')) {
         currentEp = 8;
       } else if (lowerTitle.contains('dandadan')) {
-        currentEp = 10;
+        currentEp = 4;
       } else if (lowerTitle.contains('re:zero') || lowerTitle.contains('rezero')) {
         currentEp = 16;
       } else if (lowerTitle.contains('slime datta ken') || lowerTitle.contains('tensura')) {
@@ -319,29 +319,42 @@ class AnimeApiClient {
       } else if (lowerTitle.contains('frieren')) {
         currentEp = 6;
       } else if (lowerTitle.contains('kaiju no. 8') || lowerTitle.contains('kaiju no 8')) {
-        currentEp = 5;
-      } else if (lowerTitle.contains('spy x family')) {
         currentEp = 4;
-      } else if (lowerTitle.contains('hero academia')) {
+      } else if (lowerTitle.contains('oshi no ko')) {
+        currentEp = 2;
+      } else if (lowerTitle.contains('blue lock')) {
         currentEp = 7;
+      } else if (lowerTitle.contains('spy x family')) {
+        currentEp = 5;
+      } else if (lowerTitle.contains('hero academia') || lowerTitle.contains('boku no hero')) {
+        currentEp = 6;
+      } else if (lowerTitle.contains('mushoku tensei')) {
+        currentEp = 6;
+      } else if (lowerTitle.contains('tate no yuusha') || lowerTitle.contains('shield hero')) {
+        currentEp = 4;
+      } else if (lowerTitle.contains('black clover')) {
+        currentEp = 6;
       } else if (startDate != null && startDate.isNotEmpty) {
         try {
           final start = DateTime.parse(startDate);
           final now = DateTime.now();
           if (now.isAfter(start)) {
             final weeks = (now.difference(start).inDays / 7).floor() + 1;
-            final maxAllowed = rawEpisodeCount ?? 24;
+            // Cap ongoing anime between 1 and 8 so it never shows fixed 12
+            final maxAllowed = (rawEpisodeCount != null && rawEpisodeCount > 1)
+                ? (rawEpisodeCount <= 12 ? (rawEpisodeCount - 2).clamp(1, 10) : 10)
+                : 8;
             currentEp = weeks.clamp(1, maxAllowed);
           } else {
             currentEp = 1;
           }
         } catch (_) {
           currentEp = (rawEpisodeCount != null && rawEpisodeCount > 0)
-              ? (rawEpisodeCount <= 12 ? (rawEpisodeCount / 2).ceil() : 6)
+              ? (rawEpisodeCount <= 12 ? (rawEpisodeCount / 2).ceil().clamp(1, 8) : 6)
               : 4;
         }
       } else if (rawEpisodeCount != null && rawEpisodeCount > 0) {
-        currentEp = (rawEpisodeCount <= 12) ? (rawEpisodeCount / 2).ceil() : 6;
+        currentEp = (rawEpisodeCount <= 12) ? (rawEpisodeCount / 2).ceil().clamp(1, 8) : 6;
       }
 
       final total = rawEpisodeCount ?? (currentEp > 12 ? currentEp : 12);
@@ -476,13 +489,21 @@ class AnimeApiClient {
       parsedCount = 1;
     }
 
-    final canonical = getCanonicalEpisodeCount(item.id, item.title);
-    final count = parsedCount ?? canonical ?? 12;
-
     final isOngoing = item.statusLabel.toLowerCase() == 'ongoing' ||
         item.episodeInfo.toLowerCase().contains('ongoing');
     final isMovie = item.episodeInfo.toUpperCase().contains('MOVIE') ||
         item.title.toLowerCase().contains('movie');
+
+    final int count;
+    if (isMovie) {
+      count = 1;
+    } else if (isOngoing) {
+      // For ongoing series, show only the current released episodes (not a fixed 12)
+      count = (parsedCount != null && parsedCount <= 24) ? parsedCount : 4;
+    } else {
+      final canonical = getCanonicalEpisodeCount(item.id, item.title);
+      count = parsedCount ?? canonical ?? 12;
+    }
 
     final status = isMovie
         ? (isOngoing ? 'Tayang' : 'Tamat')

@@ -29,16 +29,31 @@ class AnimeSubtitleService {
     return '';
   }
 
+  static int _extractSeasonNumber(String animeKey) {
+    final match = RegExp(r'-s(\d+)').firstMatch(animeKey);
+    if (match != null) {
+      return int.tryParse(match.group(1)!) ?? 1;
+    }
+    if (animeKey.contains('season-2') || animeKey.contains('-s2')) return 2;
+    if (animeKey.contains('season-3') || animeKey.contains('-s3')) return 3;
+    if (animeKey.contains('season-4') || animeKey.contains('-s4')) return 4;
+    if (animeKey.contains('tybw')) return 2;
+    return 1;
+  }
+
   static List<SubtitleCue> _getDefaultCuesForEpisode(String animeKey, int episodeNumber) {
     final title = _getAnimeDisplayName(animeKey);
     final isMovie = animeKey.contains('movie') ||
         animeKey == 'jujutsu-kaisen-0' ||
         animeKey == 'your-name' ||
         animeKey == 'silent-voice' ||
-        animeKey == 'tokyo-ghoul';
+        animeKey == 'tokyo-ghoul' ||
+        animeKey == 'overlord' ||
+        animeKey == 'kage-no-jitsuryokusha';
+    final seasonNum = _extractSeasonNumber(animeKey);
     final headerText = isMovie
         ? '[Sub Indo] $title - Full Movie'
-        : '[Sub Indo] $title Season 1 - Episode $episodeNumber';
+        : '[Sub Indo] $title Season $seasonNum - Episode $episodeNumber';
     return [
       SubtitleCue(
         start: const Duration(seconds: 0),
@@ -58,7 +73,13 @@ class AnimeSubtitleService {
     ];
   }
 
-  static String _getAnimeDisplayName(String key) {
+  static String _getAnimeDisplayName(String rawKey) {
+    if (rawKey.contains('fallback')) {
+      return 'Anime Series';
+    }
+    // Strip season suffix like -s2, -s3, -s4 for display title lookup
+    final key = rawKey.replaceAll(RegExp(r'-s\d+$'), '');
+
     switch (key) {
       case 'demon-slayer':
         return 'Demon Slayer: Kimetsu no Yaiba';
@@ -110,8 +131,64 @@ class AnimeSubtitleService {
         return 'Steins;Gate';
       case 'dandadan':
         return 'Dandadan';
+      case 'dandadan-s2':
+        return 'Dandadan Season 2';
       case 'rezero':
         return 'Re:Zero kara Hajimeru Isekai Seikatsu';
+      case 'rezero-s3':
+        return 'Re:Zero Season 3';
+      case 'jujutsu-kaisen-s3':
+        return 'Jujutsu Kaisen Season 3';
+      case 'solo-leveling-s2':
+        return 'Solo Leveling Season 2: Arise from the Shadow';
+      case 'frieren-s2':
+        return 'Sousou no Frieren Season 2';
+      case 'bleach-tybw':
+        return 'Bleach: Thousand-Year Blood War';
+      case 'tokyo-revengers-s4':
+        return 'Tokyo Revengers Season 4';
+      case 'spy-x-family-s3':
+        return 'Spy x Family Season 3';
+      case 'my-hero-academia-s8':
+        return 'Boku no Hero Academia Season 8';
+      case 'mushoku-tensei':
+        return 'Mushoku Tensei: Jobless Reincarnation';
+      case 'tensura':
+        return 'That Time I Got Reincarnated as a Slime';
+      case 'kaiju-no-8':
+        return 'Kaiju No. 8';
+      case 'oshi-no-ko':
+        return 'Oshi no Ko';
+      case 'blue-lock':
+        return 'Blue Lock';
+      case 'kaguya-sama':
+        return 'Kaguya-sama: Love Is War';
+      case 'horimiya':
+        return 'Horimiya';
+      case 'gotoubun':
+        return 'Gotoubun no Hanayome';
+      case 'kimi-ni-todoke':
+        return 'Kimi ni Todoke';
+      case 'ao-haru-ride':
+        return 'Ao Haru Ride';
+      case 'code-geass':
+        return 'Code Geass: Lelouch of the Rebellion';
+      case 'eighty-six':
+        return '86 Eighty-Six';
+      case 'erased':
+        return 'Erased (Boku dake ga Inai Machi)';
+      case 'monster':
+        return 'Monster';
+      case 'parasyte':
+        return 'Parasyte -the maxim-';
+      case 'overlord':
+        return 'Overlord';
+      case 'tate-no-yuusha':
+        return 'The Rising of the Shield Hero';
+      case 'kage-no-jitsuryokusha':
+        return 'The Eminence in Shadow';
+      case 'kuroko-no-basket':
+        return 'Kuroko no Basket';
       case 'shigatsu-wa-kimi':
         return 'Shigatsu wa Kimi no Uso';
       default:

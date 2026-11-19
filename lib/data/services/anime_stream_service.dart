@@ -323,7 +323,7 @@ class AnimeStreamService {
       studio: 'Madhouse',
       totalEpisodes: 24,
       episodes: List.generate(
-        12,
+        6,
         (index) => EpisodeItem(
           id: 'frieren-s2-eps-${index + 1}',
           episodeNumber: index + 1,
@@ -381,7 +381,7 @@ class AnimeStreamService {
       studio: 'Studio Pierrot',
       totalEpisodes: 12,
       episodes: List.generate(
-        12,
+        6,
         (index) => EpisodeItem(
           id: 'black-clover-s2-eps-${index + 1}',
           episodeNumber: index + 1,
