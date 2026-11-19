@@ -10,9 +10,9 @@ void main() {
     });
 
     test('getAnimeDetail returns rich details and episode list for valid id', () async {
-      final detail = await service.getAnimeDetail('solo-leveling-s2');
+      final detail = await service.getAnimeDetail('solo-leveling');
 
-      expect(detail.id, equals('solo-leveling-s2'));
+      expect(detail.id, equals('solo-leveling'));
       expect(detail.title, contains('Solo Leveling'));
       expect(detail.synopsis, isNotEmpty);
       expect(detail.episodes.length, greaterThanOrEqualTo(8));
@@ -25,11 +25,11 @@ void main() {
 
       expect(detail.id, equals('unknown-anime-id'));
       expect(detail.episodes, isNotEmpty);
-      expect(detail.episodes.first.streamUrl, isNotEmpty);
+      expect(detail.episodes.first.streamUrl, isEmpty);
     });
 
     test('getEpisodeStreamUrl returns valid video stream endpoint', () async {
-      final streamUrl = await service.getEpisodeStreamUrl('solo-leveling-s2-eps-1');
+      final streamUrl = await service.getEpisodeStreamUrl('solo-leveling-eps-1');
       expect(streamUrl, isNotEmpty);
       expect(streamUrl.startsWith('http'), isTrue);
     });

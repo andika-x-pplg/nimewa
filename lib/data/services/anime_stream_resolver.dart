@@ -9,6 +9,45 @@ class AnimeStreamResolver {
   /// Shared instance of ConsumetApiClient for online stream lookup.
   static ConsumetApiClient consumetClient = ConsumetApiClient();
 
+  /// Set of anime keys verified to have 100% genuine, authentic episode files of that exact show.
+  /// Under the Atomicity principle ("semua atau tidak sama sekali"), any anime not in this set
+  /// is strictly rejected and never displayed or played.
+  static const Set<String> _authenticKeys = {
+    'demon-slayer',
+    'demon-slayer-s2',
+    'demon-slayer-s3',
+    'demon-slayer-s4',
+    'demon-slayer-movie',
+    'attack-on-titan',
+    'death-note',
+    'jujutsu-kaisen',
+    'jujutsu-kaisen-0',
+    'tokyo-revengers',
+    'tokyo-revengers-s2',
+    'tokyo-revengers-s3',
+    'chainsaw-man',
+    'chainsaw-man-movie',
+    'naruto',
+    'one-piece',
+    'spy-x-family',
+    'hunter-x-hunter',
+    'fullmetal-alchemist',
+    'bleach',
+    'solo-leveling',
+    'my-hero-academia',
+    'steins-gate',
+    'dandadan',
+    'dandadan-s2',
+    'rezero',
+    'shigatsu-wa-kimi',
+    'your-name',
+    'haikyuu-movie',
+    'gintama-movie',
+    'silent-voice',
+    'tokyo-ghoul',
+    'frieren',
+  };
+
   /// Set of anime keys known to be incomplete or lacking authentic episode files.
   /// Under the Atomicity principle ("semua atau tidak sama sekali"), these are never displayed or played.
   static const Set<String> _incompleteBlacklist = {
@@ -37,6 +76,7 @@ class AnimeStreamResolver {
     }
 
     final key = detectAnimeKey(animeId, animeTitle);
+    if (!_authenticKeys.contains(key)) return false;
     if (_incompleteBlacklist.contains(key)) return false;
 
     final episodes = _animeEpisodeMap[key];
@@ -670,8 +710,7 @@ class AnimeStreamResolver {
     if (season == 3) return 'season-3-fallback';
     if (season >= 4) return 'season-4-fallback';
 
-    // Default to Demon Slayer Season 1 authentic stream
-    return 'demon-slayer';
+    return 'unknown';
   }
 
   // --- Demon Slayer Season 1 (26 Episodes, ~24m each) ---
@@ -789,11 +828,6 @@ class AnimeStreamResolver {
     }).toList();
   }
 
-  // Universal Fallbacks per Season
-  static List<_AnimeStreamEntry> _buildSeason2Fallback() => _buildKnySeason2();
-  static List<_AnimeStreamEntry> _buildSeason3Fallback() => _buildKnySeason3();
-  static List<_AnimeStreamEntry> _buildSeason4Fallback() => _buildKnySeason4();
-
   // --- Demon Slayer Movie / Mugen Train (~26m Feature) ---
   static List<_AnimeStreamEntry> _buildKnyMovie() {
     const url =
@@ -812,10 +846,6 @@ class AnimeStreamResolver {
     });
   }
 
-  static List<_AnimeStreamEntry> _buildAotSeason2() => _buildSeason2Fallback();
-  static List<_AnimeStreamEntry> _buildAotSeason3() => _buildSeason3Fallback();
-  static List<_AnimeStreamEntry> _buildAotSeason4() => _buildSeason4Fallback();
-
   // --- Jujutsu Kaisen Season 1 (24 Episodes, ~24m each) ---
   static List<_AnimeStreamEntry> _buildJjkSeason1() {
     return List.generate(24, (index) {
@@ -826,9 +856,6 @@ class AnimeStreamResolver {
       return _AnimeStreamEntry(server1Url: url, server3Url: url);
     });
   }
-
-  static List<_AnimeStreamEntry> _buildJjkSeason2() => _buildSeason2Fallback();
-  static List<_AnimeStreamEntry> _buildJjkSeason3() => _buildSeason3Fallback();
 
   // --- Jujutsu Kaisen 0 Movie (104 Minutes) ---
   static List<_AnimeStreamEntry> _buildJjk0() {
@@ -940,8 +967,6 @@ class AnimeStreamResolver {
     });
   }
 
-  static List<_AnimeStreamEntry> _buildSoloLevelingS2() => _buildSeason2Fallback();
-
   // --- Boku no Hero Academia Season 1 (13 Episodes, ~24m each) ---
   static List<_AnimeStreamEntry> _buildMhaSeason1() {
     return List.generate(13, (index) {
@@ -953,9 +978,6 @@ class AnimeStreamResolver {
       return _AnimeStreamEntry(server1Url: url, server3Url: url);
     });
   }
-
-  static List<_AnimeStreamEntry> _buildMhaS2() => _buildSeason2Fallback();
-  static List<_AnimeStreamEntry> _buildMhaS8() => _buildSeason4Fallback();
 
   // --- Chainsaw Man Season 1 (12 Episodes, ~24m each) ---
   static const Map<int, String> _csmHashes = {
@@ -1062,9 +1084,6 @@ class AnimeStreamResolver {
     });
   }
 
-  static List<_AnimeStreamEntry> _buildSpyFamilyS2() => _buildSeason2Fallback();
-  static List<_AnimeStreamEntry> _buildSpyFamilyS3() => _buildSeason3Fallback();
-
   // --- Sousou no Frieren Season 1 (5 Episodes, ~24m each) ---
   static List<_AnimeStreamEntry> _buildFrierenSeason1() {
     return List.generate(5, (index) {
@@ -1072,17 +1091,6 @@ class AnimeStreamResolver {
       final pad = epNum.toString().padLeft(2, '0');
       final url =
           'https://archive.org/download/sousou-no-frieren-dublado/Sousou%20no%20Frieren%20Dublado%20$pad%20Online.mp4';
-      return _AnimeStreamEntry(server1Url: url, server3Url: url);
-    });
-  }
-
-  static List<_AnimeStreamEntry> _buildFrierenS2() {
-    return List.generate(8, (index) {
-      final epNum = index + 1;
-      final pad = epNum.toString().padLeft(2, '0');
-      final clampedPad = epNum <= 5 ? pad : '05';
-      final url =
-          'https://archive.org/download/sousou-no-frieren-dublado/Sousou%20no%20Frieren%20Dublado%20$clampedPad%20Online.mp4';
       return _AnimeStreamEntry(server1Url: url, server3Url: url);
     });
   }
@@ -1119,16 +1127,6 @@ class AnimeStreamResolver {
     return _bleachFiles.map((file) {
       final encoded = Uri.encodeComponent(file).replaceAll('%2F', '/');
       final url = 'https://archive.org/download/claro-video-anime-series-pack-web-dl/$encoded';
-      return _AnimeStreamEntry(server1Url: url, server3Url: url);
-    }).toList();
-  }
-
-  static List<_AnimeStreamEntry> _buildBleachTybw() {
-    final bleachFiles = _bleachFiles.take(14).toList();
-    return bleachFiles.map((file) {
-      final encoded = Uri.encodeComponent(file).replaceAll('%2F', '/');
-      final url =
-          'https://archive.org/download/claro-video-anime-series-pack-web-dl/$encoded';
       return _AnimeStreamEntry(server1Url: url, server3Url: url);
     }).toList();
   }
@@ -1261,19 +1259,6 @@ class AnimeStreamResolver {
           'https://archive.org/download/re-zero-english-dub-season-1-all-episodes/ReZeroEnglishDubSeason1Episode$epNum.ia.mp4';
       final s3 =
           'https://archive.org/download/re-zero-english-dub-season-1-all-episodes/ReZeroEnglishDubSeason1Episode$epNum.mp4';
-      return _AnimeStreamEntry(server1Url: s1, server3Url: s3);
-    });
-  }
-
-  static List<_AnimeStreamEntry> _buildReZeroS2() => _buildSeason2Fallback();
-  static List<_AnimeStreamEntry> _buildReZeroS3() {
-    return List.generate(16, (index) {
-      final epNum = index + 1;
-      final clampedEp = epNum <= 25 ? epNum : 25;
-      final s1 =
-          'https://archive.org/download/re-zero-english-dub-season-1-all-episodes/ReZeroEnglishDubSeason1Episode$clampedEp.ia.mp4';
-      final s3 =
-          'https://archive.org/download/re-zero-english-dub-season-1-all-episodes/ReZeroEnglishDubSeason1Episode$clampedEp.mp4';
       return _AnimeStreamEntry(server1Url: s1, server3Url: s3);
     });
   }
@@ -1576,74 +1561,13 @@ class AnimeStreamResolver {
     'silent-voice': _buildSilentVoice(),
     'tokyo-ghoul': _buildTokyoGhoulMovie(),
 
-    // Universal Season Fallbacks
-    'season-2-fallback': _buildSeason2Fallback(),
-    'season-3-fallback': _buildSeason3Fallback(),
-    'season-4-fallback': _buildSeason4Fallback(),
-
-    // Season-Specific Entries
+    // Season-Specific Verified Entries
     'demon-slayer-s2': _buildKnySeason2(),
     'demon-slayer-s3': _buildKnySeason3(),
     'demon-slayer-s4': _buildKnySeason4(),
     'dandadan-s2': _buildDandadanS2(),
-    'jujutsu-kaisen-s2': _buildJjkSeason2(),
-    'jujutsu-kaisen-s3': _buildJjkSeason3(),
-    'solo-leveling-s2': _buildSoloLevelingS2(),
-    'attack-on-titan-s2': _buildAotSeason2(),
-    'attack-on-titan-s3': _buildAotSeason3(),
-    'attack-on-titan-s4': _buildAotSeason4(),
-    'frieren-s2': _buildFrierenS2(),
-    'bleach-tybw': _buildBleachTybw(),
     'tokyo-revengers-s2': _buildTokyoRevengersS2(),
     'tokyo-revengers-s3': _buildTokyoRevengersS3(),
-    'spy-x-family-s2': _buildSpyFamilyS2(),
-    'spy-x-family-s3': _buildSpyFamilyS3(),
-    'my-hero-academia-s2': _buildMhaS2(),
-    'my-hero-academia-s3': _buildSeason3Fallback(),
-    'my-hero-academia-s4': _buildSeason4Fallback(),
-    'my-hero-academia-s5': _buildSeason4Fallback(),
-    'my-hero-academia-s6': _buildSeason4Fallback(),
-    'my-hero-academia-s7': _buildSeason4Fallback(),
-    'my-hero-academia-s8': _buildMhaS8(),
-    'rezero-s2': _buildReZeroS2(),
-    'rezero-s3': _buildReZeroS3(),
-
-    // Additional Catalog Anime
-    'mushoku-tensei': _buildMushokuTensei(),
-    'mushoku-tensei-s2': _buildMushokuTenseiS2(),
-    'mushoku-tensei-s3': _buildMushokuTenseiS3(),
-    'tensura': _buildTensura(),
-    'tensura-s2': _buildTensuraS2(),
-    'tensura-s3': _buildTensuraS3(),
-    'tensura-s4': _buildTensuraS4(),
-    'kaiju-no-8': _buildKaijuNo8(),
-    'kaiju-no-8-s2': _buildKaijuNo8S2(),
-    'oshi-no-ko': _buildOshiNoKo(),
-    'oshi-no-ko-s2': _buildOshiNoKoS2(),
-    'oshi-no-ko-s3': _buildOshiNoKoS3(),
-    'blue-lock': _buildBlueLock(),
-    'kaguya-sama': _buildKaguyaSama(),
-    'kaguya-sama-s2': _buildKaguyaSamaS2(),
-    'kaguya-sama-s3': _buildKaguyaSamaS3(),
-    'kaguya-sama-s4': _buildKaguyaSamaS4(),
-    'horimiya': _buildHorimiya(),
-    'gotoubun': _buildGotoubun(),
-    'kimi-ni-todoke': _buildKimiNiTodoke(),
-    'kimi-ni-todoke-s2': _buildKimiNiTodokeS2(),
-    'kimi-ni-todoke-s3': _buildKimiNiTodokeS3(),
-    'ao-haru-ride': _buildAoHaruRide(),
-    'code-geass': _buildCodeGeass(),
-    'eighty-six': _buildEightySix(),
-    'erased': _buildErased(),
-    'monster': _buildMonster(),
-    'parasyte': _buildParasyte(),
-    'overlord': _buildOverlord(),
-    'tate-no-yuusha': _buildTateNoYuusha(),
-    'tate-no-yuusha-s2': _buildTateNoYuushaS2(),
-    'tate-no-yuusha-s3': _buildTateNoYuushaS3(),
-    'tate-no-yuusha-s4': _buildTateNoYuushaS4(),
-    'kage-no-jitsuryokusha': _buildKageNoJitsuryokusha(),
-    'kuroko-no-basket': _buildKurokoNoBasket(),
   };
 }
 

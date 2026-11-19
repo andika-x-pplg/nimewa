@@ -104,15 +104,15 @@ void main() {
         expect(item.episodeInfo, isNot('SUB · EP 12')); // No generic defaults
       }
 
-      final soloLeveling = AnimeApiClient.cachedTrendingAnime.firstWhere((a) => a.id == '46231');
-      expect(soloLeveling.episodeInfo, 'SUB · EP 8 (Ongoing)');
-      expect(soloLeveling.statusLabel, 'Ongoing');
+      final soloLeveling = AnimeApiClient.cachedTrendingAnime.firstWhere((a) => a.id == 'solo-leveling');
+      expect(soloLeveling.episodeInfo, 'SUB · 12 EPS (Tamat)');
+      expect(soloLeveling.statusLabel, 'Tamat');
 
-      final knyMovie = AnimeApiClient.cachedTrendingAnime.firstWhere((a) => a.id == '42765');
-      expect(knyMovie.episodeInfo, 'SUB · MOVIE');
-      expect(knyMovie.statusLabel, 'Tayang');
+      final demonSlayer = AnimeApiClient.cachedTrendingAnime.firstWhere((a) => a.id == 'demon-slayer');
+      expect(demonSlayer.episodeInfo, 'SUB · 26 EPS (Tamat)');
+      expect(demonSlayer.statusLabel, 'Tamat');
 
-      final aot = AnimeApiClient.cachedTrendingAnime.firstWhere((a) => a.id == '7442');
+      final aot = AnimeApiClient.cachedTrendingAnime.firstWhere((a) => a.id == 'attack-on-titan');
       expect(aot.episodeInfo, 'SUB · 25 EPS (Tamat)');
       expect(aot.statusLabel, 'Tamat');
     });

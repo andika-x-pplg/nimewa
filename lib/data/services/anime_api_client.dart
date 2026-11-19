@@ -16,29 +16,12 @@ class AnimeApiClient {
     this.timeout = const Duration(seconds: 6),
   });
 
-  /// Fetches top trending anime for home spotlight carousel (Popular 2026 by default).
+  /// Fetches top trending anime for home spotlight carousel (Popular anime in this app).
   Future<List<AnimeItem>> fetchTrendingAnime({
     int limit = 10,
     int offset = 0,
-    int? seasonYear = 2026,
+    int? seasonYear,
   }) async {
-    final yearFilter = seasonYear != null ? '&filter[seasonYear]=$seasonYear' : '';
-    final fetchLimit = limit + 10;
-    final url = '$baseUrl/anime?sort=-user_count$yearFilter&page[limit]=$fetchLimit&page[offset]=$offset';
-    try {
-      final json = await _get(url);
-      final list = _parseAnimeList(json);
-      if (list.length >= limit) return list.take(limit).toList();
-      if (list.isNotEmpty) {
-        final remaining = limit - list.length;
-        final backfill = cachedTrendingAnime
-            .where((c) => !list.any((item) => item.id == c.id))
-            .take(remaining);
-        return [...list, ...backfill];
-      }
-    } catch (_) {
-      // Graceful fallback to cached authentic catalog
-    }
     if (offset >= cachedTrendingAnime.length) return [];
     return cachedTrendingAnime.skip(offset).take(limit).toList();
   }
@@ -48,17 +31,21 @@ class AnimeApiClient {
     int limit = 20,
     int offset = 0,
   }) async {
+    final exploreList = getExploreAnime(filter: 'latest', limit: limit, offset: offset);
     final fetchLimit = limit + 10;
     final url = '$baseUrl/anime?sort=-startDate&page[limit]=$fetchLimit&page[offset]=$offset';
     try {
       final json = await _get(url);
       final list = _parseAnimeList(json);
       if (list.length >= limit) return list.take(limit).toList();
-      if (list.isNotEmpty) return list;
+      if (list.isNotEmpty) {
+        final combined = [...list, ...exploreList.where((e) => !list.any((a) => a.id == e.id))];
+        return combined.take(limit).toList();
+      }
     } catch (_) {
       // Fallback
     }
-    return getExploreAnime(filter: 'latest', limit: limit, offset: offset);
+    return exploreList;
   }
 
   /// Fetches top rated anime sorted by score with pagination.
@@ -66,17 +53,21 @@ class AnimeApiClient {
     int limit = 20,
     int offset = 0,
   }) async {
+    final exploreList = getExploreAnime(filter: 'top_rated', limit: limit, offset: offset);
     final fetchLimit = limit + 10;
     final url = '$baseUrl/anime?sort=-averageRating&page[limit]=$fetchLimit&page[offset]=$offset';
     try {
       final json = await _get(url);
       final list = _parseAnimeList(json);
       if (list.length >= limit) return list.take(limit).toList();
-      if (list.isNotEmpty) return list;
+      if (list.isNotEmpty) {
+        final combined = [...list, ...exploreList.where((e) => !list.any((a) => a.id == e.id))];
+        return combined.take(limit).toList();
+      }
     } catch (_) {
       // Fallback
     }
-    return getExploreAnime(filter: 'top_rated', limit: limit, offset: offset);
+    return exploreList;
   }
 
   /// Searches anime by keyword with pagination.
@@ -559,111 +550,59 @@ class AnimeApiClient {
     );
   }
 
-  /// Top 10 Popular Anime of 2026 (Strictly ordered, deterministic, never shuffled).
+  /// Top 10 Popular Anime in this app with verified authentic episodes.
   static const List<AnimeItem> cachedTrendingAnime = [
     AnimeItem(
-      id: '46231',
-      title: 'Solo Leveling: Arise from the Shadow',
+      id: 'solo-leveling',
+      title: 'Solo Leveling',
       japaneseTitle: '俺だけレベルアップな件',
       rating: 8.8,
-      releaseYear: 2026,
+      releaseYear: 2024,
       genres: ['Action', 'Fantasy', 'Supernatural'],
-      description: 'Sung Jinwoo bangkit sebagai Shadow Monarch dan melampaui batas kekuatan manusia.',
-      posterUrl: 'https://media.kitsu.app/anime/46231/poster_image/large-cdadff31f42490b9f48a035939a01a92.jpeg',
-      backdropUrl: 'https://media.kitsu.app/anime/46231/poster_image/large-cdadff31f42490b9f48a035939a01a92.jpeg',
-      episodeInfo: 'SUB · EP 8 (Ongoing)',
-      statusLabel: 'Ongoing',
+      description: 'Sung Jinwoo bangkit dari Hunter terlemah menjadi satu-satunya yang dapat naik level tanpa batas.',
+      posterUrl: 'https://media.kitsu.app/anime/poster_images/46231/large.jpg',
+      backdropUrl: 'https://media.kitsu.app/anime/poster_images/46231/large.jpg',
+      episodeInfo: 'SUB · 12 EPS (Tamat)',
+      statusLabel: 'Tamat',
     ),
     AnimeItem(
-      id: '42765',
-      title: 'Kimetsu no Yaiba: Infinity Castle',
-      japaneseTitle: '鬼滅の刃 無限城編',
-      rating: 9.1,
-      releaseYear: 2026,
+      id: 'demon-slayer',
+      title: 'Demon Slayer: Kimetsu no Yaiba',
+      japaneseTitle: '鬼滅の刃',
+      rating: 8.9,
+      releaseYear: 2019,
       genres: ['Action', 'Historical', 'Supernatural'],
-      description: 'Pertempuran puncak Korps Pembasmi Iblis di dalam Kastil Tanpa Batas.',
-      posterUrl: 'https://media.kitsu.app/anime/poster_images/42765/large.jpg',
-      backdropUrl: 'https://media.kitsu.app/anime/poster_images/42765/large.jpg',
-      episodeInfo: 'SUB · MOVIE',
-      statusLabel: 'Tayang',
+      description: 'Tanjiro Kamado berjuang membasmi iblis demi mengembalikan adiknya, Nezuko, menjadi manusia.',
+      posterUrl: 'https://media.kitsu.app/anime/poster_images/41370/large.jpg',
+      backdropUrl: 'https://media.kitsu.app/anime/poster_images/41370/large.jpg',
+      episodeInfo: 'SUB · 26 EPS (Tamat)',
+      statusLabel: 'Tamat',
     ),
     AnimeItem(
-      id: '52991',
-      title: 'Sousou no Frieren Season 2',
-      japaneseTitle: '葬送のフリーレン',
-      rating: 9.3,
-      releaseYear: 2026,
-      genres: ['Fantasy', 'Adventure', 'Drama'],
-      description: 'Perjalanan penyihir elf Frieren memahami arti hidup dan waktu manusia.',
-      posterUrl: 'https://avac.moe/img/anime/large/52991.jpg',
-      backdropUrl: 'https://avac.moe/img/anime/large/52991.jpg',
-      episodeInfo: 'SUB · EP 6 (Ongoing)',
-      statusLabel: 'Ongoing',
+      id: 'attack-on-titan',
+      title: 'Attack on Titan',
+      japaneseTitle: '進撃の巨人',
+      rating: 8.8,
+      releaseYear: 2013,
+      genres: ['Action', 'Fantasy', 'Mystery'],
+      description: 'Pertarungan umat manusia melawan para Titan raksasa yang mengancam kepunahan.',
+      posterUrl: 'https://media.kitsu.app/anime/poster_images/7442/large.jpg',
+      backdropUrl: 'https://media.kitsu.app/anime/poster_images/7442/large.jpg',
+      episodeInfo: 'SUB · 25 EPS (Tamat)',
+      statusLabel: 'Tamat',
     ),
     AnimeItem(
-      id: '43806',
-      title: 'Jujutsu Kaisen: Culling Game',
+      id: 'jujutsu-kaisen',
+      title: 'Jujutsu Kaisen',
       japaneseTitle: '呪術廻戦',
       rating: 8.9,
-      releaseYear: 2026,
+      releaseYear: 2020,
       genres: ['Action', 'Supernatural', 'Fantasy'],
-      description: 'Yuji Itadori dan kawan-kawan terjun ke dalam medan Culling Game yang mematikan.',
+      description: 'Yuji Itadori menelan jari kutukan Sukuna dan memasuki dunia pertempuran penyihir Jujutsu.',
       posterUrl: 'https://media.kitsu.app/anime/poster_images/43806/large.jpg',
       backdropUrl: 'https://media.kitsu.app/anime/poster_images/43806/large.jpg',
-      episodeInfo: 'SUB · EP 4 (Ongoing)',
-      statusLabel: 'Ongoing',
-    ),
-    AnimeItem(
-      id: '40321',
-      title: 'Chainsaw Man: Reze Arc',
-      japaneseTitle: 'チェンソーマン レゼ篇',
-      rating: 8.9,
-      releaseYear: 2026,
-      genres: ['Action', 'Supernatural', 'Romance'],
-      description: 'Denji bertemu gadis misterius bernama Reze di tengah malam hujan.',
-      posterUrl: 'https://media.kitsu.app/anime/poster_images/40321/large.jpg',
-      backdropUrl: 'https://media.kitsu.app/anime/poster_images/40321/large.jpg',
-      episodeInfo: 'SUB · MOVIE',
-      statusLabel: 'Tayang',
-    ),
-    AnimeItem(
-      id: '48671',
-      title: 'Kaiju No. 8 Season 2',
-      japaneseTitle: '怪獣8号',
-      rating: 8.5,
-      releaseYear: 2026,
-      genres: ['Action', 'Sci-Fi', 'Military'],
-      description: 'Kafka Hibino bertransformasi menjadi Kaiju dan berjuang di Pasukan Pertahanan.',
-      posterUrl: 'https://media.kitsu.app/anime/48671/poster_image/large-6156a7475d03dbb788ab1a9ce6c7f962.jpeg',
-      backdropUrl: 'https://media.kitsu.app/anime/48671/poster_image/large-6156a7475d03dbb788ab1a9ce6c7f962.jpeg',
-      episodeInfo: 'SUB · EP 5 (Ongoing)',
-      statusLabel: 'Ongoing',
-    ),
-    AnimeItem(
-      id: '41992',
-      title: 'Spy x Family Season 3',
-      japaneseTitle: 'SPY×FAMILY',
-      rating: 8.6,
-      releaseYear: 2026,
-      genres: ['Comedy', 'Action', 'Family'],
-      description: 'Mata-mata Twilight menyamar membentuk keluarga palsu demi misi perdamaian.',
-      posterUrl: 'https://media.kitsu.app/anime/poster_images/41992/large.jpg',
-      backdropUrl: 'https://media.kitsu.app/anime/poster_images/41992/large.jpg',
-      episodeInfo: 'SUB · EP 4 (Ongoing)',
-      statusLabel: 'Ongoing',
-    ),
-    AnimeItem(
-      id: '11469',
-      title: 'Boku no Hero Academia: Final Season',
-      japaneseTitle: '僕のヒーローアカデミア',
-      rating: 8.7,
-      releaseYear: 2026,
-      genres: ['Action', 'Super Power', 'School'],
-      description: 'Pertarungan pamungkas para pahlawan melawan All For One dan Shigaraki.',
-      posterUrl: 'https://media.kitsu.app/anime/poster_images/11469/large.jpg',
-      backdropUrl: 'https://media.kitsu.app/anime/poster_images/11469/large.jpg',
-      episodeInfo: 'SUB · EP 7 (Ongoing)',
-      statusLabel: 'Ongoing',
+      episodeInfo: 'SUB · 24 EPS (Tamat)',
+      statusLabel: 'Tamat',
     ),
     AnimeItem(
       id: 'tokyo-revengers-s3',
@@ -673,22 +612,74 @@ class AnimeApiClient {
       releaseYear: 2023,
       genres: ['Action', 'Drama', 'Delinquents'],
       description: 'Pertarungan besar antara Tokyo Manji Gang dan geng Tenjiku pimpinan Izana Kurokawa.',
-      posterUrl: 'https://avac.moe/img/anime/large/42249.jpg',
-      backdropUrl: 'https://avac.moe/img/anime/large/42249.jpg',
+      posterUrl: 'https://media.kitsu.app/anime/poster_images/47537/large.jpg',
+      backdropUrl: 'https://media.kitsu.app/anime/poster_images/47537/large.jpg',
       episodeInfo: 'SUB · 13 EPS (Tamat)',
       statusLabel: 'Tamat',
     ),
     AnimeItem(
-      id: '7442',
-      title: 'Attack on Titan',
-      japaneseTitle: '進撃の巨人',
-      rating: 8.8,
-      releaseYear: 2026,
-      genres: ['Action', 'Fantasy', 'Mystery'],
-      description: 'Pertarungan umat manusia melawan para Titan raksasa yang mengancam kepunahan.',
-      posterUrl: 'https://media.kitsu.app/anime/poster_images/7442/large.jpg',
-      backdropUrl: 'https://media.kitsu.app/anime/poster_images/7442/large.jpg',
-      episodeInfo: 'SUB · 25 EPS (Tamat)',
+      id: 'chainsaw-man',
+      title: 'Chainsaw Man',
+      japaneseTitle: 'チェンソーマン',
+      rating: 8.7,
+      releaseYear: 2022,
+      genres: ['Action', 'Supernatural', 'Horror'],
+      description: 'Denji membuat kontrak dengan iblis gergaji Pochita dan bangkit sebagai Chainsaw Man.',
+      posterUrl: 'https://media.kitsu.app/anime/poster_images/44081/large.jpg',
+      backdropUrl: 'https://media.kitsu.app/anime/poster_images/44081/large.jpg',
+      episodeInfo: 'SUB · 12 EPS (Tamat)',
+      statusLabel: 'Tamat',
+    ),
+    AnimeItem(
+      id: 'dandadan',
+      title: 'Dan Da Dan',
+      japaneseTitle: 'ダンダダン',
+      rating: 8.7,
+      releaseYear: 2024,
+      genres: ['Action', 'Comedy', 'Sci-Fi'],
+      description: 'Pertarungan heboh alien dan roh kutukan bersama Momo Ayase dan Okarun.',
+      posterUrl: 'https://media.kitsu.app/anime/poster_images/48363/large.jpg',
+      backdropUrl: 'https://media.kitsu.app/anime/poster_images/48363/large.jpg',
+      episodeInfo: 'SUB · 12 EPS (Tamat)',
+      statusLabel: 'Tamat',
+    ),
+    AnimeItem(
+      id: 'spy-x-family',
+      title: 'Spy x Family',
+      japaneseTitle: 'SPY×FAMILY',
+      rating: 8.6,
+      releaseYear: 2022,
+      genres: ['Comedy', 'Action', 'Family'],
+      description: 'Mata-mata Twilight menyamar membentuk keluarga palsu demi misi perdamaian.',
+      posterUrl: 'https://media.kitsu.app/anime/poster_images/41992/large.jpg',
+      backdropUrl: 'https://media.kitsu.app/anime/poster_images/41992/large.jpg',
+      episodeInfo: 'SUB · 12 EPS (Tamat)',
+      statusLabel: 'Tamat',
+    ),
+    AnimeItem(
+      id: 'frieren',
+      title: 'Sousou no Frieren',
+      japaneseTitle: '葬送のフリーレン',
+      rating: 9.3,
+      releaseYear: 2023,
+      genres: ['Fantasy', 'Adventure', 'Drama'],
+      description: 'Perjalanan penyihir elf Frieren memahami arti hidup dan waktu manusia.',
+      posterUrl: 'https://media.kitsu.app/anime/poster_images/46112/large.jpg',
+      backdropUrl: 'https://media.kitsu.app/anime/poster_images/46112/large.jpg',
+      episodeInfo: 'SUB · 5 EPS',
+      statusLabel: 'Tayang',
+    ),
+    AnimeItem(
+      id: 'death-note',
+      title: 'Death Note',
+      japaneseTitle: 'デスノート',
+      rating: 9.0,
+      releaseYear: 2006,
+      genres: ['Mystery', 'Psychological', 'Supernatural'],
+      description: 'Light Yagami menggunakan buku catatan kematian untuk menciptakan dunia baru tanpa kejahatan.',
+      posterUrl: 'https://media.kitsu.app/anime/poster_images/1376/large.jpg',
+      backdropUrl: 'https://media.kitsu.app/anime/poster_images/1376/large.jpg',
+      episodeInfo: 'SUB · 37 EPS (Tamat)',
       statusLabel: 'Tamat',
     ),
   ];

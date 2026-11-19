@@ -26,10 +26,10 @@ void main() {
       expect(find.text('ANIME POPULER'), findsOneWidget);
       expect(find.text('HOT SPOTLIGHT'), findsOneWidget);
 
-      // Metadata for first item (Tokyo Revengers Season 4)
-      expect(find.text('Tokyo Revengers Season 4'), findsOneWidget);
-      expect(find.text('7.8'), findsOneWidget);
-      expect(find.text('2025'), findsOneWidget);
+      // Metadata for first item (Solo Leveling)
+      expect(find.text('Solo Leveling'), findsOneWidget);
+      expect(find.text('8.8'), findsOneWidget);
+      expect(find.text('2024'), findsOneWidget);
       expect(find.text('Action'), findsOneWidget);
       expect(find.byIcon(Icons.star_rounded), findsOneWidget);
     });
@@ -150,21 +150,21 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Tokyo Revengers Season 4'), findsOneWidget);
+      expect(find.text('Solo Leveling'), findsOneWidget);
 
       // Swipe left on PageView to go to next item
       await tester.fling(find.byType(PageView), const Offset(-400, 0), 1000);
       await tester.pumpAndSettle();
 
-      // Second item is Black Clover Season 2
-      expect(find.text('Black Clover Season 2'), findsOneWidget);
+      // Second item is Demon Slayer: Kimetsu no Yaiba
+      expect(find.text('Demon Slayer: Kimetsu no Yaiba'), findsOneWidget);
 
       // Tap "Tonton Sekarang" on second item
       await tester.tap(find.text('Tonton Sekarang'));
       await tester.pumpAndSettle();
 
       expect(watchedItem, isNotNull);
-      expect(watchedItem!.id, 'black-clover-s2');
+      expect(watchedItem!.id, 'demon-slayer');
     });
 
     testWidgets('tapping indicator dot animates to corresponding page', (tester) async {
@@ -182,11 +182,11 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // Tap dot index 2 (Chii Fuyo)
+      // Tap dot index 2 (Attack on Titan)
       await tester.tap(find.byKey(const Key('carousel_dot_2')));
       await tester.pumpAndSettle();
 
-      expect(find.textContaining('Chii Fuyo'), findsOneWidget);
+      expect(find.textContaining('Attack on Titan'), findsOneWidget);
     });
 
     testWidgets('handles empty items list gracefully without crashing', (tester) async {

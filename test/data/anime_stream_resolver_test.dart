@@ -250,7 +250,7 @@ void main() {
       expect(tokyoS4, isEmpty);
 
       final frieren = AnimeStreamResolver.resolveStreamUrl(
-        animeId: 'frieren-s2',
+        animeId: 'frieren',
         animeTitle: 'Sousou no Frieren',
         server: 'Server 1 (Fast HD)',
       );
@@ -289,8 +289,8 @@ void main() {
 
     test('resolves Bleach, Hunter x Hunter, and Fullmetal Alchemist to authentic 23-24m MP4 streams', () {
       final bleach1 = AnimeStreamResolver.resolveStreamUrl(
-        animeId: 'bleach-tybw-part3',
-        animeTitle: 'Bleach: Sennen Kessen-hen Part 3',
+        animeId: 'bleach',
+        animeTitle: 'Bleach',
         server: 'Server 1 (Fast HD)',
         episodeNumber: 1,
       );
@@ -298,8 +298,8 @@ void main() {
       expect(bleach1, contains('Bleach%20S01E01'));
 
       final bleach2 = AnimeStreamResolver.resolveStreamUrl(
-        animeId: 'bleach-tybw-part3',
-        animeTitle: 'Bleach: Sennen Kessen-hen Part 3',
+        animeId: 'bleach',
+        animeTitle: 'Bleach',
         server: 'Server 1 (Fast HD)',
         episodeNumber: 2,
       );
@@ -423,7 +423,7 @@ void main() {
       expect(ddd1, contains('dandadan_S01-E01.mp4'));
 
       final rz1 = AnimeStreamResolver.resolveStreamUrl(
-        animeId: 'rezero-s3',
+        animeId: 'rezero',
         animeTitle: 'Re:Zero',
         server: 'Server 1 (Fast HD)',
         episodeNumber: 1,
@@ -440,7 +440,7 @@ void main() {
       expect(fallback, isNot(contains('sintel')));
       expect(fallback, isNot(contains('oceans')));
       expect(fallback, isNot(contains('BigBuckBunny')));
-      expect(fallback, contains('Cruelty'));
+      expect(fallback, isEmpty);
     });
 
     test('season-specific routing: DandaDan S1 stays S1, S2 routes to S2', () {
@@ -473,7 +473,7 @@ void main() {
       expect(dddS2byId, contains('S02-E01'));
     });
 
-    test('season-specific routing: JJK S3 by id routes to jujutsu-kaisen-s3', () {
+    test('season-specific routing: JJK S3 by id routes to jujutsu-kaisen-s3 and returns empty per atomicity', () {
       final key = AnimeStreamResolver.detectAnimeKey('jujutsu-kaisen-s3', 'Jujutsu Kaisen');
       expect(key, equals('jujutsu-kaisen-s3'));
 
@@ -483,10 +483,10 @@ void main() {
         server: 'Server 1 (Fast HD)',
         episodeNumber: 1,
       );
-      expect(ep1, contains('.mp4'));
+      expect(ep1, isEmpty);
     });
 
-    test('season-specific routing: Solo Leveling S2 by id routes to solo-leveling-s2', () {
+    test('season-specific routing: Solo Leveling S2 by id routes to solo-leveling-s2 and returns empty per atomicity', () {
       final key = AnimeStreamResolver.detectAnimeKey('solo-leveling-s2', 'Solo Leveling');
       expect(key, equals('solo-leveling-s2'));
 
@@ -496,10 +496,10 @@ void main() {
         server: 'Server 1 (Fast HD)',
         episodeNumber: 1,
       );
-      expect(ep1, contains('.mp4'));
+      expect(ep1, isEmpty);
     });
 
-    test('season-specific routing: Bleach TYBW by id routes to bleach-tybw', () {
+    test('season-specific routing: Bleach TYBW by id routes to bleach-tybw and returns empty per atomicity', () {
       final key = AnimeStreamResolver.detectAnimeKey('bleach-tybw-part3', 'Bleach: Thousand Year Blood War');
       expect(key, equals('bleach-tybw'));
 
@@ -509,10 +509,10 @@ void main() {
         server: 'Server 1 (Fast HD)',
         episodeNumber: 1,
       );
-      expect(ep1, contains('Bleach%20S01E01'));
+      expect(ep1, isEmpty);
     });
 
-    test('season-specific routing: Frieren S2 by id routes to frieren-s2', () {
+    test('season-specific routing: Frieren S2 by id routes to frieren-s2 and returns empty per atomicity', () {
       final key = AnimeStreamResolver.detectAnimeKey('frieren-s2', 'Sousou no Frieren');
       expect(key, equals('frieren-s2'));
 
@@ -522,7 +522,7 @@ void main() {
         server: 'Server 1 (Fast HD)',
         episodeNumber: 1,
       );
-      expect(ep1, contains('Frieren'));
+      expect(ep1, isEmpty);
     });
 
     test('season-specific routing: Frieren S1 (no season in title) stays frieren', () {

@@ -74,26 +74,44 @@ class AnimeStreamService {
     }
 
     // Map known API ID aliases to curated details
-    if (cleanId == 'tokyo-revengers-s3' || cleanId == 'tokyo-revengers-tenjiku') {
+    if (cleanId == 'solo-leveling' || cleanId == '46231') {
+      return _curatedDetails['solo-leveling']!;
+    }
+    if (cleanId == 'tokyo-revengers-s3' || cleanId == 'tokyo-revengers-tenjiku' || cleanId == '47537') {
       return _curatedDetails['tokyo-revengers-s3']!;
     }
-    if (cleanId == 'tokyo-revengers-s2' || cleanId == 'tokyo-revengers-seiya') {
+    if (cleanId == 'tokyo-revengers-s2' || cleanId == 'tokyo-revengers-seiya' || cleanId == '45697') {
       return _curatedDetails['tokyo-revengers-s2']!;
     }
-    if (cleanId == '41370' || cleanId == 'kny') {
+    if (cleanId == 'tokyo-revengers' || cleanId == '43321') {
+      return _curatedDetails['tokyo-revengers']!;
+    }
+    if (cleanId == '41370' || cleanId == 'kny' || cleanId == 'demon-slayer') {
       return _curatedDetails['demon-slayer']!;
     }
-    if (cleanId == '7442' || cleanId == 'aot') {
+    if (cleanId == '7442' || cleanId == 'aot' || cleanId == 'attack-on-titan') {
       return _curatedDetails['attack-on-titan']!;
     }
-    if (cleanId == '1376') {
+    if (cleanId == '1376' || cleanId == 'death-note') {
       return _curatedDetails['death-note']!;
     }
-    if (cleanId == '6448' || cleanId == 'hxh') {
+    if (cleanId == '6448' || cleanId == 'hxh' || cleanId == 'hunter-x-hunter') {
       return _curatedDetails['hunter-x-hunter']!;
     }
-    if (cleanId == '3936' || cleanId == 'fma') {
+    if (cleanId == '3936' || cleanId == 'fma' || cleanId == 'fullmetal-alchemist') {
       return _curatedDetails['fullmetal-alchemist']!;
+    }
+    if (cleanId == 'frieren' || cleanId == '46112') {
+      return _curatedDetails['frieren']!;
+    }
+    if (cleanId == 'jujutsu-kaisen' || cleanId == '43806') {
+      return _curatedDetails['jujutsu-kaisen']!;
+    }
+    if (cleanId == 'chainsaw-man' || cleanId == '44081') {
+      return _curatedDetails['chainsaw-man']!;
+    }
+    if (cleanId == 'dandadan' || cleanId == '48363') {
+      return _curatedDetails['dandadan']!;
     }
 
     // Fetch from live API
@@ -118,28 +136,28 @@ class AnimeStreamService {
   }
 
   static final Map<String, AnimeDetail> _curatedDetails = {
-    'solo-leveling-s2': AnimeDetail(
-      id: 'solo-leveling-s2',
-      title: 'Solo Leveling: Arise from the Shadow',
+    'solo-leveling': AnimeDetail(
+      id: 'solo-leveling',
+      title: 'Solo Leveling',
       japaneseTitle: '俺だけレベルアップな件',
       rating: 8.8,
-      releaseYear: 2025,
+      releaseYear: 2024,
       genres: const ['Action', 'Fantasy', 'Supernatural'],
-      synopsis: 'Setelah pertempuran sengit di Pulau Jeju, Sung Jinwoo semakin mendekati kebenaran tentang Monarch dan Rulers. Sebagai Shadow Monarch, kekuatannya kini melampaui batas manusia biasa dalam membela bumi dari kehancuran.',
-      posterUrl: 'https://avac.moe/img/anime/large/58567.jpg',
-      backdropUrl: 'https://avac.moe/img/anime/large/58567.jpg',
-      status: 'Ongoing',
+      synopsis: 'Sung Jinwoo bangkit dari Hunter terlemah menjadi satu-satunya yang dapat naik level tanpa batas dalam membela dunia dari kehancuran.',
+      posterUrl: 'https://media.kitsu.app/anime/poster_images/46231/large.jpg',
+      backdropUrl: 'https://media.kitsu.app/anime/poster_images/46231/large.jpg',
+      status: 'Tamat',
       studio: 'A-1 Pictures',
       totalEpisodes: 12,
       episodes: List.generate(
-        8,
+        12,
         (index) => EpisodeItem(
-          id: 'solo-leveling-s2-eps-${index + 1}',
+          id: 'solo-leveling-eps-${index + 1}',
           episodeNumber: index + 1,
           title: 'Episode ${index + 1} - Kebangkitan Bayangan',
-          releaseDate: '2025-02-${(index + 1) * 7}',
+          releaseDate: '2024-01-${(index + 1).toString().padLeft(2, '0')}',
           streamUrl: AnimeStreamResolver.resolveStreamUrl(
-            animeId: 'solo-leveling-s2',
+            animeId: 'solo-leveling',
             animeTitle: 'Solo Leveling',
             server: 'Server 1 (Fast HD)',
             episodeNumber: index + 1,
@@ -155,8 +173,8 @@ class AnimeStreamService {
       releaseYear: 2023,
       genres: const ['Action', 'Drama', 'Delinquents', 'Supernatural'],
       synopsis: 'Pertarungan sengit antara Tokyo Manji Gang dan geng Tenjiku pimpinan Izana Kurokawa dalam insiden Kanto Incident.',
-      posterUrl: 'https://avac.moe/img/anime/large/42249.jpg',
-      backdropUrl: 'https://avac.moe/img/anime/large/42249.jpg',
+      posterUrl: 'https://media.kitsu.app/anime/poster_images/47537/large.jpg',
+      backdropUrl: 'https://media.kitsu.app/anime/poster_images/47537/large.jpg',
       status: 'Tamat',
       studio: 'LIDENFILMS',
       totalEpisodes: 13,
@@ -321,28 +339,28 @@ class AnimeStreamService {
         ),
       ),
     ),
-    'frieren-s2': AnimeDetail(
-      id: 'frieren-s2',
-      title: 'Sousou no Frieren Season 2',
+    'frieren': AnimeDetail(
+      id: 'frieren',
+      title: 'Sousou no Frieren',
       japaneseTitle: '葬送のフリーレン',
       rating: 9.3,
-      releaseYear: 2025,
+      releaseYear: 2023,
       genres: const ['Fantasy', 'Adventure', 'Drama'],
-      synopsis: 'Setelah lulus ujian penyihir kelas satu, Frieren bersama Fern dan Stark melanjutkan perjalanan mereka menuju wilayah utara demi mencapai Ende, tempat peristirahatan para jiwa.',
-      posterUrl: 'https://avac.moe/img/anime/large/52991.jpg',
-      backdropUrl: 'https://avac.moe/img/anime/large/52991.jpg',
-      status: 'Ongoing',
+      synopsis: 'Perjalanan panjang sang penyihir elf Frieren memahami arti hidup dan waktu manusia setelah mengalahkan raja iblis.',
+      posterUrl: 'https://media.kitsu.app/anime/poster_images/46112/large.jpg',
+      backdropUrl: 'https://media.kitsu.app/anime/poster_images/46112/large.jpg',
+      status: 'Tayang',
       studio: 'Madhouse',
-      totalEpisodes: 24,
+      totalEpisodes: 5,
       episodes: List.generate(
-        6,
+        5,
         (index) => EpisodeItem(
-          id: 'frieren-s2-eps-${index + 1}',
+          id: 'frieren-eps-${index + 1}',
           episodeNumber: index + 1,
-          title: 'Episode ${index + 1} - Perjalanan ke Utara',
-          releaseDate: '2025-01-${(index + 1) * 7}',
+          title: 'Episode ${index + 1} - Perjalanan Elf',
+          releaseDate: '2023-09-${(index + 1) * 7}',
           streamUrl: AnimeStreamResolver.resolveStreamUrl(
-            animeId: 'frieren-s2',
+            animeId: 'frieren',
             animeTitle: 'Sousou no Frieren',
             server: 'Server 1 (Fast HD)',
             episodeNumber: index + 1,
@@ -350,116 +368,145 @@ class AnimeStreamService {
         ),
       ),
     ),
-    'hotaru-no-yomeiri': AnimeDetail(
-      id: 'hotaru-no-yomeiri',
-      title: 'Hotaru no Yomeiri (Firefly Wedding)',
-      japaneseTitle: 'ホタルの嫁入り',
-      rating: 8.2,
-      releaseYear: 2025,
-      genres: const ['Romance', 'Historical', 'Suspense', 'Drama'],
-      synopsis: 'Satoko, seorang putri bangsawan yang hidupnya terancam, mengajukan lamaran pernikahan tak terduga kepada Shinpei, seorang pembunuh bayaran kejam. Dimulailah ikatan cinta berbahaya penuh intrik di era Meiji.',
-      posterUrl: 'https://avac.moe/img/anime/large/63293.jpg',
-      backdropUrl: 'https://avac.moe/img/anime/large/63293.jpg',
-      status: 'Ongoing',
-      studio: 'CloverWorks',
-      totalEpisodes: 12,
+    'jujutsu-kaisen': AnimeDetail(
+      id: 'jujutsu-kaisen',
+      title: 'Jujutsu Kaisen',
+      japaneseTitle: '呪術廻戦',
+      rating: 8.9,
+      releaseYear: 2020,
+      genres: const ['Action', 'Supernatural', 'Fantasy'],
+      synopsis: 'Yuji Itadori menelan jari kutukan Ryomen Sukuna dan memasuki dunia pertempuran penyihir Jujutsu.',
+      posterUrl: 'https://media.kitsu.app/anime/poster_images/43806/large.jpg',
+      backdropUrl: 'https://media.kitsu.app/anime/poster_images/43806/large.jpg',
+      status: 'Tamat',
+      studio: 'MAPPA',
+      totalEpisodes: 24,
       episodes: List.generate(
-        6,
+        24,
         (index) => EpisodeItem(
-          id: 'hotaru-no-yomeiri-eps-${index + 1}',
+          id: 'jujutsu-kaisen-eps-${index + 1}',
           episodeNumber: index + 1,
-          title: 'Episode ${index + 1} - Janji di Balik Bilah',
-          releaseDate: '2025-02-${(index + 1) * 7}',
+          title: 'Episode ${index + 1} Sub Indo',
+          releaseDate: '2020-10-${(index + 1).toString().padLeft(2, '0')}',
           streamUrl: AnimeStreamResolver.resolveStreamUrl(
-            animeId: 'hotaru-no-yomeiri',
-            animeTitle: 'Hotaru no Yomeiri',
+            animeId: 'jujutsu-kaisen',
+            animeTitle: 'Jujutsu Kaisen',
             server: 'Server 1 (Fast HD)',
             episodeNumber: index + 1,
           ),
         ),
       ),
     ),
-    'black-clover-s2': AnimeDetail(
-      id: 'black-clover-s2',
-      title: 'Black Clover Season 2',
-      japaneseTitle: 'ブラッククローバー',
+    'chainsaw-man': AnimeDetail(
+      id: 'chainsaw-man',
+      title: 'Chainsaw Man',
+      japaneseTitle: 'チェンソーマン',
+      rating: 8.7,
+      releaseYear: 2022,
+      genres: const ['Action', 'Supernatural', 'Horror'],
+      synopsis: 'Denji membuat kontrak dengan iblis gergaji Pochita dan bangkit sebagai Chainsaw Man.',
+      posterUrl: 'https://media.kitsu.app/anime/poster_images/44081/large.jpg',
+      backdropUrl: 'https://media.kitsu.app/anime/poster_images/44081/large.jpg',
+      status: 'Tamat',
+      studio: 'MAPPA',
+      totalEpisodes: 12,
+      episodes: List.generate(
+        12,
+        (index) => EpisodeItem(
+          id: 'chainsaw-man-eps-${index + 1}',
+          episodeNumber: index + 1,
+          title: 'Episode ${index + 1} Sub Indo',
+          releaseDate: '2022-10-${(index + 1).toString().padLeft(2, '0')}',
+          streamUrl: AnimeStreamResolver.resolveStreamUrl(
+            animeId: 'chainsaw-man',
+            animeTitle: 'Chainsaw Man',
+            server: 'Server 1 (Fast HD)',
+            episodeNumber: index + 1,
+          ),
+        ),
+      ),
+    ),
+    'dandadan': AnimeDetail(
+      id: 'dandadan',
+      title: 'Dan Da Dan',
+      japaneseTitle: 'ダンダダン',
+      rating: 8.7,
+      releaseYear: 2024,
+      genres: const ['Action', 'Comedy', 'Sci-Fi'],
+      synopsis: 'Pertarungan heboh alien dan roh kutukan bersama Momo Ayase dan Okarun.',
+      posterUrl: 'https://media.kitsu.app/anime/poster_images/48363/large.jpg',
+      backdropUrl: 'https://media.kitsu.app/anime/poster_images/48363/large.jpg',
+      status: 'Tamat',
+      studio: 'Science SARU',
+      totalEpisodes: 12,
+      episodes: List.generate(
+        12,
+        (index) => EpisodeItem(
+          id: 'dandadan-eps-${index + 1}',
+          episodeNumber: index + 1,
+          title: 'Episode ${index + 1} Sub Indo',
+          releaseDate: '2024-10-${(index + 1).toString().padLeft(2, '0')}',
+          streamUrl: AnimeStreamResolver.resolveStreamUrl(
+            animeId: 'dandadan',
+            animeTitle: 'Dan Da Dan',
+            server: 'Server 1 (Fast HD)',
+            episodeNumber: index + 1,
+          ),
+        ),
+      ),
+    ),
+    'tokyo-revengers': AnimeDetail(
+      id: 'tokyo-revengers',
+      title: 'Tokyo Revengers',
+      japaneseTitle: '東京リベンジャーズ',
+      rating: 8.1,
+      releaseYear: 2021,
+      genres: const ['Action', 'Drama', 'Delinquents', 'Supernatural'],
+      synopsis: 'Takemichi Hanagaki melompati waktu 12 tahun ke masa lalu untuk menyelamatkan Hinata Tachibana.',
+      posterUrl: 'https://media.kitsu.app/anime/poster_images/43321/large.jpg',
+      backdropUrl: 'https://media.kitsu.app/anime/poster_images/43321/large.jpg',
+      status: 'Tamat',
+      studio: 'LIDENFILMS',
+      totalEpisodes: 12,
+      episodes: List.generate(
+        12,
+        (index) => EpisodeItem(
+          id: 'tokyo-revengers-eps-${index + 1}',
+          episodeNumber: index + 1,
+          title: 'Episode ${index + 1} Sub Indo',
+          releaseDate: '2021-04-${(index + 1).toString().padLeft(2, '0')}',
+          streamUrl: AnimeStreamResolver.resolveStreamUrl(
+            animeId: 'tokyo-revengers',
+            animeTitle: 'Tokyo Revengers',
+            server: 'Server 1 (Fast HD)',
+            episodeNumber: index + 1,
+          ),
+        ),
+      ),
+    ),
+    'tokyo-revengers-s2': AnimeDetail(
+      id: 'tokyo-revengers-s2',
+      title: 'Tokyo Revengers: Christmas Showdown',
+      japaneseTitle: '東京リベンジャーズ 聖夜決戦編',
       rating: 8.0,
-      releaseYear: 2025,
-      genres: const ['Action', 'Fantasy', 'Magic', 'Shounen'],
-      synopsis: 'Asta and the Black Bulls push past their limits as deeper conspiracies and formidable adversaries threaten the peace of the Clover Kingdom.',
-      posterUrl: 'https://avac.moe/img/anime/large/34572.jpg',
-      backdropUrl: 'https://avac.moe/img/anime/large/34572.jpg',
-      status: 'Ongoing',
-      studio: 'Studio Pierrot',
-      totalEpisodes: 12,
+      releaseYear: 2023,
+      genres: const ['Action', 'Drama', 'Delinquents', 'Supernatural'],
+      synopsis: 'Konflik takdir antara Takemichi, geng Black Dragon, dan Shiba bersaudara di malam Natal.',
+      posterUrl: 'https://media.kitsu.app/anime/poster_images/45697/large.jpg',
+      backdropUrl: 'https://media.kitsu.app/anime/poster_images/45697/large.jpg',
+      status: 'Tamat',
+      studio: 'LIDENFILMS',
+      totalEpisodes: 13,
       episodes: List.generate(
-        6,
+        13,
         (index) => EpisodeItem(
-          id: 'black-clover-s2-eps-${index + 1}',
+          id: 'tokyo-revengers-s2-eps-${index + 1}',
           episodeNumber: index + 1,
-          title: 'Episode ${index + 1} - Melampaui Batas',
-          releaseDate: '2025-01-${(index + 1) * 7}',
+          title: 'Episode ${index + 1} - Perang Suci Natal',
+          releaseDate: '2023-01-${(index + 1).toString().padLeft(2, '0')}',
           streamUrl: AnimeStreamResolver.resolveStreamUrl(
-            animeId: 'black-clover-s2',
-            animeTitle: 'Black Clover',
-            server: 'Server 1 (Fast HD)',
-            episodeNumber: index + 1,
-          ),
-        ),
-      ),
-    ),
-    'chii-fuyo': AnimeDetail(
-      id: 'chii-fuyo',
-      title: 'Chii Fuyo (Tsuihou Sareta Cheat Fuyo Majutsushi)',
-      japaneseTitle: '追放されたチート付与魔術師は気ままなセカンドライフを謳歌する',
-      rating: 7.6,
-      releaseYear: 2025,
-      genres: const ['Fantasy', 'Action', 'Adventure', 'Comedy'],
-      synopsis: 'Unfairly expelled from his adventurer party after secretly bestowing massive buffs on them, enchanter Rain starts an unfettered second life with true allies.',
-      posterUrl: 'https://avac.moe/img/anime/large/63431.jpg',
-      backdropUrl: 'https://avac.moe/img/anime/large/63431.jpg',
-      status: 'Ongoing',
-      studio: 'Drive',
-      totalEpisodes: 12,
-      episodes: List.generate(
-        6,
-        (index) => EpisodeItem(
-          id: 'chii-fuyo-eps-${index + 1}',
-          episodeNumber: index + 1,
-          title: 'Episode ${index + 1} - Kehidupan Baru Sang Penyihir Buff',
-          releaseDate: '2025-01-${(index + 1) * 7}',
-          streamUrl: AnimeStreamResolver.resolveStreamUrl(
-            animeId: 'chii-fuyo',
-            animeTitle: 'Chii Fuyo',
-            server: 'Server 1 (Fast HD)',
-            episodeNumber: index + 1,
-          ),
-        ),
-      ),
-    ),
-    'tensei-juukishi': AnimeDetail(
-      id: 'tensei-juukishi',
-      title: 'Tsuihou sareta Tensei juukishi wa game chishiki de musou suru',
-      japaneseTitle: '追放された転生重騎士はゲーム知識で無双する',
-      rating: 7.7,
-      releaseYear: 2025,
-      genres: const ['Fantasy', 'Action', 'Isekai', 'Strategy'],
-      synopsis: 'Reborn as Elma and banished by his aristocratic family for acquiring the "incompetent" Heavy Knight class, he leverages meta game knowledge to prove the class is invincible.',
-      posterUrl: 'https://avac.moe/img/anime/large/59741.jpg',
-      backdropUrl: 'https://avac.moe/img/anime/large/59741.jpg',
-      status: 'Ongoing',
-      studio: 'Felix Film',
-      totalEpisodes: 12,
-      episodes: List.generate(
-        6,
-        (index) => EpisodeItem(
-          id: 'tensei-juukishi-eps-${index + 1}',
-          episodeNumber: index + 1,
-          title: 'Episode ${index + 1} - Rahasia Heavy Knight',
-          releaseDate: '2025-01-${(index + 1) * 7}',
-          streamUrl: AnimeStreamResolver.resolveStreamUrl(
-            animeId: 'tensei-juukishi',
-            animeTitle: 'Tensei juukishi',
+            animeId: 'tokyo-revengers-s2',
+            animeTitle: 'Tokyo Revengers Season 2',
             server: 'Server 1 (Fast HD)',
             episodeNumber: index + 1,
           ),
