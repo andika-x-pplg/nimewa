@@ -260,31 +260,148 @@ void main() {
       expect(ep12, isNot(equals(ep1)));
     });
 
-    test('resolves Bleach, Hunter x Hunter, and Fullmetal Alchemist to authentic MP4 streams', () {
-      final bleach = AnimeStreamResolver.resolveStreamUrl(
+    test('resolves Bleach, Hunter x Hunter, and Fullmetal Alchemist to authentic 23-24m MP4 streams', () {
+      final bleach1 = AnimeStreamResolver.resolveStreamUrl(
         animeId: 'bleach-tybw-part3',
         animeTitle: 'Bleach: Sennen Kessen-hen Part 3',
         server: 'Server 1 (Fast HD)',
         episodeNumber: 1,
       );
-      expect(bleach, contains('.mp4'));
-      expect(bleach, contains('getvid'));
+      expect(bleach1, contains('.mp4'));
+      expect(bleach1, contains('Bleach%20S01E01'));
 
-      final hxh = AnimeStreamResolver.resolveStreamUrl(
+      final bleach2 = AnimeStreamResolver.resolveStreamUrl(
+        animeId: 'bleach-tybw-part3',
+        animeTitle: 'Bleach: Sennen Kessen-hen Part 3',
+        server: 'Server 1 (Fast HD)',
+        episodeNumber: 2,
+      );
+      expect(bleach2, contains('Bleach%20S01E02'));
+      expect(bleach2, isNot(equals(bleach1)));
+
+      final hxh1 = AnimeStreamResolver.resolveStreamUrl(
         animeId: 'hunter-x-hunter',
         animeTitle: 'Hunter x Hunter',
         server: 'Server 1 (Fast HD)',
+        episodeNumber: 1,
       );
-      expect(hxh, contains('turner_video_6095'));
-      expect(hxh, contains('.mp4'));
+      expect(hxh1, contains('hxh11'));
+      expect(hxh1, contains('001.ia.mp4'));
 
-      final fmab = AnimeStreamResolver.resolveStreamUrl(
+      final hxh2 = AnimeStreamResolver.resolveStreamUrl(
+        animeId: 'hunter-x-hunter',
+        animeTitle: 'Hunter x Hunter',
+        server: 'Server 1 (Fast HD)',
+        episodeNumber: 2,
+      );
+      expect(hxh2, contains('002.ia.mp4'));
+      expect(hxh2, isNot(equals(hxh1)));
+
+      final fmab1 = AnimeStreamResolver.resolveStreamUrl(
         animeId: 'fullmetal-alchemist',
         animeTitle: 'Fullmetal Alchemist: Brotherhood',
         server: 'Server 1 (Fast HD)',
+        episodeNumber: 1,
       );
-      expect(fmab, contains('turner_video_134430'));
-      expect(fmab, contains('.mp4'));
+      expect(fmab1, contains('Fullmetal%20Alchemist%20Brotherhood%20S01E01'));
+      expect(fmab1, contains('.mp4'));
+
+      final fmab2 = AnimeStreamResolver.resolveStreamUrl(
+        animeId: 'fullmetal-alchemist',
+        animeTitle: 'Fullmetal Alchemist: Brotherhood',
+        server: 'Server 1 (Fast HD)',
+        episodeNumber: 2,
+      );
+      expect(fmab2, contains('Fullmetal%20Alchemist%20Brotherhood%20S01E02'));
+      expect(fmab2, isNot(equals(fmab1)));
+    });
+
+    test('resolves full-length anime movies with dedicated authentic feature streams', () {
+      final jjk0 = AnimeStreamResolver.resolveStreamUrl(
+        animeId: 'jujutsu-kaisen-0',
+        animeTitle: 'Jujutsu Kaisen 0 Movie',
+        server: 'Server 1 (Fast HD)',
+      );
+      expect(jjk0, contains('Jujustu%20Kaisen%200'));
+      expect(jjk0, contains('.mp4'));
+
+      final yourName = AnimeStreamResolver.resolveStreamUrl(
+        animeId: 'your-name',
+        animeTitle: 'Kimi no Na wa. (Your Name)',
+        server: 'Server 1 (Fast HD)',
+      );
+      expect(yourName, contains('Your.Name'));
+      expect(yourName, contains('.mp4'));
+
+      final csmMovie = AnimeStreamResolver.resolveStreamUrl(
+        animeId: 'chainsaw-man-movie',
+        animeTitle: 'Chainsaw Man: Reze Arc',
+        server: 'Server 1 (Fast HD)',
+      );
+      expect(csmMovie, contains('ssstwitter.com_1763419408768.mp4'));
+
+      final knyMovie = AnimeStreamResolver.resolveStreamUrl(
+        animeId: 'kimetsu-no-yaiba-infinity',
+        animeTitle: 'Kimetsu no Yaiba: Infinity Castle',
+        server: 'Server 1 (Fast HD)',
+      );
+      expect(knyMovie, contains('Rengoku%20Kyojurou'));
+
+      final haikyuuMovie = AnimeStreamResolver.resolveStreamUrl(
+        animeId: 'haikyuu-movie',
+        animeTitle: 'Haikyuu!! The Dumpster Battle',
+        server: 'Server 1 (Fast HD)',
+      );
+      expect(haikyuuMovie, contains('Dumpster%20Battle'));
+
+      final gintama = AnimeStreamResolver.resolveStreamUrl(
+        animeId: 'gintama-final',
+        animeTitle: 'Gintama: The Final',
+        server: 'Server 1 (Fast HD)',
+      );
+      expect(gintama, contains('Gintama%20-%20The%20FINAL.mp4'));
+
+      final silentVoice = AnimeStreamResolver.resolveStreamUrl(
+        animeId: 'silent-voice',
+        animeTitle: 'A Silent Voice',
+        server: 'Server 1 (Fast HD)',
+      );
+      expect(silentVoice, contains('Silent%20Voice'));
+    });
+
+    test('resolves Steins;Gate, Dan Da Dan, and Re:Zero sequential episodes', () {
+      final sg1 = AnimeStreamResolver.resolveStreamUrl(
+        animeId: 'steins-gate',
+        animeTitle: 'Steins;Gate',
+        server: 'Server 1 (Fast HD)',
+        episodeNumber: 1,
+      );
+      expect(sg1, contains('Steins%3BGate%20-%2001.mp4'));
+
+      final sg2 = AnimeStreamResolver.resolveStreamUrl(
+        animeId: 'steins-gate',
+        animeTitle: 'Steins;Gate',
+        server: 'Server 1 (Fast HD)',
+        episodeNumber: 2,
+      );
+      expect(sg2, contains('Steins%3BGate%20-%2002.mp4'));
+      expect(sg2, isNot(equals(sg1)));
+
+      final ddd1 = AnimeStreamResolver.resolveStreamUrl(
+        animeId: 'dandadan',
+        animeTitle: 'Dandadan',
+        server: 'Server 1 (Fast HD)',
+        episodeNumber: 1,
+      );
+      expect(ddd1, contains('dandadan_S01-E01.mp4'));
+
+      final rz1 = AnimeStreamResolver.resolveStreamUrl(
+        animeId: 'rezero-s3',
+        animeTitle: 'Re:Zero',
+        server: 'Server 1 (Fast HD)',
+        episodeNumber: 1,
+      );
+      expect(rz1, contains('ReZeroEnglishDubSeason1Episode1.ia.mp4'));
     });
 
     test('never returns generic dummy 3D trailers for unknown titles', () {

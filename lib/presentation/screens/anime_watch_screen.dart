@@ -220,7 +220,11 @@ class _AnimeWatchScreenState extends State<AnimeWatchScreen> {
         _videoController!.value.duration > Duration.zero) {
       return _videoController!.value.duration;
     }
-    return _totalDuration;
+    final isMovie = widget.anime.totalEpisodes == 1 &&
+        (widget.anime.status == 'Tayang' ||
+            widget.anime.title.toLowerCase().contains('movie') ||
+            widget.initialEpisode.title.toLowerCase().contains('movie'));
+    return isMovie ? const Duration(minutes: 105) : _totalDuration;
   }
 
   void _seekRelative(int seconds) {

@@ -31,11 +31,19 @@ class AnimeSubtitleService {
 
   static List<SubtitleCue> _getDefaultCuesForEpisode(String animeKey, int episodeNumber) {
     final title = _getAnimeDisplayName(animeKey);
+    final isMovie = animeKey.contains('movie') ||
+        animeKey == 'jujutsu-kaisen-0' ||
+        animeKey == 'your-name' ||
+        animeKey == 'silent-voice' ||
+        animeKey == 'tokyo-ghoul';
+    final headerText = isMovie
+        ? '[Sub Indo] $title - Full Movie'
+        : '[Sub Indo] $title Season 1 - Episode $episodeNumber';
     return [
       SubtitleCue(
         start: const Duration(seconds: 0),
         end: const Duration(seconds: 6),
-        text: '[Sub Indo] $title Season 1 - Episode $episodeNumber',
+        text: headerText,
       ),
       SubtitleCue(
         start: const Duration(seconds: 6),
@@ -82,6 +90,30 @@ class AnimeSubtitleService {
         return 'Hunter x Hunter';
       case 'fullmetal-alchemist':
         return 'Fullmetal Alchemist: Brotherhood';
+      case 'demon-slayer-movie':
+        return 'Kimetsu no Yaiba: Infinity Castle / Mugen Train';
+      case 'chainsaw-man-movie':
+        return 'Chainsaw Man: Reze Arc';
+      case 'jujutsu-kaisen-0':
+        return 'Jujutsu Kaisen 0';
+      case 'your-name':
+        return 'Kimi no Na wa. (Your Name)';
+      case 'haikyuu-movie':
+        return 'Haikyuu!! The Dumpster Battle';
+      case 'gintama-movie':
+        return 'Gintama: The Final';
+      case 'silent-voice':
+        return 'Koe no Katachi (A Silent Voice)';
+      case 'tokyo-ghoul':
+        return 'Tokyo Ghoul';
+      case 'steins-gate':
+        return 'Steins;Gate';
+      case 'dandadan':
+        return 'Dandadan';
+      case 'rezero':
+        return 'Re:Zero kara Hajimeru Isekai Seikatsu';
+      case 'shigatsu-wa-kimi':
+        return 'Shigatsu wa Kimi no Uso';
       default:
         return 'Anime';
     }

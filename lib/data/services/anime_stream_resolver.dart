@@ -28,6 +28,104 @@ class AnimeStreamResolver {
   static String detectAnimeKey(String id, String title) {
     final combined = '${id.toLowerCase()} ${title.toLowerCase()}';
 
+    // 1. Movies (Priority matching to avoid general franchise collision)
+    // Jujutsu Kaisen 0 Movie
+    if (combined.contains('jujutsu kaisen 0') ||
+        combined.contains('jjk 0') ||
+        id == 'jujutsu-kaisen-0') {
+      return 'jujutsu-kaisen-0';
+    }
+
+    // Your Name / Kimi no Na wa Movie
+    if (combined.contains('your name') ||
+        combined.contains('kimi no na wa') ||
+        combined.contains('君の名は') ||
+        id == 'your-name' ||
+        id == 'kimi-no-na-wa') {
+      return 'your-name';
+    }
+
+    // A Silent Voice / Koe no Katachi Movie
+    if (combined.contains('silent voice') ||
+        combined.contains('koe no katachi') ||
+        combined.contains('聲の形') ||
+        id == 'silent-voice' ||
+        id == 'koe-no-katachi') {
+      return 'silent-voice';
+    }
+
+    // Gintama The Final Movie
+    if (combined.contains('gintama') ||
+        combined.contains('銀魂') ||
+        id == 'gintama-final' ||
+        id == 'gintama-movie') {
+      return 'gintama-movie';
+    }
+
+    // Haikyuu Dumpster Battle Movie
+    if (combined.contains('dumpster') ||
+        combined.contains('haikyuu') ||
+        combined.contains('haikyu') ||
+        combined.contains('ハイキュー') ||
+        id == 'haikyuu' ||
+        id == 'haikyuu-movie') {
+      return 'haikyuu-movie';
+    }
+
+    // Chainsaw Man: Reze Arc Movie
+    if ((combined.contains('chainsaw') || id == 'chainsaw-man-movie') &&
+        (combined.contains('reze') || combined.contains('movie') || combined.contains('film'))) {
+      return 'chainsaw-man-movie';
+    }
+
+    // Kimetsu no Yaiba: Infinity Castle / Mugen Train Movie
+    if ((combined.contains('demon slayer') || combined.contains('kimetsu') || id == 'kimetsu-no-yaiba-infinity') &&
+        (combined.contains('infinity') || combined.contains('mugen') || combined.contains('movie') || combined.contains('film'))) {
+      return 'demon-slayer-movie';
+    }
+
+    // Tokyo Ghoul
+    if (combined.contains('tokyo ghoul') ||
+        combined.contains('東京喰種') ||
+        combined.contains('kaneki') ||
+        id == 'tokyo-ghoul') {
+      return 'tokyo-ghoul';
+    }
+
+    // Steins;Gate
+    if (combined.contains('steins') ||
+        combined.contains('okabe') ||
+        id == 'steins-gate') {
+      return 'steins-gate';
+    }
+
+    // Dan Da Dan
+    if (combined.contains('dandadan') ||
+        combined.contains('dan da dan') ||
+        combined.contains('ダンダダン') ||
+        id == 'dandadan') {
+      return 'dandadan';
+    }
+
+    // Re:Zero
+    if (combined.contains('re:zero') ||
+        combined.contains('rezero') ||
+        combined.contains('rem') ||
+        combined.contains('emilia') ||
+        id == 'rezero-s3' ||
+        id == 'rezero') {
+      return 'rezero';
+    }
+
+    // Shigatsu wa Kimi no Uso (Your Lie in April)
+    if (combined.contains('shigatsu') ||
+        combined.contains('your lie in april') ||
+        combined.contains('kimi no uso') ||
+        id == 'shigatsu-wa-kimi') {
+      return 'shigatsu-wa-kimi';
+    }
+
+    // 2. Canonical TV Series
     // Demon Slayer / Kimetsu no Yaiba
     if (combined.contains('demon slayer') ||
         combined.contains('kimetsu') ||
@@ -199,7 +297,7 @@ class AnimeStreamResolver {
     return 'demon-slayer';
   }
 
-  // --- Demon Slayer Season 1 (26 Episodes) ---
+  // --- Demon Slayer Season 1 (26 Episodes, ~24m each) ---
   static const List<String> _knyMobileFiles = [
     'S01/Demon Slayer Kimetsu no Yaiba - S01E01 - Grausamkeit - mobile.mp4',
     'S01/Demon Slayer Kimetsu no Yaiba - S01E02 - Lehrmeister Urokodaki Sakonji - mobile.mp4',
@@ -246,7 +344,14 @@ class AnimeStreamResolver {
     });
   }
 
-  // --- Attack on Titan Season 1 (25 Episodes) ---
+  // --- Demon Slayer Movie / Mugen Train (~26m Feature) ---
+  static List<_AnimeStreamEntry> _buildKnyMovie() {
+    const url =
+        'https://archive.org/download/anicolldemonslayerkimetsunoyaibadl19241080bray_puddingS0203.Gemischt/S02/Demon%20Slayer%20Kimetsu%20no%20Yaiba%20-%20S02E01%20-%20Flammens%C3%A4ule%20Rengoku%20Kyojurou%20-%20mobile.mp4';
+    return [const _AnimeStreamEntry(server1Url: url, server3Url: url)];
+  }
+
+  // --- Attack on Titan Season 1 (25 Episodes, ~24m each) ---
   static List<_AnimeStreamEntry> _buildAotSeason1() {
     return List.generate(25, (index) {
       final epNum = index + 1;
@@ -257,7 +362,7 @@ class AnimeStreamResolver {
     });
   }
 
-  // --- Jujutsu Kaisen Season 1 (24 Episodes) ---
+  // --- Jujutsu Kaisen Season 1 (24 Episodes, ~24m each) ---
   static List<_AnimeStreamEntry> _buildJjkSeason1() {
     return List.generate(24, (index) {
       final epNum = index + 1;
@@ -268,7 +373,14 @@ class AnimeStreamResolver {
     });
   }
 
-  // --- Death Note Season 1 (37 Episodes) ---
+  // --- Jujutsu Kaisen 0 Movie (104 Minutes) ---
+  static List<_AnimeStreamEntry> _buildJjk0() {
+    const url =
+        'https://archive.org/download/jujustu-kaisen-0-subbed/Jujustu%20Kaisen%200%20%28Subbed%29.mp4';
+    return [const _AnimeStreamEntry(server1Url: url, server3Url: url)];
+  }
+
+  // --- Death Note Season 1 (37 Episodes, ~23m each) ---
   static const List<String> _deathNoteTitles = [
     'E01 - Rebirth',
     'E02 - Confrontation',
@@ -318,7 +430,7 @@ class AnimeStreamResolver {
     }).toList();
   }
 
-  // --- Tokyo Revengers Season 1 (12 Episodes) ---
+  // --- Tokyo Revengers Season 1 (12 Episodes, ~24m each) ---
   static List<_AnimeStreamEntry> _buildTokyoRevengersSeason1() {
     return List.generate(12, (index) {
       final epNum = index + 1;
@@ -329,7 +441,7 @@ class AnimeStreamResolver {
     });
   }
 
-  // --- Solo Leveling Season 1 (12 Episodes) ---
+  // --- Solo Leveling Season 1 (12 Episodes, ~24m each) ---
   static List<_AnimeStreamEntry> _buildSoloLevelingSeason1() {
     return List.generate(12, (index) {
       final epNum = index + 1;
@@ -343,7 +455,7 @@ class AnimeStreamResolver {
     });
   }
 
-  // --- Boku no Hero Academia Season 1 (13 Episodes) ---
+  // --- Boku no Hero Academia Season 1 (13 Episodes, ~24m each) ---
   static List<_AnimeStreamEntry> _buildMhaSeason1() {
     return List.generate(13, (index) {
       final epNum = index + 1;
@@ -355,7 +467,7 @@ class AnimeStreamResolver {
     });
   }
 
-  // --- Chainsaw Man Season 1 (12 Episodes) ---
+  // --- Chainsaw Man Season 1 (12 Episodes, ~24m each) ---
   static const Map<int, String> _csmHashes = {
     1: '62A0D357',
     2: 'A25323AA',
@@ -382,7 +494,14 @@ class AnimeStreamResolver {
     });
   }
 
-  // --- Naruto Season 1 (25 Episodes) ---
+  // --- Chainsaw Man: Reze Arc Movie (94 Minutes) ---
+  static List<_AnimeStreamEntry> _buildCsmMovie() {
+    const url =
+        'https://archive.org/download/ssstwitter.com_1763419408768/ssstwitter.com_1763419408768.mp4';
+    return [const _AnimeStreamEntry(server1Url: url, server3Url: url)];
+  }
+
+  // --- Naruto Season 1 (25 Episodes, ~23m each) ---
   static List<_AnimeStreamEntry> _buildNarutoSeason1() {
     return List.generate(25, (index) {
       final epNum = index + 1;
@@ -405,7 +524,7 @@ class AnimeStreamResolver {
     });
   }
 
-  // --- One Piece Season 1 (East Blue Saga, 25 Episodes) ---
+  // --- One Piece Season 1 (East Blue Saga, 25 Episodes, ~24m each) ---
   static List<_AnimeStreamEntry> _buildOnePieceSeason1() {
     return List.generate(25, (index) {
       final epNum = index + 1;
@@ -424,7 +543,7 @@ class AnimeStreamResolver {
     });
   }
 
-  // --- Spy x Family Season 1 (12 Episodes) ---
+  // --- Spy x Family Season 1 (12 Episodes, ~24m each) ---
   static const List<String> _spyFamilyFiles = [
     'Spy.x.Family.2022.DL.1080p.BluRay_WebHD/S01_ABJ/SPY x FAMILY - S01E01 - Operation Strix .ia.mp4',
     'Spy.x.Family.2022.DL.1080p.BluRay_WebHD/S01_ABJ/SPY x FAMILY - S01E02 - Eine Frau muss her .ia.mp4',
@@ -453,7 +572,7 @@ class AnimeStreamResolver {
     });
   }
 
-  // --- Sousou no Frieren Season 1 (5 Episodes) ---
+  // --- Sousou no Frieren Season 1 (5 Episodes, ~24m each) ---
   static List<_AnimeStreamEntry> _buildFrierenSeason1() {
     return List.generate(5, (index) {
       final epNum = index + 1;
@@ -464,52 +583,218 @@ class AnimeStreamResolver {
     });
   }
 
-  // --- Bleach Season 1 (24 Episodes) ---
-  static List<_AnimeStreamEntry> _buildBleach() {
-    const ep1Url = 'https://archive.org/download/getvid-9_202404/getvid%20%289%29.mp4';
-    const ep2Url =
-        'https://archive.org/download/bleach-soul-society-arc-episode-1/Bleach_%20Soul%20Society%20Arc%20-%20Episode%201.mp4';
-    const ep3Url =
-        'https://archive.org/download/bleach-agent-shinigami-arc-episode-3/Bleach_%20Agent%20Shinigami%20Arc%20-%20Episode%203.mp4';
-    const ep4Url =
-        'https://archive.org/download/bleach-agent-shinigami-arc-episode-4/Bleach_%20Agent%20Shinigami%20Arc%20-%20Episode%204.mp4';
+  // --- Bleach Season 1 (24 Episodes, ~23m each, Claro Video Pack) ---
+  static const List<String> _bleachFiles = [
+    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E01 The Day I Became a Shinigami.mp4',
+    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E02 A Shinigami`s Work.mp4',
+    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E03 The Older Brother`s Wish, the Younger Sister`s Wish.mp4',
+    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E04 Cursed Parakeet.mp4',
+    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E05 Beat the Invisible Enemy!.mp4',
+    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E06 Fight to the Death! Ichigo vs.mp4',
+    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E07 Greetings from a Stuffed Lion.mp4',
+    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E08 June 17, Memories in the Rain.mp4',
+    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E09 Unbeatable Enemy.mp4',
+    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E10 Assault on Trip at Sacred Ground!.mp4',
+    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E11 The Legendary Quincy.mp4',
+    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E12 A Gentle Right Arm.mp4',
+    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E13 Flower and Hollow.mp4',
+    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E14 Back to Back, a Fight to the Death!.mp4',
+    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E15 Kon`s Great Plan.mp4',
+    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E16 The Encounter, Abarai Renji!.mp4',
+    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E17 Ichigo Dies!.mp4',
+    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E18 Reclaim! The Power of the Shinigami!.mp4',
+    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E19 Ichigo Becomes a Hollow!.mp4',
+    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E20 Ichimaru Gin`s Shadow.mp4',
+    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E21 Enter! The World of the Shinigami.mp4',
+    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E22 The Man who Hates Shinigami.mp4',
+    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E23 14 Days Before Rukia`s Execution.mp4',
+    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E24 Assemble! The 13 Divisions.mp4',
+  ];
 
-    return List.generate(24, (index) {
-      String stream;
-      if (index == 0) {
-        stream = ep1Url;
-      } else if (index == 1) {
-        stream = ep2Url;
-      } else if (index == 2) {
-        stream = ep3Url;
-      } else {
-        stream = ep4Url;
-      }
-      return _AnimeStreamEntry(server1Url: stream, server3Url: stream);
+  static List<_AnimeStreamEntry> _buildBleach() {
+    return _bleachFiles.map((file) {
+      final encoded = Uri.encodeComponent(file).replaceAll('%2F', '/');
+      final url = 'https://archive.org/download/claro-video-anime-series-pack-web-dl/$encoded';
+      return _AnimeStreamEntry(server1Url: url, server3Url: url);
+    }).toList();
+  }
+
+  // --- Hunter x Hunter 2011 (148 Episodes, ~23.4m each, hxh11 collection) ---
+  static List<_AnimeStreamEntry> _buildHxh() {
+    return List.generate(148, (index) {
+      final epNum = index + 1;
+      final pad3 = epNum.toString().padLeft(3, '0');
+      final s1 = 'https://archive.org/download/hxh11/$pad3.ia.mp4';
+      final s3 = 'https://archive.org/download/hxh11/$pad3.mp4';
+      return _AnimeStreamEntry(server1Url: s1, server3Url: s3);
     });
   }
 
-  // --- Hunter x Hunter (12 Episodes) ---
-  static List<_AnimeStreamEntry> _buildHxh() {
-    const url = 'https://archive.org/download/turner_video_6095/6095.mp4';
-    return List.generate(12, (index) => const _AnimeStreamEntry(server1Url: url, server3Url: url));
+  // --- Fullmetal Alchemist: Brotherhood (64 Episodes, ~24.3m each, Claro Video Pack) ---
+  static const List<String> _fmabFiles = [
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E01 Fullmetal Alchemist.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E02 The First Day.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E03 City of Heresy.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E04 An Alchemist`s Anguish.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E05 Rain of Sorrows.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E06 Road of Hope.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E07 Hidden Truths.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E08 The Fifth Laboratory.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E09 Created Feelings.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E10 Separate Destinations.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E11 Miracle at Rush Valley.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E12 One Is All, All Is One.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E13 Beasts of Dublith.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E14 Those Who Lurk Underground.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E15 Envoy from the East.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E16 Footsteps of a Comrade-in-Arms.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E17 Cold Flame.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E18 The Arrogant Palm of a Small Human.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E19 Death of the Undying.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E20 Father Before the Grave.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E21 Advance of the Fool.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E22 Backs in the Distance.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E23 Girl on the Battlefield.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E24 Inside the Belly.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E25 Doorway of Darkness.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E26 Reunion.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E27 Interlude Party.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E28 Father.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E29 Struggle of the Fool.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E30 The Ishvalan War of Extermination.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E31 The 520 Cenz Promise.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E32 The Führer`s Son.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E33 The Northern Wall of Briggs.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E34 Ice Queen.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E35 The Shape of This Country.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E36 Family Portrait.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E37 The First Homunculus.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E38 Conflict at Baschool.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E39 Daydream.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E40 Homunculus (The Dwarf in the Flask).mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E41 The Abyss.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E42 Signs of a Counteroffensive.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E43 Bite of the Ant.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E44 Revving at Full Throttle.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E45 The Promised Day.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E46 Looming Shadows.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E47 Emissary of Darkness.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E48 The Oath in the Tunnel.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E49 Filial Affection.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E50 Upheaval in Central.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E51 The Immortal Legion.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E52 Combined Strength.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E53 Flame of Vengeance.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E54 Beyond the Inferno.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E55 The Adults` Way of Life.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E56 The Return of the Führer.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E57 Eternal Leave.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E58 Sacrifices.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E59 Lost Light.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E60 Eye of Heaven, Gateway of Earth.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E61 He Who Would Swallow God.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E62 A Fierce Counterattack.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E63 The Other Side of the Gateway.mp4',
+    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E64 Journey`s End.mp4',
+  ];
+
+  static List<_AnimeStreamEntry> _buildFmab() {
+    return _fmabFiles.map((file) {
+      final encoded = Uri.encodeComponent(file).replaceAll('%2F', '/');
+      final url = 'https://archive.org/download/claro-video-anime-series-pack-web-dl/$encoded';
+      return _AnimeStreamEntry(server1Url: url, server3Url: url);
+    }).toList();
   }
 
-  // --- Fullmetal Alchemist (12 Episodes) ---
-  static List<_AnimeStreamEntry> _buildFmab() {
-    const url = 'https://archive.org/download/turner_video_134430/134430.mp4';
-    return List.generate(12, (index) => const _AnimeStreamEntry(server1Url: url, server3Url: url));
+  // --- Steins;Gate (24 Episodes, ~24m each, Anime Time) ---
+  static List<_AnimeStreamEntry> _buildSteinsGate() {
+    return List.generate(24, (index) {
+      final epNum = index + 1;
+      final pad = epNum.toString().padLeft(2, '0');
+      final url =
+          'https://archive.org/download/anime-time-steins-gate/%5BAnime%20Time%5D%20Steins%3BGate%20-%20$pad.mp4';
+      return _AnimeStreamEntry(server1Url: url, server3Url: url);
+    });
+  }
+
+  // --- Dan Da Dan (12 Episodes, ~24m each) ---
+  static List<_AnimeStreamEntry> _buildDandadan() {
+    return List.generate(12, (index) {
+      final epNum = index + 1;
+      final pad = epNum.toString().padLeft(2, '0');
+      final url =
+          'https://archive.org/download/dan-da-dan-seasons-1-2/Dan%20Da%20Dan/dandadan_S01-E$pad.mp4';
+      return _AnimeStreamEntry(server1Url: url, server3Url: url);
+    });
+  }
+
+  // --- Re:Zero Season 1 (25 Episodes, ~24-49m each) ---
+  static List<_AnimeStreamEntry> _buildReZero() {
+    return List.generate(25, (index) {
+      final epNum = index + 1;
+      final s1 =
+          'https://archive.org/download/re-zero-english-dub-season-1-all-episodes/ReZeroEnglishDubSeason1Episode$epNum.ia.mp4';
+      final s3 =
+          'https://archive.org/download/re-zero-english-dub-season-1-all-episodes/ReZeroEnglishDubSeason1Episode$epNum.mp4';
+      return _AnimeStreamEntry(server1Url: s1, server3Url: s3);
+    });
+  }
+
+  // --- Shigatsu wa Kimi no Uso (22 Episodes, ~23m each) ---
+  static List<_AnimeStreamEntry> _buildYourLieInApril() {
+    return List.generate(22, (index) {
+      final epNum = index + 1;
+      final url = 'https://archive.org/download/AY-YourLieInApril/$epNum.mp4';
+      return _AnimeStreamEntry(server1Url: url, server3Url: url);
+    });
+  }
+
+  // --- Your Name / Kimi no Na wa Movie (106 Minutes) ---
+  static List<_AnimeStreamEntry> _buildYourName() {
+    const url =
+        'https://archive.org/download/your.-name.-2016.-1.8-gb.-1080p.-dual.-audio.-hin-eng.-vegamovies.-nl/Your.Name.%282016%29.1.8GB.1080p.Dual.Audio.%28Hin-Eng%29.Vegamovies.NL.mp4';
+    return [const _AnimeStreamEntry(server1Url: url, server3Url: url)];
+  }
+
+  // --- Haikyuu Dumpster Battle Movie (81 Minutes) ---
+  static List<_AnimeStreamEntry> _buildHaikyuuMovie() {
+    const url =
+        'https://archive.org/download/Haikyuu-the-dumpster-battle-english-sub/%40AnimeArise%20Haikyuu%20The%20Dumpster%20Battle%20English%20sub.mp4';
+    return [const _AnimeStreamEntry(server1Url: url, server3Url: url)];
+  }
+
+  // --- Gintama: The Final Movie (100 Minutes) ---
+  static List<_AnimeStreamEntry> _buildGintamaMovie() {
+    const url =
+        'https://archive.org/download/gintama-the-final/Gintama%20-%20The%20FINAL.mp4';
+    return [const _AnimeStreamEntry(server1Url: url, server3Url: url)];
+  }
+
+  // --- A Silent Voice Movie (130 Minutes) ---
+  static List<_AnimeStreamEntry> _buildSilentVoice() {
+    const url =
+        'https://archive.org/download/a-silent-voice-2016-1080p/A%20Silent%20Voice%20%282016%29%20%5B1080p%5D.mp4';
+    return [const _AnimeStreamEntry(server1Url: url, server3Url: url)];
+  }
+
+  // --- Tokyo Ghoul Movie / Feature (101 Minutes) ---
+  static List<_AnimeStreamEntry> _buildTokyoGhoulMovie() {
+    const url = 'https://archive.org/download/tokyo-ghoul-s/TokyoGhoulS.mp4';
+    return [const _AnimeStreamEntry(server1Url: url, server3Url: url)];
   }
 
   static final Map<String, List<_AnimeStreamEntry>> _animeEpisodeMap = {
     'demon-slayer': _buildKnySeason1(),
+    'demon-slayer-movie': _buildKnyMovie(),
     'attack-on-titan': _buildAotSeason1(),
     'jujutsu-kaisen': _buildJjkSeason1(),
+    'jujutsu-kaisen-0': _buildJjk0(),
     'death-note': _buildDeathNoteSeason1(),
     'tokyo-revengers': _buildTokyoRevengersSeason1(),
     'solo-leveling': _buildSoloLevelingSeason1(),
     'my-hero-academia': _buildMhaSeason1(),
     'chainsaw-man': _buildChainsawManSeason1(),
+    'chainsaw-man-movie': _buildCsmMovie(),
     'naruto': _buildNarutoSeason1(),
     'one-piece': _buildOnePieceSeason1(),
     'spy-x-family': _buildSpyFamilySeason1(),
@@ -517,6 +802,15 @@ class AnimeStreamResolver {
     'bleach': _buildBleach(),
     'hunter-x-hunter': _buildHxh(),
     'fullmetal-alchemist': _buildFmab(),
+    'steins-gate': _buildSteinsGate(),
+    'dandadan': _buildDandadan(),
+    'rezero': _buildReZero(),
+    'shigatsu-wa-kimi': _buildYourLieInApril(),
+    'your-name': _buildYourName(),
+    'haikyuu-movie': _buildHaikyuuMovie(),
+    'gintama-movie': _buildGintamaMovie(),
+    'silent-voice': _buildSilentVoice(),
+    'tokyo-ghoul': _buildTokyoGhoulMovie(),
   };
 }
 
