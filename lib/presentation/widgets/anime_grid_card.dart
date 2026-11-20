@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../data/models/anime_item.dart';
+import 'anime_image_placeholder.dart';
 
 /// Card component for 2-column anime grid display on the Explore screen.
 class AnimeGridCard extends StatelessWidget {
@@ -26,7 +27,7 @@ class AnimeGridCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Poster with 2:3 ratio and rating badge
+            // Poster with 2:3 ratio, rating badge, and availability badge
             AspectRatio(
               aspectRatio: 0.72,
               child: Stack(
@@ -43,38 +44,32 @@ class AnimeGridCard extends StatelessWidget {
                         ),
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: Image.network(
-                        item.posterUrl,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => Container(
-                          color: AppColors.surfaceCard,
-                          child: const Center(
-                            child: Icon(
-                              Icons.movie_filter_rounded,
-                              color: AppColors.textMuted,
-                              size: 32,
-                            ),
-                          ),
-                        ),
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return Container(
-                            color: AppColors.surfaceCard,
-                            child: const Center(
-                              child: SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    AppColors.accentBlue,
+                      child: item.posterUrl.trim().isEmpty
+                          ? AnimeImagePlaceholder(title: item.title)
+                          : Image.network(
+                              item.posterUrl,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  AnimeImagePlaceholder(title: item.title),
+                              loadingBuilder: (context, child, loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return Container(
+                                  color: AppColors.surfaceCard,
+                                  child: const Center(
+                                    child: SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        valueColor: AlwaysStoppedAnimation<Color>(
+                                          AppColors.accentBlue,
+                                        ),
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
+                                );
+                              },
                             ),
-                          );
-                        },
-                      ),
                     ),
                   ),
 
@@ -107,6 +102,52 @@ class AnimeGridCard extends StatelessWidget {
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                               fontSize: 11,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  // Video availability badge on top-right
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: item.hasVideoAvailable
+                            ? AppColors.accentBlue.withValues(alpha: 0.9)
+                            : Colors.black.withValues(alpha: 0.75),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                          color: item.hasVideoAvailable
+                              ? AppColors.accentBlue
+                              : AppColors.borderSubtle,
+                          width: 0.8,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            item.hasVideoAvailable
+                                ? Icons.play_arrow_rounded
+                                : Icons.videocam_off_outlined,
+                            size: 12,
+                            color: item.hasVideoAvailable
+                                ? Colors.white
+                                : AppColors.textMuted,
+                          ),
+                          const SizedBox(width: 3),
+                          Text(
+                            item.hasVideoAvailable ? 'Tersedia Video' : 'Belum Tersedia',
+                            style: AppTypography.labelSmall.copyWith(
+                              color: item.hasVideoAvailable
+                                  ? Colors.white
+                                  : AppColors.textMuted,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 10,
                             ),
                           ),
                         ],

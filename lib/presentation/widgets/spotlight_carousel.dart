@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../data/models/anime_item.dart';
+import 'anime_image_placeholder.dart';
 
 /// Cinematic Spotlight Carousel widget for popular anime highlights.
 /// Features high-contrast dark vignette gradient, metadata chips,
@@ -161,7 +162,7 @@ class _SpotlightCarouselState extends State<SpotlightCarousel> {
           fit: StackFit.expand,
           children: [
             // Background Image with Graceful Network Fallback
-            _buildBackdropImage(imageUrl),
+            _buildBackdropImage(imageUrl, item),
 
             // Vignette Gradient Overlay (ensuring high WCAG AA text contrast)
             _buildGradientOverlay(),
@@ -204,9 +205,14 @@ class _SpotlightCarouselState extends State<SpotlightCarousel> {
     );
   }
 
-  Widget _buildBackdropImage(String imageUrl) {
+  Widget _buildBackdropImage(String imageUrl, AnimeItem item) {
     if (imageUrl.isEmpty) {
-      return _buildImagePlaceholder();
+      return AnimeImagePlaceholder(
+        title: item.title,
+        showTitle: false,
+        iconSize: 48,
+        fontSize: 14,
+      );
     }
 
     return Image.network(
@@ -215,25 +221,31 @@ class _SpotlightCarouselState extends State<SpotlightCarousel> {
       width: double.infinity,
       height: double.infinity,
       errorBuilder: (context, error, stackTrace) {
-        return _buildImagePlaceholder();
+        return AnimeImagePlaceholder(
+          title: item.title,
+          showTitle: false,
+          iconSize: 48,
+          fontSize: 14,
+        );
       },
       loadingBuilder: (context, child, loadingProgress) {
         if (loadingProgress == null) return child;
-        return _buildImagePlaceholder();
+        return Container(
+          color: AppColors.surfaceCard,
+          child: const Center(
+            child: SizedBox(
+              width: 32,
+              height: 32,
+              child: CircularProgressIndicator(
+                strokeWidth: 2.5,
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  AppColors.accentBlue,
+                ),
+              ),
+            ),
+          ),
+        );
       },
-    );
-  }
-
-  Widget _buildImagePlaceholder() {
-    return Container(
-      color: AppColors.surfaceCard,
-      child: const Center(
-        child: Icon(
-          Icons.movie_filter_rounded,
-          color: AppColors.borderSubtle,
-          size: 48,
-        ),
-      ),
     );
   }
 
