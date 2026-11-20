@@ -1,6 +1,7 @@
+import 'anime_relation_item.dart';
 import 'episode_item.dart';
 
-/// Full detail model for an anime including synopsis and episode list.
+/// Full detail model for an anime including synopsis, relations, and episode list.
 class AnimeDetail {
   final String id;
   final String title;
@@ -15,6 +16,10 @@ class AnimeDetail {
   final String studio;
   final int totalEpisodes;
   final List<EpisodeItem> episodes;
+  final int aniListId;
+  final List<AnimeRelationItem> relations;
+  final bool hasVideoAvailable;
+  final String? bannerUrl;
 
   const AnimeDetail({
     required this.id,
@@ -30,6 +35,10 @@ class AnimeDetail {
     required this.studio,
     required this.totalEpisodes,
     required this.episodes,
+    this.aniListId = 0,
+    this.relations = const [],
+    this.hasVideoAvailable = true,
+    this.bannerUrl,
   });
 
   @override

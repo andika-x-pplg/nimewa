@@ -11,6 +11,9 @@ class AnimeItem {
   final String backdropUrl;
   final String episodeInfo;
   final String statusLabel;
+  final int aniListId;
+  final bool hasVideoAvailable;
+  final String? bannerUrl;
 
   const AnimeItem({
     required this.id,
@@ -24,6 +27,9 @@ class AnimeItem {
     required this.backdropUrl,
     this.episodeInfo = 'SUB · EP 12',
     this.statusLabel = 'Ongoing',
+    this.aniListId = 0,
+    this.hasVideoAvailable = true,
+    this.bannerUrl,
   });
 
   @override
