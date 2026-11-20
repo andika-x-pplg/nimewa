@@ -78,8 +78,8 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(watchedItem, isNotNull);
-      expect(watchedItem!.id, 'tokyo-revengers-s4');
-      expect(watchedItem!.title, 'Tokyo Revengers Season 4');
+      expect(watchedItem!.id, 'solo-leveling');
+      expect(watchedItem!.title, 'Solo Leveling');
     });
 
     testWidgets('triggers onAddList callback with current item when "+" button is tapped', (tester) async {
@@ -106,7 +106,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(addedItem, isNotNull);
-      expect(addedItem!.id, 'tokyo-revengers-s4');
+      expect(addedItem!.id, 'solo-leveling');
     });
 
     testWidgets('renders dot indicators corresponding to items length', (tester) async {
