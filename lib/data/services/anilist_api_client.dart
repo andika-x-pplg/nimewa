@@ -119,6 +119,23 @@ query ($page: Int, $perPage: Int) {
     return cachedPopularAnime.skip((page - 1) * limit).take(limit).toList();
   }
 
+  /// Fetches top rated anime from AniList.
+  Future<List<AnimeItem>> fetchTopRatedAnime({
+    int limit = 20,
+    int page = 1,
+  }) async {
+    return fetchPopularAnime(limit: limit, page: page);
+  }
+
+  /// Alias for fetchAnimeByCategory.
+  Future<List<AnimeItem>> fetchAnimeByGenre(
+    String genre, {
+    int limit = 20,
+    int page = 1,
+  }) async {
+    return fetchAnimeByCategory(genre, limit: limit, page: page);
+  }
+
   /// Fetches latest anime releases sorted by release date.
   Future<List<AnimeItem>> fetchLatestAnime({
     int limit = 20,

@@ -102,5 +102,50 @@ void main() {
       expect(find.byType(AnimeWatchScreen), findsOneWidget);
       expect(find.textContaining('Ep 2'), findsWidgets);
     });
+
+    testWidgets('renders franchise relations carousel when relations are present', (tester) async {
+      tester.view.physicalSize = const Size(400, 1200);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.darkTheme,
+          home: const AnimeDetailScreen(
+            animeId: 'tokyo-revengers-s3',
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      expect(find.text('Relasi Franchise'), findsOneWidget);
+      expect(find.text('Prequel / Sequel'), findsOneWidget);
+      expect(find.text('PREQUEL'), findsWidgets);
+      expect(find.text('SEQUEL'), findsWidgets);
+    });
+
+    testWidgets('displays Video Belum Tersedia and hides unplayable episodes when hasVideoAvailable is false', (tester) async {
+      tester.view.physicalSize = const Size(400, 1200);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.darkTheme,
+          home: const AnimeDetailScreen(
+            animeId: 'tokyo-revengers-s4',
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      expect(find.text('Video Belum Tersedia'), findsOneWidget);
+      expect(find.text('Episode video belum tersedia untuk judul ini.'), findsOneWidget);
+      expect(find.text('Tidak Tersedia'), findsOneWidget);
+    });
   });
 }

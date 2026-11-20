@@ -5,6 +5,7 @@ import '../../data/models/anime_detail.dart';
 import '../../data/models/anime_item.dart';
 import '../../data/models/episode_item.dart';
 import '../../data/services/anime_stream_service.dart';
+import '../widgets/anime_image_placeholder.dart';
 import 'anime_watch_screen.dart';
 
 /// Screen displaying anime information, synopsis, and episode streaming list.
@@ -12,12 +13,14 @@ class AnimeDetailScreen extends StatefulWidget {
   final String animeId;
   final AnimeItem? previewItem;
   final void Function(EpisodeItem episode)? onEpisodeTap;
+  final AnimeStreamService? service;
 
   const AnimeDetailScreen({
     super.key,
     required this.animeId,
     this.previewItem,
     this.onEpisodeTap,
+    this.service,
   });
 
   @override
@@ -25,13 +28,14 @@ class AnimeDetailScreen extends StatefulWidget {
 }
 
 class _AnimeDetailScreenState extends State<AnimeDetailScreen> {
-  final AnimeStreamService _service = AnimeStreamService();
+  late final AnimeStreamService _service;
   late Future<AnimeDetail> _detailFuture;
   bool _isBookmarked = false;
 
   @override
   void initState() {
     super.initState();
+    _service = widget.service ?? const AnimeStreamService();
     _detailFuture = _service.getAnimeDetail(widget.animeId);
   }
 
@@ -81,6 +85,10 @@ class _AnimeDetailScreenState extends State<AnimeDetailScreen> {
                       const SizedBox(height: 20),
                       _buildSynopsisSection(detail),
                       const SizedBox(height: 24),
+                      if (detail?.relations.isNotEmpty ?? false) ...[
+                        _buildFranchiseRelationsSection(detail!),
+                        const SizedBox(height: 24),
+                      ],
                       _buildEpisodeSection(detail),
                       const SizedBox(height: 32),
                     ],
@@ -140,15 +148,18 @@ class _AnimeDetailScreenState extends State<AnimeDetailScreen> {
               Image.network(
                 backdrop,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Container(
-                  color: AppColors.surfaceCard,
-                  child: const Center(
-                    child: Icon(Icons.movie_rounded, color: AppColors.textMuted, size: 48),
-                  ),
+                errorBuilder: (context, error, stackTrace) => AnimeImagePlaceholder(
+                  title: detail?.title ?? widget.previewItem?.title ?? '',
+                  showTitle: false,
+                  iconSize: 48,
                 ),
               )
             else
-              Container(color: AppColors.surfaceCard),
+              AnimeImagePlaceholder(
+                title: detail?.title ?? widget.previewItem?.title ?? '',
+                showTitle: false,
+                iconSize: 48,
+              ),
 
             // Gradient scrim fading into pure OLED black
             Container(
@@ -313,34 +324,46 @@ class _AnimeDetailScreenState extends State<AnimeDetailScreen> {
   }
 
   Widget _buildActionButtons(AnimeDetail? detail) {
+    final hasVideo = detail?.hasVideoAvailable ?? true;
     final firstEpisode = detail?.episodes.isNotEmpty ?? false ? detail!.episodes.first : null;
+    final isPlayable = detail != null && hasVideo && firstEpisode != null && firstEpisode.streamUrl.isNotEmpty;
 
     return Row(
       children: [
         // Primary Watch Button
         Expanded(
           child: ElevatedButton.icon(
-            onPressed: () {
-              if (detail != null && firstEpisode != null) {
-                _openWatchScreen(detail, firstEpisode);
-              }
-            },
-            icon: const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 22),
-            label: const Text(
-              'Mulai Nonton',
+            onPressed: isPlayable
+                ? () {
+                    _openWatchScreen(detail, firstEpisode);
+                  }
+                : null,
+            icon: Icon(
+              hasVideo ? Icons.play_arrow_rounded : Icons.videocam_off_outlined,
+              color: isPlayable ? Colors.white : AppColors.textMuted,
+              size: 20,
+            ),
+            label: Text(
+              hasVideo ? 'Mulai Nonton' : 'Video Belum Tersedia',
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
               style: TextStyle(
-                color: Colors.white,
+                color: isPlayable ? Colors.white : AppColors.textMuted,
                 fontWeight: FontWeight.bold,
-                fontSize: 14,
+                fontSize: 13,
               ),
             ),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.accentBlue,
+              backgroundColor: isPlayable ? AppColors.accentBlue : AppColors.surfaceCard,
+              disabledBackgroundColor: AppColors.surfaceCard,
               foregroundColor: Colors.white,
               elevation: 0,
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
+                side: BorderSide(
+                  color: isPlayable ? Colors.transparent : AppColors.borderSubtle,
+                ),
               ),
             ),
           ),
@@ -412,7 +435,135 @@ class _AnimeDetailScreenState extends State<AnimeDetailScreen> {
     );
   }
 
+  Widget _buildFranchiseRelationsSection(AnimeDetail detail) {
+    final relations = detail.relations;
+    if (relations.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Flexible(
+              child: Text(
+                'Relasi Franchise',
+                style: AppTypography.titleMedium.copyWith(
+                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.bold,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              'Prequel / Sequel',
+              style: AppTypography.bodySmall.copyWith(
+                color: AppColors.textMuted,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        SizedBox(
+          height: 200,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: relations.length,
+            separatorBuilder: (context, index) => const SizedBox(width: 12),
+            itemBuilder: (context, index) {
+              final rel = relations[index];
+              return InkWell(
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => AnimeDetailScreen(
+                        animeId: rel.id.toString(),
+                      ),
+                    ),
+                  );
+                },
+                borderRadius: BorderRadius.circular(10),
+                child: SizedBox(
+                  width: 110,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      AspectRatio(
+                        aspectRatio: 0.75,
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: rel.posterUrl.trim().isEmpty
+                                  ? AnimeImagePlaceholder(
+                                      title: rel.title,
+                                      iconSize: 24,
+                                      fontSize: 9,
+                                    )
+                                  : Image.network(
+                                      rel.posterUrl,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (_, __, ___) =>
+                                          AnimeImagePlaceholder(
+                                        title: rel.title,
+                                        iconSize: 24,
+                                        fontSize: 9,
+                                      ),
+                                    ),
+                            ),
+                            Positioned(
+                              top: 4,
+                              left: 4,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 5,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppColors.accentBlue.withValues(alpha: 0.9),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  rel.relationType,
+                                  style: AppTypography.labelSmall.copyWith(
+                                    color: Colors.white,
+                                    fontSize: 9,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        rel.title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTypography.labelSmall.copyWith(
+                          color: AppColors.textPrimary,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 11,
+                          height: 1.2,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildEpisodeSection(AnimeDetail? detail) {
+    final hasVideo = detail?.hasVideoAvailable ?? true;
     final episodes = detail?.episodes ?? [];
 
     return Column(
@@ -421,15 +572,21 @@ class _AnimeDetailScreenState extends State<AnimeDetailScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              'Daftar Episode',
-              style: AppTypography.titleMedium.copyWith(
-                color: AppColors.textPrimary,
-                fontWeight: FontWeight.bold,
+            Flexible(
+              child: Text(
+                'Daftar Episode',
+                style: AppTypography.titleMedium.copyWith(
+                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.bold,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
+            const SizedBox(width: 8),
             Text(
-              detail != null ? '${episodes.length} Episode' : (widget.previewItem?.episodeInfo ?? 'Memuat...'),
+              detail != null
+                  ? (hasVideo ? '${episodes.length} Episode' : 'Tidak Tersedia')
+                  : (widget.previewItem?.episodeInfo ?? 'Memuat...'),
               style: AppTypography.bodySmall.copyWith(
                 color: AppColors.textMuted,
               ),
@@ -453,19 +610,41 @@ class _AnimeDetailScreenState extends State<AnimeDetailScreen> {
               ),
             ),
           )
-        else if (episodes.isEmpty)
+        else if (!hasVideo || episodes.isEmpty)
           Container(
-            padding: const EdgeInsets.all(20),
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
             decoration: BoxDecoration(
               color: AppColors.surfaceCard,
               borderRadius: BorderRadius.circular(10),
               border: Border.all(color: AppColors.borderSubtle),
             ),
-            child: Center(
-              child: Text(
-                'Belum ada episode yang tersedia.',
-                style: AppTypography.bodyMedium.copyWith(color: AppColors.textSecondary),
-              ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.videocam_off_outlined,
+                  color: AppColors.textMuted,
+                  size: 36,
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Episode video belum tersedia untuk judul ini.',
+                  textAlign: TextAlign.center,
+                  style: AppTypography.bodyMedium.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Anda dapat melihat franchise relation (prequel/sequel) atau katalog judul lainnya.',
+                  textAlign: TextAlign.center,
+                  style: AppTypography.bodySmall.copyWith(
+                    color: AppColors.textMuted,
+                  ),
+                ),
+              ],
             ),
           )
         else

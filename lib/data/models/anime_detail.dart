@@ -41,6 +41,46 @@ class AnimeDetail {
     this.bannerUrl,
   });
 
+  AnimeDetail copyWith({
+    String? id,
+    String? title,
+    String? japaneseTitle,
+    double? rating,
+    int? releaseYear,
+    List<String>? genres,
+    String? synopsis,
+    String? posterUrl,
+    String? backdropUrl,
+    String? status,
+    String? studio,
+    int? totalEpisodes,
+    List<EpisodeItem>? episodes,
+    int? aniListId,
+    List<AnimeRelationItem>? relations,
+    bool? hasVideoAvailable,
+    String? bannerUrl,
+  }) {
+    return AnimeDetail(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      japaneseTitle: japaneseTitle ?? this.japaneseTitle,
+      rating: rating ?? this.rating,
+      releaseYear: releaseYear ?? this.releaseYear,
+      genres: genres ?? this.genres,
+      synopsis: synopsis ?? this.synopsis,
+      posterUrl: posterUrl ?? this.posterUrl,
+      backdropUrl: backdropUrl ?? this.backdropUrl,
+      status: status ?? this.status,
+      studio: studio ?? this.studio,
+      totalEpisodes: totalEpisodes ?? this.totalEpisodes,
+      episodes: episodes ?? this.episodes,
+      aniListId: aniListId ?? this.aniListId,
+      relations: relations ?? this.relations,
+      hasVideoAvailable: hasVideoAvailable ?? this.hasVideoAvailable,
+      bannerUrl: bannerUrl ?? this.bannerUrl,
+    );
+  }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||

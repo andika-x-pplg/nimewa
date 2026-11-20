@@ -5,13 +5,15 @@ class AnimeRelationItem {
   final String relationType;
   final String posterUrl;
   final String format;
+  final String status;
 
   const AnimeRelationItem({
     required this.id,
     required this.title,
     required this.relationType,
-    required this.posterUrl,
+    this.posterUrl = '',
     this.format = 'TV',
+    this.status = '',
   });
 
   factory AnimeRelationItem.fromJson(Map<String, dynamic> json) {
@@ -31,6 +33,7 @@ class AnimeRelationItem {
         '';
 
     final format = node['format']?.toString() ?? 'TV';
+    final status = node['status']?.toString() ?? '';
 
     return AnimeRelationItem(
       id: id,
@@ -38,6 +41,7 @@ class AnimeRelationItem {
       relationType: relationType,
       posterUrl: posterUrl,
       format: format,
+      status: status,
     );
   }
 

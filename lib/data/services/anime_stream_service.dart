@@ -1,7 +1,9 @@
+import 'anilist_api_client.dart';
 import 'anime_api_client.dart';
 import 'anime_stream_resolver.dart';
 import '../models/anime_detail.dart';
 import '../models/anime_item.dart';
+import '../models/anime_relation_item.dart';
 import '../models/episode_item.dart';
 
 /// Service providing anime details, episode lists, and streaming endpoints.
@@ -9,10 +11,12 @@ import '../models/episode_item.dart';
 class AnimeStreamService {
   final Duration networkDelay;
   final AnimeApiClient apiClient;
+  final AniListApiClient anilistApiClient;
 
   const AnimeStreamService({
     this.networkDelay = const Duration(milliseconds: 50),
     this.apiClient = const AnimeApiClient(),
+    this.anilistApiClient = const AniListApiClient(),
   });
 
   /// Fetches spotlight anime (10 items) for home hero carousel.
@@ -20,8 +24,7 @@ class AnimeStreamService {
     if (networkDelay > Duration.zero) {
       await Future.delayed(networkDelay);
     }
-    final items = await apiClient.fetchTrendingAnime(limit: 10);
-    return items.where((item) => AnimeStreamResolver.hasCompleteEpisodes(item.id, item.title)).toList();
+    return anilistApiClient.fetchTrendingAnime(limit: 10);
   }
 
   /// Fetches explore anime catalog with reactive filtering, search query, and pagination.
@@ -36,29 +39,23 @@ class AnimeStreamService {
       await Future.delayed(networkDelay);
     }
 
-    List<AnimeItem> items;
+    final page = (offset ~/ limit) + 1;
     final cleanQuery = query?.trim();
     if (cleanQuery != null && cleanQuery.isNotEmpty) {
-      items = await apiClient.searchAnime(cleanQuery, limit: limit, offset: offset);
+      return anilistApiClient.searchAnime(cleanQuery, limit: limit, page: page);
     } else if (genre != null && genre != 'Semua' && genre.isNotEmpty) {
-      items = await apiClient.fetchAnimeByCategory(genre, limit: limit, offset: offset);
+      return anilistApiClient.fetchAnimeByCategory(genre, limit: limit, page: page);
     } else {
       switch (filter) {
         case 'latest':
-          items = await apiClient.fetchLatestAnime(limit: limit, offset: offset);
-          break;
+          return anilistApiClient.fetchLatestAnime(limit: limit, page: page);
         case 'top_rated':
-          items = await apiClient.fetchTopRatedAnime(limit: limit, offset: offset);
-          break;
+          return anilistApiClient.fetchTopRatedAnime(limit: limit, page: page);
         case 'popular':
         default:
-          items = await apiClient.fetchTrendingAnime(limit: limit, offset: offset);
-          break;
+          return anilistApiClient.fetchPopularAnime(limit: limit, page: page);
       }
     }
-
-    // Atomicity principle: all or nothing, only return anime with complete episodes
-    return items.where((item) => AnimeStreamResolver.hasCompleteEpisodes(item.id, item.title)).toList();
   }
 
   /// Fetches detailed metadata and all available episodes for an anime.
@@ -68,49 +65,75 @@ class AnimeStreamService {
     }
 
     final cleanId = animeId.toLowerCase().trim();
+    final parsedAniListId = int.tryParse(cleanId);
+
+    // If numeric AniList ID, fetch directly from AniList GraphQL client
+    if (parsedAniListId != null) {
+      try {
+        final detail = await anilistApiClient.fetchAnimeDetail(parsedAniListId);
+        final hasVideo = AnimeStreamResolver.hasCompleteEpisodes(cleanId, detail.title);
+        final key = AnimeStreamResolver.detectAnimeKey(cleanId, detail.title);
+        final curated = _curatedDetails[key];
+        if (hasVideo && curated != null && curated.episodes.isNotEmpty) {
+          return detail.copyWith(
+            hasVideoAvailable: true,
+            episodes: curated.episodes,
+          );
+        }
+        return detail.copyWith(
+          hasVideoAvailable: hasVideo,
+          episodes: hasVideo ? detail.episodes : const [],
+        );
+      } catch (_) {
+        // Fall through to curated details
+      }
+    }
 
     if (_curatedDetails.containsKey(cleanId)) {
       return _curatedDetails[cleanId]!;
     }
 
     // Map known API ID aliases to curated details
-    if (cleanId == 'solo-leveling' || cleanId == '46231') {
+    if (cleanId == 'solo-leveling' || cleanId == 'solo-leveling-s2' || cleanId == '46231' || cleanId == '151807') {
       return _curatedDetails['solo-leveling']!;
     }
-    if (cleanId == 'tokyo-revengers-s3' || cleanId == 'tokyo-revengers-tenjiku' || cleanId == '47537') {
+    if (cleanId == 'tokyo-revengers-s4' || cleanId == '178945' || cleanId == '48960') {
+      return _curatedDetails['tokyo-revengers-s4']!;
+    }
+    if (cleanId == 'tokyo-revengers-s3' || cleanId == 'tokyo-revengers-tenjiku' || cleanId == '47537' || cleanId == '163539') {
       return _curatedDetails['tokyo-revengers-s3']!;
     }
-    if (cleanId == 'tokyo-revengers-s2' || cleanId == 'tokyo-revengers-seiya' || cleanId == '45697') {
+    if (cleanId == 'tokyo-revengers-s2' || cleanId == 'tokyo-revengers-seiya' || cleanId == '45697' || cleanId == '142853') {
       return _curatedDetails['tokyo-revengers-s2']!;
     }
-    if (cleanId == 'tokyo-revengers' || cleanId == '43321') {
+    if (cleanId == 'tokyo-revengers' || cleanId == '43321' || cleanId == '120120') {
       return _curatedDetails['tokyo-revengers']!;
     }
-    if (cleanId == '41370' || cleanId == 'kny' || cleanId == 'demon-slayer') {
+    if (cleanId == '41370' || cleanId == '101922' || cleanId == 'kny' || cleanId == 'demon-slayer') {
       return _curatedDetails['demon-slayer']!;
     }
-    if (cleanId == '7442' || cleanId == 'aot' || cleanId == 'attack-on-titan') {
+    if (cleanId == '7442' || cleanId == '16498' || cleanId == 'aot' || cleanId == 'attack-on-titan') {
       return _curatedDetails['attack-on-titan']!;
     }
-    if (cleanId == '1376' || cleanId == 'death-note') {
+    if (cleanId == '1376' || cleanId == '1535' || cleanId == 'death-note') {
       return _curatedDetails['death-note']!;
     }
-    if (cleanId == '6448' || cleanId == 'hxh' || cleanId == 'hunter-x-hunter') {
+    if (cleanId == '6448' || cleanId == '11061' || cleanId == 'hxh' || cleanId == 'hunter-x-hunter') {
       return _curatedDetails['hunter-x-hunter']!;
     }
-    if (cleanId == '3936' || cleanId == 'fma' || cleanId == 'fullmetal-alchemist') {
+    if (cleanId == '3936' || cleanId == '5114' || cleanId == 'fma' || cleanId == 'fullmetal-alchemist') {
       return _curatedDetails['fullmetal-alchemist']!;
     }
-    if (cleanId == 'frieren' || cleanId == '46112') {
+    if (cleanId == 'frieren' || cleanId == '154587' || cleanId == '46112') {
       return _curatedDetails['frieren']!;
     }
-    if (cleanId == 'jujutsu-kaisen' || cleanId == '43806') {
+    if (cleanId == 'jujutsu-kaisen' || cleanId == '113415' || cleanId == '43806') {
       return _curatedDetails['jujutsu-kaisen']!;
     }
-    if (cleanId == 'chainsaw-man' || cleanId == '44081') {
+    if (cleanId == 'chainsaw-man' || cleanId == '127720' || cleanId == '44081') {
       return _curatedDetails['chainsaw-man']!;
     }
-    if (cleanId == 'dandadan' || cleanId == '48363') {
+    if (cleanId == 'dandadan' || cleanId == '166240' || cleanId == '48363') {
       return _curatedDetails['dandadan']!;
     }
 
@@ -149,6 +172,17 @@ class AnimeStreamService {
       status: 'Tamat',
       studio: 'A-1 Pictures',
       totalEpisodes: 12,
+      aniListId: 151807,
+      hasVideoAvailable: true,
+      relations: const [
+        AnimeRelationItem(
+          id: 176274,
+          title: 'Solo Leveling Season 2: -Arise from the Shadow-',
+          relationType: 'SEQUEL',
+          format: 'TV',
+          status: 'RELEASING',
+        ),
+      ],
       episodes: List.generate(
         12,
         (index) => EpisodeItem(
@@ -178,6 +212,24 @@ class AnimeStreamService {
       status: 'Tamat',
       studio: 'LIDENFILMS',
       totalEpisodes: 13,
+      aniListId: 163539,
+      hasVideoAvailable: true,
+      relations: const [
+        AnimeRelationItem(
+          id: 142853,
+          title: 'Tokyo Revengers: Christmas Showdown',
+          relationType: 'PREQUEL',
+          format: 'TV',
+          status: 'FINISHED',
+        ),
+        AnimeRelationItem(
+          id: 178945,
+          title: 'Tokyo Revengers: Santen Sensou-hen',
+          relationType: 'SEQUEL',
+          format: 'TV',
+          status: 'NOT_YET_RELEASED',
+        ),
+      ],
       episodes: List.generate(
         13,
         (index) => EpisodeItem(
@@ -468,6 +520,17 @@ class AnimeStreamService {
       status: 'Tamat',
       studio: 'LIDENFILMS',
       totalEpisodes: 12,
+      aniListId: 120120,
+      hasVideoAvailable: true,
+      relations: const [
+        AnimeRelationItem(
+          id: 142853,
+          title: 'Tokyo Revengers: Christmas Showdown',
+          relationType: 'SEQUEL',
+          format: 'TV',
+          status: 'FINISHED',
+        ),
+      ],
       episodes: List.generate(
         12,
         (index) => EpisodeItem(
@@ -497,6 +560,24 @@ class AnimeStreamService {
       status: 'Tamat',
       studio: 'LIDENFILMS',
       totalEpisodes: 13,
+      aniListId: 142853,
+      hasVideoAvailable: true,
+      relations: const [
+        AnimeRelationItem(
+          id: 120120,
+          title: 'Tokyo Revengers',
+          relationType: 'PREQUEL',
+          format: 'TV',
+          status: 'FINISHED',
+        ),
+        AnimeRelationItem(
+          id: 163539,
+          title: 'Tokyo Revengers: Tenjiku Arc',
+          relationType: 'SEQUEL',
+          format: 'TV',
+          status: 'FINISHED',
+        ),
+      ],
       episodes: List.generate(
         13,
         (index) => EpisodeItem(
@@ -512,6 +593,32 @@ class AnimeStreamService {
           ),
         ),
       ),
+    ),
+    'tokyo-revengers-s4': const AnimeDetail(
+      id: '178945',
+      title: 'Tokyo Revengers: Santen Sensou-hen',
+      japaneseTitle: '東京リベンジャーズ 三天戦争編',
+      rating: 8.2,
+      releaseYear: 2026,
+      genres: ['Action', 'Drama', 'Delinquents'],
+      synopsis: 'Pertarungan tiga dewa besar Tokyo dalam babak Three Deities.',
+      posterUrl: '',
+      backdropUrl: '',
+      status: 'Akan Tayang',
+      studio: 'LIDENFILMS',
+      totalEpisodes: 0,
+      episodes: [],
+      aniListId: 178945,
+      hasVideoAvailable: false,
+      relations: [
+        AnimeRelationItem(
+          id: 163539,
+          title: 'Tokyo Revengers: Tenjiku Arc',
+          relationType: 'PREQUEL',
+          format: 'TV',
+          status: 'FINISHED',
+        ),
+      ],
     ),
   };
 }

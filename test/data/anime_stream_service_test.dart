@@ -69,6 +69,21 @@ void main() {
       );
       expect(emptyResult, isEmpty);
     });
+
+    test('getAnimeDetail returns relations for franchise anime', () async {
+      final detail = await service.getAnimeDetail('tokyo-revengers-s3');
+      expect(detail.relations, isNotEmpty);
+      expect(detail.relations.any((r) => r.relationType == 'PREQUEL'), isTrue);
+      expect(detail.relations.any((r) => r.relationType == 'SEQUEL'), isTrue);
+      expect(detail.hasVideoAvailable, isTrue);
+    });
+
+    test('getAnimeDetail for incomplete anime returns hasVideoAvailable false and empty episodes', () async {
+      final detail = await service.getAnimeDetail('tokyo-revengers-s4');
+      expect(detail.hasVideoAvailable, isFalse);
+      expect(detail.episodes, isEmpty);
+      expect(detail.relations, isNotEmpty);
+    });
   });
 }
 
