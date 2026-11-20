@@ -193,6 +193,10 @@ class AnimeSubtitleService {
         return 'Kuroko no Basket';
       case 'shigatsu-wa-kimi':
         return 'Shigatsu wa Kimi no Uso';
+      case 'one-punch-man':
+        return 'One Punch Man';
+      case 'one-punch-man-s2':
+        return 'One Punch Man Season 2';
       default:
         return 'Anime';
     }
@@ -550,6 +554,30 @@ class AnimeSubtitleService {
         start: Duration(seconds: 35),
         end: Duration(seconds: 45),
         text: 'Light Yagami: Aku akan membersihkan dunia dari kejahatan dan menjadi Dewa Dunia Baru!',
+      ),
+    ],
+
+    // One Punch Man Episode 1
+    'one-punch-man-ep1': const [
+      SubtitleCue(
+        start: Duration(seconds: 0),
+        end: Duration(seconds: 6),
+        text: 'Vaccine Man: Manusia telah mencemari Bumi... Aku terlahir dari kemarahan Ibu Bumi!',
+      ),
+      SubtitleCue(
+        start: Duration(seconds: 6),
+        end: Duration(seconds: 14),
+        text: 'Saitama: Siapa aku? Hanya orang biasa yang menjadi pahlawan untuk hobi.',
+      ),
+      SubtitleCue(
+        start: Duration(seconds: 14),
+        end: Duration(seconds: 24),
+        text: 'Vaccine Man: Hobi?! Beraninya kau meremehkan utusan alam!',
+      ),
+      SubtitleCue(
+        start: Duration(seconds: 24),
+        end: Duration(seconds: 35),
+        text: 'Saitama: Sialan... hanya satu pukulan lagi! Semuanya selesai dalam satu pukulan!',
       ),
     ],
   };

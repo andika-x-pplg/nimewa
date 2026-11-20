@@ -144,7 +144,7 @@ class AnimeGridCard extends StatelessWidget {
                           ),
                           const SizedBox(width: 3),
                           Text(
-                            item.hasVideoAvailable ? 'Tersedia Video' : 'Belum Tersedia',
+                            item.hasVideoAvailable ? 'Video tersedia' : 'Belum tersedia',
                             style: AppTypography.labelSmall.copyWith(
                               color: item.hasVideoAvailable
                                   ? Colors.white

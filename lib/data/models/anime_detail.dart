@@ -1,7 +1,8 @@
+import 'anime_external_link.dart';
 import 'anime_relation_item.dart';
 import 'episode_item.dart';
 
-/// Full detail model for an anime including synopsis, relations, and episode list.
+/// Full detail model for an anime including synopsis, relations, external links, and episode list.
 class AnimeDetail {
   final String id;
   final String title;
@@ -18,6 +19,7 @@ class AnimeDetail {
   final List<EpisodeItem> episodes;
   final int aniListId;
   final List<AnimeRelationItem> relations;
+  final List<AnimeExternalLink> externalLinks;
   final bool hasVideoAvailable;
   final String? bannerUrl;
 
@@ -37,9 +39,14 @@ class AnimeDetail {
     required this.episodes,
     this.aniListId = 0,
     this.relations = const [],
+    this.externalLinks = const [],
     this.hasVideoAvailable = true,
     this.bannerUrl,
   });
+
+  /// Returns official streaming platforms (Crunchyroll, Netflix, Bilibili, etc.) from externalLinks
+  List<AnimeExternalLink> get streamingLinks =>
+      externalLinks.where((link) => link.isStreaming && link.url.isNotEmpty).toList();
 
   AnimeDetail copyWith({
     String? id,
@@ -57,6 +64,7 @@ class AnimeDetail {
     List<EpisodeItem>? episodes,
     int? aniListId,
     List<AnimeRelationItem>? relations,
+    List<AnimeExternalLink>? externalLinks,
     bool? hasVideoAvailable,
     String? bannerUrl,
   }) {
@@ -76,6 +84,7 @@ class AnimeDetail {
       episodes: episodes ?? this.episodes,
       aniListId: aniListId ?? this.aniListId,
       relations: relations ?? this.relations,
+      externalLinks: externalLinks ?? this.externalLinks,
       hasVideoAvailable: hasVideoAvailable ?? this.hasVideoAvailable,
       bannerUrl: bannerUrl ?? this.bannerUrl,
     );
@@ -92,6 +101,6 @@ class AnimeDetail {
   int get hashCode => id.hashCode;
 
   @override
-  String toString() => 'AnimeDetail(id: $id, title: $title, episodes: ${episodes.length})';
+  String toString() =>
+      'AnimeDetail(id: $id, title: $title, episodes: ${episodes.length}, streamingLinks: ${streamingLinks.length})';
 }
-

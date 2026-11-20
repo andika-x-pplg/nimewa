@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../data/models/anime_detail.dart';
+import '../../data/models/anime_external_link.dart';
 import '../../data/models/anime_item.dart';
 import '../../data/models/episode_item.dart';
 import '../../data/services/anime_stream_service.dart';
@@ -213,8 +215,11 @@ class _AnimeDetailScreenState extends State<AnimeDetailScreen> {
         ],
         const SizedBox(height: 12),
 
-        // Info badges row
-        Row(
+        // Info badges
+        Wrap(
+          spacing: 8.0,
+          runSpacing: 6.0,
+          crossAxisAlignment: WrapCrossAlignment.center,
           children: [
             // Rating
             Container(
@@ -225,6 +230,7 @@ class _AnimeDetailScreenState extends State<AnimeDetailScreen> {
                 border: Border.all(color: AppColors.borderSubtle),
               ),
               child: Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   const Icon(Icons.star_rounded, color: AppColors.accentAmber, size: 16),
                   const SizedBox(width: 4),
@@ -238,7 +244,6 @@ class _AnimeDetailScreenState extends State<AnimeDetailScreen> {
                 ],
               ),
             ),
-            const SizedBox(width: 8),
 
             // Year
             Container(
@@ -253,7 +258,6 @@ class _AnimeDetailScreenState extends State<AnimeDetailScreen> {
                 style: AppTypography.labelSmall.copyWith(color: AppColors.textSecondary),
               ),
             ),
-            const SizedBox(width: 8),
 
             // Status
             Container(
@@ -271,15 +275,39 @@ class _AnimeDetailScreenState extends State<AnimeDetailScreen> {
                 ),
               ),
             ),
-            const SizedBox(width: 8),
+
+            // Availability badge
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: (detail?.hasVideoAvailable ?? widget.previewItem?.hasVideoAvailable ?? true)
+                    ? AppColors.accentBlue.withValues(alpha: 0.15)
+                    : Colors.white.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(
+                  color: (detail?.hasVideoAvailable ?? widget.previewItem?.hasVideoAvailable ?? true)
+                      ? AppColors.accentBlue.withValues(alpha: 0.3)
+                      : AppColors.borderSubtle,
+                ),
+              ),
+              child: Text(
+                (detail?.hasVideoAvailable ?? widget.previewItem?.hasVideoAvailable ?? true)
+                    ? 'Video tersedia'
+                    : 'Belum tersedia',
+                style: AppTypography.labelSmall.copyWith(
+                  color: (detail?.hasVideoAvailable ?? widget.previewItem?.hasVideoAvailable ?? true)
+                      ? AppColors.accentBlue
+                      : AppColors.textMuted,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
 
             // Studio
-            Flexible(
-              child: Text(
-                studio,
-                style: AppTypography.bodySmall.copyWith(color: AppColors.textMuted),
-                overflow: TextOverflow.ellipsis,
-              ),
+            Text(
+              studio,
+              style: AppTypography.bodySmall.copyWith(color: AppColors.textMuted),
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),
@@ -324,88 +352,177 @@ class _AnimeDetailScreenState extends State<AnimeDetailScreen> {
   }
 
   Widget _buildActionButtons(AnimeDetail? detail) {
-    final hasVideo = detail?.hasVideoAvailable ?? true;
+    final hasVideo = detail?.hasVideoAvailable ?? widget.previewItem?.hasVideoAvailable ?? false;
     final firstEpisode = detail?.episodes.isNotEmpty ?? false ? detail!.episodes.first : null;
     final isPlayable = detail != null && hasVideo && firstEpisode != null && firstEpisode.streamUrl.isNotEmpty;
+    final streamingLinks = detail?.streamingLinks ?? const [];
 
-    return Row(
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // Primary Watch Button
-        Expanded(
-          child: ElevatedButton.icon(
-            onPressed: isPlayable
-                ? () {
-                    _openWatchScreen(detail, firstEpisode);
-                  }
-                : null,
-            icon: Icon(
-              hasVideo ? Icons.play_arrow_rounded : Icons.videocam_off_outlined,
-              color: isPlayable ? Colors.white : AppColors.textMuted,
-              size: 20,
-            ),
-            label: Text(
-              hasVideo ? 'Mulai Nonton' : 'Video Belum Tersedia',
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-              style: TextStyle(
-                color: isPlayable ? Colors.white : AppColors.textMuted,
-                fontWeight: FontWeight.bold,
-                fontSize: 13,
+        Row(
+          children: [
+            // Primary Watch Button
+            Expanded(
+              child: ElevatedButton.icon(
+                onPressed: isPlayable
+                    ? () {
+                        _openWatchScreen(detail, firstEpisode);
+                      }
+                    : null,
+                icon: Icon(
+                  hasVideo ? Icons.play_arrow_rounded : Icons.videocam_off_outlined,
+                  color: isPlayable ? Colors.white : AppColors.textMuted,
+                  size: 20,
+                ),
+                label: Text(
+                  hasVideo ? 'Mulai Nonton' : 'Video Belum Tersedia',
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  style: TextStyle(
+                    color: isPlayable ? Colors.white : AppColors.textMuted,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: isPlayable ? AppColors.accentBlue : AppColors.surfaceCard,
+                  disabledBackgroundColor: AppColors.surfaceCard,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    side: BorderSide(
+                      color: isPlayable ? Colors.transparent : AppColors.borderSubtle,
+                    ),
+                  ),
+                ),
               ),
             ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: isPlayable ? AppColors.accentBlue : AppColors.surfaceCard,
-              disabledBackgroundColor: AppColors.surfaceCard,
-              foregroundColor: Colors.white,
-              elevation: 0,
+            const SizedBox(width: 10),
+
+            // Bookmark button
+            InkWell(
+              onTap: () {
+                setState(() {
+                  _isBookmarked = !_isBookmarked;
+                });
+              },
+              borderRadius: BorderRadius.circular(10),
+              child: Container(
+                height: 46,
+                padding: const EdgeInsets.symmetric(horizontal: 14),
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceElevated,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: AppColors.borderSubtle),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      _isBookmarked ? Icons.bookmark_rounded : Icons.bookmark_outline_rounded,
+                      color: _isBookmarked ? AppColors.accentBlue : AppColors.textPrimary,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      _isBookmarked ? 'Tersimpan' : 'Daftar Tonton',
+                      style: AppTypography.labelMedium.copyWith(
+                        color: _isBookmarked ? AppColors.accentBlue : AppColors.textPrimary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+
+        // Official platform streaming button (Crunchyroll, Netflix, Bilibili, etc.)
+        if (streamingLinks.isNotEmpty) ...[
+          const SizedBox(height: 10),
+          OutlinedButton.icon(
+            onPressed: () => _openOfficialStreaming(streamingLinks),
+            icon: const Icon(Icons.open_in_new_rounded, size: 18, color: AppColors.accentBlue),
+            label: Text(
+              streamingLinks.length == 1
+                  ? 'Tonton di platform resmi (${streamingLinks.first.site})'
+                  : 'Tonton di platform resmi',
+              style: AppTypography.labelMedium.copyWith(
+                color: AppColors.accentBlue,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            style: OutlinedButton.styleFrom(
+              side: const BorderSide(color: AppColors.accentBlue, width: 1.2),
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
-                side: BorderSide(
-                  color: isPlayable ? Colors.transparent : AppColors.borderSubtle,
-                ),
               ),
+              backgroundColor: AppColors.accentBlue.withValues(alpha: 0.08),
             ),
           ),
-        ),
-        const SizedBox(width: 10),
+        ],
+      ],
+    );
+  }
 
-        // Bookmark button
-        InkWell(
-          onTap: () {
-            setState(() {
-              _isBookmarked = !_isBookmarked;
-            });
-          },
-          borderRadius: BorderRadius.circular(10),
-          child: Container(
-            height: 46,
-            padding: const EdgeInsets.symmetric(horizontal: 14),
-            decoration: BoxDecoration(
-              color: AppColors.surfaceElevated,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: AppColors.borderSubtle),
-            ),
-            child: Row(
+  Future<void> _openOfficialStreaming(List<AnimeExternalLink> links) async {
+    if (links.isEmpty) return;
+    if (links.length == 1) {
+      final uri = Uri.tryParse(links.first.url);
+      if (uri != null) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      }
+      return;
+    }
+
+    if (!mounted) return;
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.surfaceElevated,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(
-                  _isBookmarked ? Icons.bookmark_rounded : Icons.bookmark_outline_rounded,
-                  color: _isBookmarked ? AppColors.accentBlue : AppColors.textPrimary,
-                  size: 20,
-                ),
-                const SizedBox(width: 6),
                 Text(
-                  _isBookmarked ? 'Tersimpan' : 'Daftar Tonton',
-                  style: AppTypography.labelMedium.copyWith(
-                    color: _isBookmarked ? AppColors.accentBlue : AppColors.textPrimary,
-                    fontWeight: FontWeight.w600,
+                  'Pilih Platform Streaming Resmi',
+                  style: AppTypography.titleMedium.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
+                const SizedBox(height: 12),
+                ...links.map((link) => ListTile(
+                      leading: const Icon(Icons.ondemand_video_rounded, color: AppColors.accentBlue),
+                      title: Text(
+                        link.site.isNotEmpty ? link.site : 'Platform Resmi',
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                      ),
+                      trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppColors.textMuted),
+                      onTap: () async {
+                        Navigator.of(ctx).pop();
+                        final uri = Uri.tryParse(link.url);
+                        if (uri != null) {
+                          await launchUrl(uri, mode: LaunchMode.externalApplication);
+                        }
+                      },
+                    )),
               ],
             ),
           ),
-        ),
-      ],
+        );
+      },
     );
   }
 

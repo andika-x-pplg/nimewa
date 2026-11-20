@@ -78,6 +78,7 @@ class AnimeStreamService {
           return detail.copyWith(
             hasVideoAvailable: true,
             episodes: curated.episodes,
+            relations: detail.relations.isNotEmpty ? detail.relations : curated.relations,
           );
         }
         return detail.copyWith(
@@ -135,6 +136,12 @@ class AnimeStreamService {
     }
     if (cleanId == 'dandadan' || cleanId == '166240' || cleanId == '48363') {
       return _curatedDetails['dandadan']!;
+    }
+    if (cleanId == 'one-punch-man' || cleanId == '21087' || cleanId == 'opm') {
+      return _curatedDetails['one-punch-man']!;
+    }
+    if (cleanId == 'one-punch-man-s2' || cleanId == '102194' || cleanId == '97668') {
+      return _curatedDetails['one-punch-man-s2']!;
     }
 
     // Fetch from live API
@@ -619,6 +626,114 @@ class AnimeStreamService {
           status: 'FINISHED',
         ),
       ],
+    ),
+    'one-punch-man': AnimeDetail(
+      id: 'one-punch-man',
+      title: 'One Punch Man',
+      japaneseTitle: 'ワンパンマン',
+      rating: 8.7,
+      releaseYear: 2015,
+      genres: const ['Action', 'Comedy', 'Sci-Fi', 'Supernatural'],
+      synopsis: 'Saitama adalah seorang pahlawan yang bisa mengalahkan musuh apa pun hanya dengan satu pukulan, namun merasa bosan karena tak pernah menemukan lawan yang seimbang.',
+      posterUrl: 'https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx21087-sZwHsannLyql.png',
+      backdropUrl: 'https://s4.anilist.co/file/anilistcdn/media/anime/banner/21087-sX47UotflVms.jpg',
+      bannerUrl: 'https://s4.anilist.co/file/anilistcdn/media/anime/banner/21087-sX47UotflVms.jpg',
+      status: 'Tamat',
+      studio: 'Madhouse',
+      totalEpisodes: 12,
+      aniListId: 21087,
+      hasVideoAvailable: true,
+      relations: const [
+        AnimeRelationItem(
+          id: 102194,
+          title: 'One Punch Man Season 2',
+          relationType: 'SEQUEL',
+          format: 'TV',
+          status: 'FINISHED',
+        ),
+      ],
+      episodes: [
+        'Pria Terkuat',
+        'Siklon Soliter',
+        'Ilmuwan Obsesif',
+        'Ninja Modern',
+        'Mentor Utama',
+        'Kota Menakutkan',
+        'Murid Terbaik',
+        'Raja Laut Dalam',
+        'Keadilan yang Pantang Menyerah',
+        'Bahaya yang Tak Tertandingi',
+        'Dominator Alam Semesta',
+        'Pahlawan Terkuat',
+      ].asMap().entries.map((entry) {
+        final ep = entry.key + 1;
+        return EpisodeItem(
+          id: 'one-punch-man-eps-$ep',
+          episodeNumber: ep,
+          title: 'Episode $ep - ${entry.value}',
+          releaseDate: '2015-10-${ep.toString().padLeft(2, '0')}',
+          streamUrl: AnimeStreamResolver.resolveStreamUrl(
+            animeId: '21087',
+            animeTitle: 'One Punch Man',
+            server: 'Server 1 (Fast HD)',
+            episodeNumber: ep,
+          ),
+        );
+      }).toList(),
+    ),
+    'one-punch-man-s2': AnimeDetail(
+      id: 'one-punch-man-s2',
+      title: 'One Punch Man Season 2',
+      japaneseTitle: 'ワンパンマン 2',
+      rating: 7.5,
+      releaseYear: 2019,
+      genres: const ['Action', 'Comedy', 'Sci-Fi', 'Supernatural'],
+      synopsis: 'Asosiasi Monster mulai bergerak sementara Garou melancarkan perburuan terhadap para pahlawan.',
+      posterUrl: 'https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx102194-NlPmtwZ7lGbe.jpg',
+      backdropUrl: 'https://s4.anilist.co/file/anilistcdn/media/anime/banner/102194-e0k1NfJ5Q1K7.jpg',
+      bannerUrl: 'https://s4.anilist.co/file/anilistcdn/media/anime/banner/102194-e0k1NfJ5Q1K7.jpg',
+      status: 'Tamat',
+      studio: 'J.C.Staff',
+      totalEpisodes: 12,
+      aniListId: 102194,
+      hasVideoAvailable: true,
+      relations: const [
+        AnimeRelationItem(
+          id: 21087,
+          title: 'One Punch Man',
+          relationType: 'PREQUEL',
+          format: 'TV',
+          status: 'FINISHED',
+        ),
+      ],
+      episodes: [
+        'Kembalinya Sang Pahlawan',
+        'Monster Manusia',
+        'Perburuan Dimulai',
+        'Kelelawar Logam',
+        'Turnamen Seni Bela Diri',
+        'Pemberontakan Monster',
+        'Pahlawan Kelas S',
+        'Perlawanan Orang Kuat',
+        'Kekhawatiran Orang Kuat',
+        'Pengepungan Keadilan',
+        'Kebanggaan Masing-Masing',
+        'Pembersihan Murid',
+      ].asMap().entries.map((entry) {
+        final ep = entry.key + 1;
+        return EpisodeItem(
+          id: 'one-punch-man-s2-eps-$ep',
+          episodeNumber: ep,
+          title: 'Episode $ep - ${entry.value}',
+          releaseDate: '2019-04-${ep.toString().padLeft(2, '0')}',
+          streamUrl: AnimeStreamResolver.resolveStreamUrl(
+            animeId: '102194',
+            animeTitle: 'One Punch Man Season 2',
+            server: 'Server 1 (Fast HD)',
+            episodeNumber: ep,
+          ),
+        );
+      }).toList(),
     ),
   };
 }

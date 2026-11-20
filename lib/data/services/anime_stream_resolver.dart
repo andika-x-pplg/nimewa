@@ -1,4 +1,5 @@
 import 'consumet_api_client.dart';
+import 'owner_video_repository.dart';
 import 'stream_audit_logger.dart';
 import 'stream_filter_validator.dart';
 
@@ -37,6 +38,9 @@ class AnimeStreamResolver {
     '21827': 'your-name',
     '20954': 'silent-voice',
     '20665': 'shigatsu-wa-kimi',
+    '21087': 'one-punch-man',
+    '102194': 'one-punch-man-s2',
+    '97668': 'one-punch-man-s2',
   };
 
   /// Set of anime keys verified to have 100% genuine, authentic episode files of that exact show.
@@ -76,6 +80,8 @@ class AnimeStreamResolver {
     'silent-voice',
     'tokyo-ghoul',
     'frieren',
+    'one-punch-man',
+    'one-punch-man-s2',
   };
 
   /// Set of anime keys known to be incomplete or lacking authentic episode files.
@@ -106,6 +112,11 @@ class AnimeStreamResolver {
       return false;
     }
 
+    final aniListId = int.tryParse(cleanId);
+    if (aniListId != null && aniListId > 0 && OwnerVideoRepository.instance.hasVideosForAnime(aniListId)) {
+      return true;
+    }
+
     final key = detectAnimeKey(animeId, animeTitle);
     if (!_authenticKeys.contains(key)) return false;
     if (_incompleteBlacklist.contains(key)) return false;
@@ -119,8 +130,8 @@ class AnimeStreamResolver {
     return true;
   }
 
-  /// Asynchronously resolves direct stream URL, prioritizing online Consumet providers
-  /// for the latest episodes, with instant automatic fallback to authentic local streams.
+  /// Asynchronously resolves direct stream URL.
+  /// Strictly prevents automatic scraping/fetching of unknown videos from internet.
   static Future<String> resolveStreamUrlAsync({
     required String animeId,
     required String animeTitle,
@@ -142,14 +153,13 @@ class AnimeStreamResolver {
       return '';
     }
 
-    final apiClient = client ?? consumetClient;
     final season = extractSeasonNumber(animeId, animeTitle);
 
-    // Attempt online lookup from Consumet if not requesting specific local otaku/archive server
-    final isStrictLocal = server.contains('Server 3') || server.toLowerCase().contains('otaku');
-    if (!isStrictLocal) {
+    // Only invoke external client if explicitly provided (e.g. in unit test injection),
+    // strictly avoiding automatic internet scraping during normal app execution.
+    if (client != null) {
       try {
-        final onlineUrl = await apiClient.resolveLatestStream(
+        final onlineUrl = await client.resolveLatestStream(
           title: animeTitle,
           episodeNumber: episodeNumber,
           seasonNumber: season,
@@ -181,7 +191,7 @@ class AnimeStreamResolver {
           }
         }
       } catch (_) {
-        // Fall through to reliable local stream
+        // Fall through to owner/verified local streams
       }
     }
 
@@ -195,6 +205,7 @@ class AnimeStreamResolver {
   }
 
   /// Resolves direct stream URL based on anime identifier, title, episode number, and server.
+  /// Matches video strictly with AniList ID and season number without cross-season fallback.
   static String resolveStreamUrl({
     required String animeId,
     required String animeTitle,
@@ -202,7 +213,73 @@ class AnimeStreamResolver {
     int episodeNumber = 1,
     String existingStreamUrl = '',
   }) {
-    // Under the Atomicity principle, incomplete anime are never played
+    final cleanId = animeId.toLowerCase().trim();
+    final aniListId = int.tryParse(cleanId);
+    final season = extractSeasonNumber(animeId, animeTitle);
+
+    // 1. Strict Season Matching with AniList Season IDs & Anti-fallback
+    // Under Atomicity principle and strict season matching:
+    // If this is Tokyo Revengers Season 4 (AniList ID 178945), reject immediately and never fallback to S1/S2/S3.
+    if (cleanId == '178945' ||
+        cleanId == 'tokyo-revengers-s4' ||
+        cleanId == '48960' ||
+        animeTitle.toLowerCase().contains('tokyo revengers: season 4') ||
+        animeTitle.toLowerCase().contains('santen sensou') ||
+        animeTitle.toLowerCase().contains('three deities')) {
+      StreamAuditLogger.instance.log(
+        searchedTitle: animeTitle,
+        candidateTitle: '$animeTitle - Episode $episodeNumber',
+        candidateSource: server,
+        isAccepted: false,
+        reason: 'Tidak ada video yang diunggah pemilik untuk Tokyo Revengers Season 4 (AniList ID 178945). Fallback ke season lain dinonaktifkan.',
+        aniListId: aniListId ?? 178945,
+      );
+      return '';
+    }
+
+    // 2. Check Owner Video Repository first (Self-uploaded videos matched by AniList ID and Season)
+    if (aniListId != null && aniListId > 0 && OwnerVideoRepository.instance.hasVideosForAnime(aniListId)) {
+      final uploadedVideo = OwnerVideoRepository.instance.getVideo(aniListId, season, episodeNumber);
+      if (uploadedVideo != null) {
+        final validation = StreamFilterValidator.validate(
+          candidateTitle: uploadedVideo.episodeTitle,
+          candidateUrl: uploadedVideo.videoUrl,
+        );
+        if (!validation.isValid) {
+          StreamAuditLogger.instance.log(
+            searchedTitle: animeTitle,
+            candidateTitle: uploadedVideo.episodeTitle,
+            candidateSource: 'OwnerVideoRepository (${uploadedVideo.uploader})',
+            isAccepted: false,
+            reason: validation.reason,
+            aniListId: aniListId,
+          );
+          return '';
+        }
+        StreamAuditLogger.instance.log(
+          searchedTitle: animeTitle,
+          candidateTitle: uploadedVideo.episodeTitle,
+          candidateSource: 'OwnerVideoRepository (${uploadedVideo.uploader})',
+          isAccepted: true,
+          reason: 'Video pemilik terverifikasi lolos filter untuk AniList ID $aniListId Season $season Episode $episodeNumber',
+          aniListId: aniListId,
+        );
+        return uploadedVideo.videoUrl;
+      } else {
+        // Anime has some videos uploaded, but NOT for this requested season
+        StreamAuditLogger.instance.log(
+          searchedTitle: animeTitle,
+          candidateTitle: '$animeTitle - Episode $episodeNumber',
+          candidateSource: server,
+          isAccepted: false,
+          reason: 'Tidak ada video pemilik untuk Season $season (AniList ID $aniListId). Fallback ke season lain dinonaktifkan.',
+          aniListId: aniListId,
+        );
+        return '';
+      }
+    }
+
+    // 3. Fallback to curated local verified archive keys for Kitsu / legacy IDs
     if (!hasCompleteEpisodes(animeId, animeTitle)) {
       StreamAuditLogger.instance.log(
         searchedTitle: animeTitle,
@@ -210,7 +287,7 @@ class AnimeStreamResolver {
         candidateSource: server,
         isAccepted: false,
         reason: 'Anime or season is marked incomplete under Atomicity rules',
-        aniListId: int.tryParse(animeId),
+        aniListId: aniListId,
       );
       return '';
     }
@@ -226,7 +303,7 @@ class AnimeStreamResolver {
         candidateSource: server,
         isAccepted: false,
         reason: 'No episode entries found for key: $key',
-        aniListId: int.tryParse(animeId),
+        aniListId: aniListId,
       );
       return '';
     }
@@ -249,7 +326,7 @@ class AnimeStreamResolver {
         candidateSource: server,
         isAccepted: false,
         reason: validation.reason,
-        aniListId: int.tryParse(animeId),
+        aniListId: aniListId,
       );
       return '';
     }
@@ -260,7 +337,7 @@ class AnimeStreamResolver {
       candidateSource: server,
       isAccepted: true,
       reason: 'Valid authentic episode stream',
-      aniListId: int.tryParse(animeId),
+      aniListId: aniListId,
     );
 
     return url;
@@ -814,6 +891,22 @@ class AnimeStreamResolver {
         combined.contains('黒子のバスケ') ||
         id == 'kuroko-no-basket') {
       return 'kuroko-no-basket';
+    }
+
+    // One Punch Man
+    if (combined.contains('one punch') ||
+        combined.contains('one-punch') ||
+        combined.contains('saitama') ||
+        combined.contains('ワンパンマン') ||
+        id == 'one-punch-man' ||
+        id == 'one-punch-man-s2' ||
+        id == '21087' ||
+        id == '102194' ||
+        id == '97668') {
+      if (season >= 2 || id == '102194' || id == '97668' || combined.contains('season 2') || combined.contains('2nd season')) {
+        return 'one-punch-man-s2';
+      }
+      return 'one-punch-man';
     }
 
     // Fallback for ANY OTHER anime that has a season indicator
@@ -1417,6 +1510,28 @@ class AnimeStreamResolver {
     return [const _AnimeStreamEntry(server1Url: url, server3Url: url)];
   }
 
+  // --- One Punch Man Season 1 (12 Episodes, ~24m each) ---
+  static List<_AnimeStreamEntry> _buildOnePunchManS1() {
+    return List.generate(12, (index) {
+      final epNum = index + 1;
+      final pad = epNum.toString().padLeft(2, '0');
+      final url =
+          'https://archive.org/download/one-punch-man-s1-ep-01/One.Punch.Man.S01E$pad.mp4';
+      return _AnimeStreamEntry(server1Url: url, server3Url: url);
+    });
+  }
+
+  // --- One Punch Man Season 2 (12 Episodes, ~24m each) ---
+  static List<_AnimeStreamEntry> _buildOnePunchManS2() {
+    return List.generate(12, (index) {
+      final epNum = index + 1;
+      final pad = epNum.toString().padLeft(2, '0');
+      final url =
+          'https://archive.org/download/one-punch-man-s2-ep-01/One.Punch.Man.S02E$pad.mp4';
+      return _AnimeStreamEntry(server1Url: url, server3Url: url);
+    });
+  }
+
   static final Map<String, List<_AnimeStreamEntry>> _animeEpisodeMap = {
     // Core Season 1 / Single-Season Anime
     'demon-slayer': _buildKnySeason1(),
@@ -1446,6 +1561,7 @@ class AnimeStreamResolver {
     'gintama-movie': _buildGintamaMovie(),
     'silent-voice': _buildSilentVoice(),
     'tokyo-ghoul': _buildTokyoGhoulMovie(),
+    'one-punch-man': _buildOnePunchManS1(),
 
     // Season-Specific Verified Entries
     'demon-slayer-s2': _buildKnySeason2(),
@@ -1454,6 +1570,7 @@ class AnimeStreamResolver {
     'dandadan-s2': _buildDandadanS2(),
     'tokyo-revengers-s2': _buildTokyoRevengersS2(),
     'tokyo-revengers-s3': _buildTokyoRevengersS3(),
+    'one-punch-man-s2': _buildOnePunchManS2(),
   };
 }
 

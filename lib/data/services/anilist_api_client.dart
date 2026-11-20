@@ -3,10 +3,12 @@ import 'dart:convert';
 import 'dart:io';
 
 import '../models/anime_detail.dart';
+import '../models/anime_external_link.dart';
 import '../models/anime_item.dart';
 import '../models/anime_relation_item.dart';
 import '../models/episode_item.dart';
 import 'anime_stream_resolver.dart';
+import 'owner_video_repository.dart';
 
 /// Client for AniList GraphQL API (https://graphql.anilist.co).
 /// Fetches rich catalog metadata, official cover/banner imagery, and franchise relations.
@@ -270,6 +272,7 @@ query ($page: Int, $perPage: Int, $genre: String) {
       'sg': 'Steins Gate',
       'tg': 'Tokyo Ghoul',
       'ddd': 'Dandadan',
+      'opm': 'One Punch Man',
     };
     final searchKeyword = acronyms[cleanQuery.toLowerCase()] ?? cleanQuery;
 
@@ -373,6 +376,14 @@ query ($id: Int) {
           }
         }
       }
+    }
+    externalLinks {
+      id
+      url
+      site
+      type
+      icon
+      color
     }
   }
 }
@@ -481,28 +492,48 @@ query ($id: Int) {
         .map(AnimeRelationItem.fromJson)
         .toList();
 
+    // Parse externalLinks (official streaming platforms)
+    final rawLinks = json['externalLinks'] as List<dynamic>? ?? [];
+    final externalLinks = rawLinks
+        .whereType<Map<String, dynamic>>()
+        .map(AnimeExternalLink.fromJson)
+        .toList();
+
     final studiosNodes = json['studios']?['nodes'] as List<dynamic>? ?? [];
     final studio = studiosNodes.isNotEmpty
         ? studiosNodes.first['name']?.toString() ?? 'Animation Studio'
         : 'Animation Studio';
 
     // Episode list: only populated if video is available
+    final uploadedVideos = OwnerVideoRepository.instance.getVideosForAnime(item.aniListId);
     final episodeList = item.hasVideoAvailable
-        ? List.generate(
-            count,
-            (i) => EpisodeItem(
-              id: '${item.id}-eps-${i + 1}',
-              episodeNumber: i + 1,
-              title: count == 1 ? 'Full Movie Sub Indo' : 'Episode ${i + 1} Sub Indo',
-              releaseDate: '2024-01-${(i + 1).toString().padLeft(2, '0')}',
-              streamUrl: AnimeStreamResolver.resolveStreamUrl(
-                animeId: item.aniListId > 0 ? item.aniListId.toString() : item.id,
-                animeTitle: item.title,
-                server: 'Server 1 (Fast HD)',
-                episodeNumber: i + 1,
-              ),
-            ),
-          )
+        ? (uploadedVideos.isNotEmpty
+            ? uploadedVideos
+                .map(
+                  (uv) => EpisodeItem(
+                    id: '${item.id}-eps-${uv.episodeNumber}',
+                    episodeNumber: uv.episodeNumber,
+                    title: uv.episodeTitle,
+                    releaseDate: '2024-01-${uv.episodeNumber.toString().padLeft(2, '0')}',
+                    streamUrl: uv.videoUrl,
+                  ),
+                )
+                .toList()
+            : List.generate(
+                count,
+                (i) => EpisodeItem(
+                  id: '${item.id}-eps-${i + 1}',
+                  episodeNumber: i + 1,
+                  title: count == 1 ? 'Full Movie Sub Indo' : 'Episode ${i + 1} Sub Indo',
+                  releaseDate: '2024-01-${(i + 1).toString().padLeft(2, '0')}',
+                  streamUrl: AnimeStreamResolver.resolveStreamUrl(
+                    animeId: item.aniListId > 0 ? item.aniListId.toString() : item.id,
+                    animeTitle: item.title,
+                    server: 'Server 1 (Fast HD)',
+                    episodeNumber: i + 1,
+                  ),
+                ),
+              ))
         : <EpisodeItem>[];
 
     return AnimeDetail(
@@ -521,6 +552,7 @@ query ($id: Int) {
       episodes: episodeList,
       aniListId: item.aniListId,
       relations: relations,
+      externalLinks: externalLinks,
       hasVideoAvailable: item.hasVideoAvailable,
       bannerUrl: item.bannerUrl,
     );
@@ -528,22 +560,35 @@ query ($id: Int) {
 
   AnimeDetail _generateDetailFromItem(AnimeItem item) {
     final count = item.hasVideoAvailable ? 12 : 0;
+    final uploadedVideos = OwnerVideoRepository.instance.getVideosForAnime(item.aniListId);
     final episodes = item.hasVideoAvailable
-        ? List.generate(
-            count,
-            (i) => EpisodeItem(
-              id: '${item.id}-eps-${i + 1}',
-              episodeNumber: i + 1,
-              title: 'Episode ${i + 1} Sub Indo',
-              releaseDate: '2024-01-${(i + 1).toString().padLeft(2, '0')}',
-              streamUrl: AnimeStreamResolver.resolveStreamUrl(
-                animeId: item.id,
-                animeTitle: item.title,
-                server: 'Server 1 (Fast HD)',
-                episodeNumber: i + 1,
-              ),
-            ),
-          )
+        ? (uploadedVideos.isNotEmpty
+            ? uploadedVideos
+                .map(
+                  (uv) => EpisodeItem(
+                    id: '${item.id}-eps-${uv.episodeNumber}',
+                    episodeNumber: uv.episodeNumber,
+                    title: uv.episodeTitle,
+                    releaseDate: '2024-01-${uv.episodeNumber.toString().padLeft(2, '0')}',
+                    streamUrl: uv.videoUrl,
+                  ),
+                )
+                .toList()
+            : List.generate(
+                count,
+                (i) => EpisodeItem(
+                  id: '${item.id}-eps-${i + 1}',
+                  episodeNumber: i + 1,
+                  title: 'Episode ${i + 1} Sub Indo',
+                  releaseDate: '2024-01-${(i + 1).toString().padLeft(2, '0')}',
+                  streamUrl: AnimeStreamResolver.resolveStreamUrl(
+                    animeId: item.id,
+                    animeTitle: item.title,
+                    server: 'Server 1 (Fast HD)',
+                    episodeNumber: i + 1,
+                  ),
+                ),
+              ))
         : <EpisodeItem>[];
 
     return AnimeDetail(
@@ -561,6 +606,8 @@ query ($id: Int) {
       totalEpisodes: episodes.length,
       episodes: episodes,
       aniListId: item.aniListId,
+      relations: const [],
+      externalLinks: const [],
       hasVideoAvailable: item.hasVideoAvailable,
       bannerUrl: item.bannerUrl,
     );
@@ -573,6 +620,9 @@ query ($id: Int) {
         title.toLowerCase().contains('santen sensou') ||
         title.toLowerCase().contains('three deities')) {
       return false;
+    }
+    if (aniListId > 0 && OwnerVideoRepository.instance.hasVideosForAnime(aniListId)) {
+      return true;
     }
     return AnimeStreamResolver.hasCompleteEpisodes(aniListId.toString(), title);
   }
@@ -794,6 +844,22 @@ query ($id: Int) {
       statusLabel: 'Tamat',
       aniListId: 8861,
       hasVideoAvailable: false,
+    ),
+    AnimeItem(
+      id: '21087',
+      title: 'One Punch Man',
+      japaneseTitle: 'ワンパンマン',
+      rating: 8.7,
+      releaseYear: 2015,
+      genres: ['Action', 'Comedy', 'Sci-Fi', 'Supernatural'],
+      description: 'Saitama adalah pahlawan unik yang mampu mengalahkan musuh mana pun hanya dengan satu pukulan.',
+      posterUrl: 'https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx21087-sZwHsannLyql.png',
+      backdropUrl: 'https://s4.anilist.co/file/anilistcdn/media/anime/banner/21087-sX47UotflVms.jpg',
+      bannerUrl: 'https://s4.anilist.co/file/anilistcdn/media/anime/banner/21087-sX47UotflVms.jpg',
+      episodeInfo: 'SUB · 12 EPS (Tamat)',
+      statusLabel: 'Tamat',
+      aniListId: 21087,
+      hasVideoAvailable: true,
     ),
     AnimeItem(
       id: '178945',

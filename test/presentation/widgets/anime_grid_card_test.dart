@@ -58,7 +58,7 @@ void main() {
     expect(find.text('8.8'), findsOneWidget);
     expect(find.text('SUB · EP 8'), findsOneWidget);
     expect(find.byIcon(Icons.star_rounded), findsOneWidget);
-    expect(find.text('Tersedia Video'), findsOneWidget);
+    expect(find.text('Video tersedia'), findsOneWidget);
 
     await tester.tap(find.byType(AnimeGridCard));
     await tester.pumpAndSettle();
@@ -81,7 +81,7 @@ void main() {
     );
 
     expect(find.text('Tokyo Revengers: Santen Sensou'), findsWidgets);
-    expect(find.text('Belum Tersedia'), findsOneWidget);
+    expect(find.text('Belum tersedia'), findsOneWidget);
     expect(find.byType(AnimeImagePlaceholder), findsOneWidget);
   });
 }
