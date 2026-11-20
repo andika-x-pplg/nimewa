@@ -29,6 +29,73 @@ void main() {
     });
   });
 
+  group('AnimeItem matchesSearch', () {
+    const tokyoRevengers = AnimeItem(
+      id: 'tokyo-revengers',
+      title: 'Tokyo Revengers: Tenjiku Arc',
+      japaneseTitle: '東京リベンジャーズ 天竺編',
+      rating: 8.3,
+      releaseYear: 2023,
+      genres: ['Action', 'Drama'],
+      description: 'Takemichi fights.',
+      posterUrl: 'https://example.com/tr.jpg',
+      backdropUrl: 'https://example.com/tr.jpg',
+    );
+
+    const attackOnTitan = AnimeItem(
+      id: 'attack-on-titan',
+      title: 'Attack on Titan',
+      japaneseTitle: '進撃の巨人',
+      rating: 8.8,
+      releaseYear: 2013,
+      genres: ['Action', 'Fantasy'],
+      description: 'Eren fights titans.',
+      posterUrl: 'https://example.com/aot.jpg',
+      backdropUrl: 'https://example.com/aot.jpg',
+    );
+
+    const yosugaNoSora = AnimeItem(
+      id: '8861',
+      title: 'Yosuga no Sora',
+      japaneseTitle: 'ヨスガノソラ',
+      rating: 7.2,
+      releaseYear: 2010,
+      genres: ['Romance', 'Drama'],
+      description: 'Haruka and Sora.',
+      posterUrl: 'https://example.com/yns.jpg',
+      backdropUrl: 'https://example.com/yns.jpg',
+    );
+
+    test('matches by substring and word prefix', () {
+      expect(tokyoRevengers.matchesSearch('tokyo'), isTrue);
+      expect(tokyoRevengers.matchesSearch('rev'), isTrue);
+      expect(tokyoRevengers.matchesSearch('tenjiku'), isTrue);
+      expect(yosugaNoSora.matchesSearch('yosuga'), isTrue);
+      expect(yosugaNoSora.matchesSearch('sora'), isTrue);
+    });
+
+    test('matches by initials and acronyms', () {
+      expect(tokyoRevengers.matchesSearch('tr'), isTrue);
+      expect(tokyoRevengers.matchesSearch('TR'), isTrue);
+      expect(attackOnTitan.matchesSearch('aot'), isTrue);
+      expect(attackOnTitan.matchesSearch('at'), isTrue);
+      expect(attackOnTitan.matchesSearch('snk'), isTrue);
+      expect(yosugaNoSora.matchesSearch('yns'), isTrue);
+      expect(yosugaNoSora.matchesSearch('ys'), isTrue);
+    });
+
+    test('returns false for non-matching queries', () {
+      expect(tokyoRevengers.matchesSearch('bleach'), isFalse);
+      expect(attackOnTitan.matchesSearch('naruto'), isFalse);
+      expect(yosugaNoSora.matchesSearch('goku'), isFalse);
+    });
+
+    test('returns true for empty or whitespace query', () {
+      expect(tokyoRevengers.matchesSearch(''), isTrue);
+      expect(tokyoRevengers.matchesSearch('   '), isTrue);
+    });
+  });
+
   group('mockPopularAnime Catalog', () {
     test('contains exactly 5 anime items', () {
       expect(mockPopularAnime.length, 5);

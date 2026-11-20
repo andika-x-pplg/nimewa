@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../data/mock/mock_explore_data.dart';
 import '../../data/models/anime_item.dart';
+import '../../data/services/anilist_api_client.dart';
 import '../../data/services/anime_stream_service.dart';
 import '../widgets/anime_grid_card.dart';
 
@@ -34,6 +36,10 @@ class _ExploreScreenState extends State<ExploreScreen> {
   bool _isLoadingMore = false;
   bool _hasMore = true;
   String? _errorMessage;
+
+  Timer? _debounceTimer;
+  int _searchRequestId = 0;
+  final List<AnimeItem> _cachedSearchResults = [];
 
   static const List<Map<String, String>> _filterTabs = [
     {'key': 'popular', 'label': 'Popular'},
@@ -83,10 +89,101 @@ class _ExploreScreenState extends State<ExploreScreen> {
 
   @override
   void dispose() {
+    _debounceTimer?.cancel();
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     _searchController.dispose();
     super.dispose();
+  }
+
+  List<AnimeItem> get _allKnownAnime {
+    final pool = <String, AnimeItem>{};
+    for (final a in allCatalogAnime) {
+      pool[a.title.toLowerCase()] = a;
+    }
+    for (final a in AniListApiClient.cachedTrendingAnime) {
+      pool[a.title.toLowerCase()] = a;
+    }
+    for (final a in _cachedSearchResults) {
+      pool[a.title.toLowerCase()] = a;
+    }
+    return pool.values.toList();
+  }
+
+  void _onSearchChanged(String val) {
+    final query = val.trim();
+    if (query.isEmpty) {
+      _debounceTimer?.cancel();
+      _fetchCatalog();
+      return;
+    }
+
+    // 1. Instant local match across all in-memory anime (letters, words, initials)
+    final localMatches = _allKnownAnime
+        .where((item) => item.matchesSearch(query))
+        .toList();
+
+    setState(() {
+      _animeList = localMatches;
+      _isLoading = false;
+      _errorMessage = null;
+      _hasMore = true;
+    });
+
+    // 2. Debounce remote search (300ms) to query AniList's full global library
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 300), () {
+      _performRemoteSearch(query);
+    });
+  }
+
+  Future<void> _performRemoteSearch(String query) async {
+    final currentRequestId = ++_searchRequestId;
+
+    try {
+      final remoteList = await _streamService.getExploreAnimeList(
+        filter: _selectedFilter,
+        genre: _selectedGenre,
+        query: query,
+        limit: 20,
+        offset: 0,
+      );
+
+      if (!mounted ||
+          _searchRequestId != currentRequestId ||
+          _searchController.text.trim().toLowerCase() != query.toLowerCase()) {
+        return;
+      }
+
+      // Cache discovered items
+      _cachedSearchResults.addAll(remoteList);
+
+      // Merge: preserve local matches at the top, append new remote items without duplicates
+      final existingTitles = _animeList.map((a) => a.title.toLowerCase()).toSet();
+      final existingIds = _animeList.map((a) => a.id).toSet();
+      final newItems = remoteList
+          .where((a) =>
+              !existingTitles.contains(a.title.toLowerCase()) &&
+              !existingIds.contains(a.id))
+          .toList();
+
+      setState(() {
+        if (_animeList.isEmpty) {
+          _animeList = remoteList;
+        } else {
+          _animeList.addAll(newItems);
+        }
+        _isLoading = false;
+        _hasMore = remoteList.length >= 20;
+      });
+    } catch (_) {
+      // If network fails (e.g. rate limit, offline), silently keep local matches
+      if (mounted && _searchRequestId == currentRequestId) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   Future<void> _fetchCatalog({bool isInitial = false}) async {
@@ -273,13 +370,13 @@ class _ExploreScreenState extends State<ExploreScreen> {
                 Expanded(
                   child: TextField(
                     controller: _searchController,
-                    onChanged: (_) => _fetchCatalog(),
+                    onChanged: _onSearchChanged,
                     style: AppTypography.bodyMedium.copyWith(
                       color: AppColors.textPrimary,
                     ),
                     cursorColor: AppColors.accentBlue,
                     decoration: InputDecoration(
-                      hintText: 'Cari anime, genre, atau studio...',
+                      hintText: 'Cari nama anime',
                       hintStyle: AppTypography.bodyMedium.copyWith(
                         color: AppColors.textMuted,
                         fontSize: 13,
@@ -294,7 +391,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                   GestureDetector(
                     onTap: () {
                       _searchController.clear();
-                      _fetchCatalog();
+                      _onSearchChanged('');
                     },
                     child: const Icon(
                       Icons.close_rounded,

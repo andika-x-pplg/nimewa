@@ -20,7 +20,7 @@ void main() {
     expect(find.text('Temukan anime favoritmu'), findsOneWidget);
 
     // Verify Search Bar
-    expect(find.text('Cari anime, genre, atau studio...'), findsOneWidget);
+    expect(find.text('Cari nama anime'), findsOneWidget);
     expect(find.byIcon(Icons.search_rounded), findsOneWidget);
     expect(find.byIcon(Icons.tune_rounded), findsOneWidget);
 
@@ -58,6 +58,12 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Kimi no Na wa (Your Name)'), findsOneWidget);
+
+    // Search by initials (e.g. 'tr' matches Tokyo Revengers)
+    await tester.enterText(find.byType(TextField), 'tr');
+    await tester.pumpAndSettle();
+
+    expect(find.text('Tokyo Revengers: Tenjiku Arc'), findsOneWidget);
 
     // Search query with no match shows empty state gracefully
     await tester.enterText(find.byType(TextField), 'xyznonexistentanime');
