@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:nimeva/data/services/anime_stream_resolver.dart';
 import 'package:nimeva/data/services/anime_subtitle_service.dart';
+import 'package:nimeva/data/services/stream_audit_logger.dart';
 
 void main() {
   group('AnimeStreamResolver Tests', () {
@@ -612,6 +613,62 @@ void main() {
         AnimeStreamResolver.hasCompleteEpisodes('tokyo-revengers-s3', 'Tokyo Revengers Season 3'),
         isTrue,
       );
+    });
+
+    test('resolves streams strictly matching AniList ID without season bleeding', () {
+      // Tokyo Revengers Season 1 (AniList ID 120120)
+      final trS1 = AnimeStreamResolver.resolveStreamUrl(
+        animeId: '120120',
+        animeTitle: 'Tokyo Revengers',
+        server: 'Server 1 (Fast HD)',
+        episodeNumber: 1,
+      );
+      expect(trS1, contains('Tokyo.Revengers'));
+
+      // Tokyo Revengers Season 2 Christmas Showdown (AniList ID 142853)
+      final trS2 = AnimeStreamResolver.resolveStreamUrl(
+        animeId: '142853',
+        animeTitle: 'Tokyo Revengers: Christmas Showdown',
+        server: 'Server 1 (Fast HD)',
+        episodeNumber: 1,
+      );
+      expect(trS2, contains('tokyo-revengers-s2'));
+
+      // Tokyo Revengers Season 3 Tenjiku Arc (AniList ID 163539)
+      final trS3 = AnimeStreamResolver.resolveStreamUrl(
+        animeId: '163539',
+        animeTitle: 'Tokyo Revengers: Tenjiku Arc',
+        server: 'Server 1 (Fast HD)',
+        episodeNumber: 1,
+      );
+      expect(trS3, contains('tokyo-revengers-s3'));
+
+      // Tokyo Revengers Season 4 / Santen Sensou (AniList ID 178945 - Incomplete / No Episode)
+      final trS4 = AnimeStreamResolver.resolveStreamUrl(
+        animeId: '178945',
+        animeTitle: 'Tokyo Revengers: Santen Sensou-hen',
+        server: 'Server 1 (Fast HD)',
+        episodeNumber: 1,
+      );
+      // Strictly empty, no fallback to Season 1 or 2!
+      expect(trS4, isEmpty);
+      expect(AnimeStreamResolver.hasCompleteEpisodes('178945', 'Tokyo Revengers: Santen Sensou-hen'), isFalse);
+    });
+
+    test('logs audit records for stream resolution candidates', () {
+      StreamAuditLogger.instance.clear();
+
+      AnimeStreamResolver.resolveStreamUrl(
+        animeId: '120120',
+        animeTitle: 'Tokyo Revengers',
+        server: 'Server 1 (Fast HD)',
+        episodeNumber: 1,
+      );
+
+      final logs = StreamAuditLogger.instance.recentLogs;
+      expect(logs, isNotEmpty);
+      expect(logs.any((l) => l.searchedTitle.contains('Tokyo Revengers')), isTrue);
+      expect(logs.any((l) => l.isAccepted == true), isTrue);
     });
   });
 

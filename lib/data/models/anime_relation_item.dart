@@ -55,3 +55,4 @@ class AnimeRelationItem {
   @override
   String toString() => 'AnimeRelationItem(id: $id, title: $title, relationType: $relationType)';
 }
+

@@ -71,3 +71,4 @@ class StreamAuditLogger {
     _logs.clear();
   }
 }
+

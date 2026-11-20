@@ -1,4 +1,6 @@
 import 'consumet_api_client.dart';
+import 'stream_audit_logger.dart';
+import 'stream_filter_validator.dart';
 
 /// Resolver that maps anime IDs, titles, and episode numbers to real, authentic
 /// anime video streams across available servers, strictly adhering to canonical
@@ -8,6 +10,34 @@ class AnimeStreamResolver {
 
   /// Shared instance of ConsumetApiClient for online stream lookup.
   static ConsumetApiClient consumetClient = ConsumetApiClient();
+
+  /// Map of AniList IDs to canonical anime keys
+  static const Map<String, String> _aniListIdMap = {
+    '120120': 'tokyo-revengers',
+    '142853': 'tokyo-revengers-s2',
+    '163539': 'tokyo-revengers-s3',
+    '178945': 'tokyo-revengers-s4',
+    '101922': 'demon-slayer',
+    '142329': 'demon-slayer-s2',
+    '145139': 'demon-slayer-s3',
+    '166240': 'dandadan',
+    '16498': 'attack-on-titan',
+    '1535': 'death-note',
+    '113415': 'jujutsu-kaisen',
+    '127720': 'chainsaw-man',
+    '151807': 'solo-leveling',
+    '154587': 'frieren',
+    '140960': 'spy-x-family',
+    '11061': 'hunter-x-hunter',
+    '5114': 'fullmetal-alchemist',
+    '21': 'one-piece',
+    '20': 'naruto',
+    '269': 'bleach',
+    '9253': 'steins-gate',
+    '21827': 'your-name',
+    '20954': 'silent-voice',
+    '20665': 'shigatsu-wa-kimi',
+  };
 
   /// Set of anime keys verified to have 100% genuine, authentic episode files of that exact show.
   /// Under the Atomicity principle ("semua atau tidak sama sekali"), any anime not in this set
@@ -64,7 +94,8 @@ class AnimeStreamResolver {
     final cleanTitle = animeTitle.toLowerCase().trim();
 
     // Tokyo Revengers Season 4 and unreleased sequels are explicitly incomplete
-    if (cleanId == 'tokyo-revengers-s4' ||
+    if (cleanId == '178945' ||
+        cleanId == 'tokyo-revengers-s4' ||
         cleanId == '48960' ||
         cleanTitle.contains('tokyo revengers: season 4') ||
         cleanTitle.contains('tokyo revengers season 4') ||
@@ -100,6 +131,14 @@ class AnimeStreamResolver {
   }) async {
     // Under Atomicity rule, incomplete anime/season is never resolved
     if (!hasCompleteEpisodes(animeId, animeTitle)) {
+      StreamAuditLogger.instance.log(
+        searchedTitle: animeTitle,
+        candidateTitle: animeTitle,
+        candidateSource: server,
+        isAccepted: false,
+        reason: 'Anime or season is marked incomplete under Atomicity rules',
+        aniListId: int.tryParse(animeId),
+      );
       return '';
     }
 
@@ -116,7 +155,30 @@ class AnimeStreamResolver {
           seasonNumber: season,
         );
         if (onlineUrl != null && onlineUrl.isNotEmpty) {
-          return onlineUrl;
+          final validation = StreamFilterValidator.validate(
+            candidateTitle: '$animeTitle - Episode $episodeNumber (Online)',
+            candidateUrl: onlineUrl,
+          );
+          if (validation.isValid) {
+            StreamAuditLogger.instance.log(
+              searchedTitle: animeTitle,
+              candidateTitle: '$animeTitle - Episode $episodeNumber (Online)',
+              candidateSource: 'Consumet API',
+              isAccepted: true,
+              reason: 'Consumet candidate validated successfully',
+              aniListId: int.tryParse(animeId),
+            );
+            return onlineUrl;
+          } else {
+            StreamAuditLogger.instance.log(
+              searchedTitle: animeTitle,
+              candidateTitle: '$animeTitle - Episode $episodeNumber (Online)',
+              candidateSource: 'Consumet API',
+              isAccepted: false,
+              reason: validation.reason,
+              aniListId: int.tryParse(animeId),
+            );
+          }
         }
       } catch (_) {
         // Fall through to reliable local stream
@@ -142,6 +204,14 @@ class AnimeStreamResolver {
   }) {
     // Under the Atomicity principle, incomplete anime are never played
     if (!hasCompleteEpisodes(animeId, animeTitle)) {
+      StreamAuditLogger.instance.log(
+        searchedTitle: animeTitle,
+        candidateTitle: animeTitle,
+        candidateSource: server,
+        isAccepted: false,
+        reason: 'Anime or season is marked incomplete under Atomicity rules',
+        aniListId: int.tryParse(animeId),
+      );
       return '';
     }
 
@@ -150,14 +220,50 @@ class AnimeStreamResolver {
 
     final episodes = _animeEpisodeMap[key];
     if (episodes == null || episodes.isEmpty) {
+      StreamAuditLogger.instance.log(
+        searchedTitle: animeTitle,
+        candidateTitle: animeTitle,
+        candidateSource: server,
+        isAccepted: false,
+        reason: 'No episode entries found for key: $key',
+        aniListId: int.tryParse(animeId),
+      );
       return '';
     }
 
     // Resolve episode index (1-based to list index)
     final epIndex = (episodeNumber - 1).clamp(0, episodes.length - 1);
     final entry = episodes[epIndex];
+    final url = isServer3 ? entry.server3Url : entry.server1Url;
 
-    return isServer3 ? entry.server3Url : entry.server1Url;
+    // StreamFilterValidator check
+    final validation = StreamFilterValidator.validate(
+      candidateTitle: '$animeTitle - Episode $episodeNumber',
+      candidateUrl: url,
+    );
+
+    if (!validation.isValid) {
+      StreamAuditLogger.instance.log(
+        searchedTitle: animeTitle,
+        candidateTitle: '$animeTitle - Episode $episodeNumber',
+        candidateSource: server,
+        isAccepted: false,
+        reason: validation.reason,
+        aniListId: int.tryParse(animeId),
+      );
+      return '';
+    }
+
+    StreamAuditLogger.instance.log(
+      searchedTitle: animeTitle,
+      candidateTitle: '$animeTitle - Episode $episodeNumber',
+      candidateSource: server,
+      isAccepted: true,
+      reason: 'Valid authentic episode stream',
+      aniListId: int.tryParse(animeId),
+    );
+
+    return url;
   }
 
   /// Extracts the canonical season number (1, 2, 3, 4, etc.) from id and title.
@@ -235,6 +341,11 @@ class AnimeStreamResolver {
 
   /// Detects the canonical anime key based on title, Japanese title, or API ID.
   static String detectAnimeKey(String id, String title) {
+    final cleanId = id.trim();
+    if (_aniListIdMap.containsKey(cleanId)) {
+      return _aniListIdMap[cleanId]!;
+    }
+
     final combined = '${id.toLowerCase()} ${title.toLowerCase()}';
     final season = extractSeasonNumber(id, title);
 
