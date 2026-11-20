@@ -50,7 +50,10 @@ class AnimeGridCard extends StatelessWidget {
                               item.posterUrl,
                               fit: BoxFit.cover,
                               errorBuilder: (context, error, stackTrace) =>
-                                  AnimeImagePlaceholder(title: item.title),
+                                  AnimeImagePlaceholder(
+                                title: item.title,
+                                showTitle: false,
+                              ),
                               loadingBuilder: (context, child, loadingProgress) {
                                 if (loadingProgress == null) return child;
                                 return Container(
