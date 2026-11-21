@@ -228,8 +228,9 @@ void main() {
         server: 'Server 1 (Fast HD)',
         episodeNumber: 1,
       );
-      expect(ep1, contains('S01E01')); // Season 1 Episode 1
+      expect(ep1, contains('sololeveling-t01e01.mp4')); // Season 1 Episode 1
       expect(ep1, isNot(contains('s-02-e-01'))); // NOT Season 2!
+      expect(ep1, isNot(contains('t02')));
 
       final ep10 = AnimeStreamResolver.resolveStreamUrl(
         animeId: '46231',
@@ -237,7 +238,7 @@ void main() {
         server: 'Server 1 (Fast HD)',
         episodeNumber: 10,
       );
-      expect(ep10, contains('S01E10')); // Season 1 Episode 10
+      expect(ep10, contains('sololeveling-t01e10.mp4')); // Season 1 Episode 10
       expect(ep10, isNot(equals(ep1)));
     });
 
@@ -323,7 +324,7 @@ void main() {
         episodeNumber: 1,
       );
       expect(bleach1, contains('.mp4'));
-      expect(bleach1, contains('Bleach%20-%20S01E01.mp4'));
+      expect(bleach1, contains('Bleach%20-%20001'));
       expect(bleach1, isNot(contains('Claro Video')));
 
       final bleach2 = AnimeStreamResolver.resolveStreamUrl(
@@ -332,7 +333,7 @@ void main() {
         server: 'Server 1 (Fast HD)',
         episodeNumber: 2,
       );
-      expect(bleach2, contains('Bleach%20-%20S01E02.mp4'));
+      expect(bleach2, contains('Bleach%20-%20002'));
       expect(bleach2, isNot(equals(bleach1)));
 
       final hxh1 = AnimeStreamResolver.resolveStreamUrl(
@@ -379,7 +380,7 @@ void main() {
         animeTitle: 'Jujutsu Kaisen 0 Movie',
         server: 'Server 1 (Fast HD)',
       );
-      expect(jjk0, contains('Jujustu%20Kaisen%200'));
+      expect(jjk0.toLowerCase(), contains('jujutsu-kaisen-0'));
       expect(jjk0, contains('.mp4'));
 
       final yourName = AnimeStreamResolver.resolveStreamUrl(
@@ -395,7 +396,7 @@ void main() {
         animeTitle: 'Chainsaw Man: Reze Arc',
         server: 'Server 1 (Fast HD)',
       );
-      expect(csmMovie, contains('ssstwitter.com_1763419408768.mp4'));
+      expect(csmMovie, contains('csmrezearc.mp4'));
 
       final knyMovie = AnimeStreamResolver.resolveStreamUrl(
         animeId: 'kimetsu-no-yaiba-infinity',
@@ -424,7 +425,7 @@ void main() {
         animeTitle: 'A Silent Voice',
         server: 'Server 1 (Fast HD)',
       );
-      expect(silentVoice, contains('Silent%20Voice'));
+      expect(silentVoice.toLowerCase(), contains('silent%20voice'));
     });
 
     test('resolves Steins;Gate, Dan Da Dan, and Re:Zero sequential episodes', () {
@@ -459,7 +460,7 @@ void main() {
         server: 'Server 1 (Fast HD)',
         episodeNumber: 1,
       );
-      expect(rz1, contains('ReZeroEnglishDubSeason1Episode1.ia.mp4'));
+      expect(rz1, contains('rezerokarahajimeruisekaiseikatsu_202001'));
     });
 
     test('never returns generic dummy 3D trailers for unknown titles', () {
@@ -590,7 +591,7 @@ void main() {
       // Verify each season has its distinct stream URL
       expect(s1, contains('knys1'));
       expect(s1, contains('KNYS1-E1'));
-      expect(s2, contains('knym1'));
+      expect(s2, contains('kimetsu_20240913'));
       expect(s3, contains('knyhgh1243ekrngtfkmrgtihj'));
       expect(s4, contains('knyhgh1243ekrngtfkmrgtihj-hd-1'));
     });
@@ -632,7 +633,7 @@ void main() {
         server: 'Server 1 (Fast HD)',
         episodeNumber: 1,
       );
-      expect(knyS2, contains('knym1'));
+      expect(knyS2, contains('kimetsu_20240913'));
 
       expect(
         AnimeStreamResolver.hasCompleteEpisodes('tokyo-revengers-s2', 'Tokyo Revengers Season 2'),
@@ -642,6 +643,22 @@ void main() {
         AnimeStreamResolver.hasCompleteEpisodes('tokyo-revengers-s3', 'Tokyo Revengers Season 3'),
         isTrue,
       );
+      // Tokyo Revengers Season 4 (Santen Sensou) is explicitly unavailable per user request
+      expect(
+        AnimeStreamResolver.hasCompleteEpisodes('tokyo-revengers-s4', 'Tokyo Revengers Season 4 Santen Sensou'),
+        isFalse,
+      );
+      expect(
+        AnimeStreamResolver.hasCompleteEpisodes('178945', 'Tokyo Revengers: Santen Sensou-hen'),
+        isFalse,
+      );
+      final trS4 = AnimeStreamResolver.resolveStreamUrl(
+        animeId: 'tokyo-revengers-s4',
+        animeTitle: 'Tokyo Revengers Season 4 Santen Sensou',
+        server: 'Server 1 (Fast HD)',
+        episodeNumber: 1,
+      );
+      expect(trS4, isEmpty);
     });
 
     test('resolves streams strictly matching AniList ID without season bleeding', () {

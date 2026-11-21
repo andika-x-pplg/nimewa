@@ -21,11 +21,15 @@ class AnimeStreamResolver {
     '101922': 'demon-slayer',
     '142329': 'demon-slayer-s2',
     '145139': 'demon-slayer-s3',
+    '112151': 'demon-slayer-movie',
     '166240': 'dandadan',
+    '178526': 'dandadan-s2',
     '16498': 'attack-on-titan',
     '1535': 'death-note',
     '113415': 'jujutsu-kaisen',
+    '131573': 'jujutsu-kaisen-0',
     '127720': 'chainsaw-man',
+    '172905': 'chainsaw-man-movie',
     '151807': 'solo-leveling',
     '154587': 'frieren',
     '140960': 'spy-x-family',
@@ -34,10 +38,14 @@ class AnimeStreamResolver {
     '21': 'one-piece',
     '20': 'naruto',
     '269': 'bleach',
+    '21355': 'rezero',
     '9253': 'steins-gate',
     '21827': 'your-name',
+    '152865': 'haikyuu-movie',
     '20954': 'silent-voice',
     '20665': 'shigatsu-wa-kimi',
+    '20605': 'tokyo-ghoul',
+    '99920': 'tokyo-ghoul-movie',
     '21087': 'one-punch-man',
     '102194': 'one-punch-man-s2',
     '97668': 'one-punch-man-s2',
@@ -60,7 +68,6 @@ class AnimeStreamResolver {
     'tokyo-revengers',
     'tokyo-revengers-s2',
     'tokyo-revengers-s3',
-    'tokyo-revengers-s4',
     'chainsaw-man',
     'chainsaw-man-movie',
     'naruto',
@@ -81,6 +88,7 @@ class AnimeStreamResolver {
     'gintama-movie',
     'silent-voice',
     'tokyo-ghoul',
+    'tokyo-ghoul-movie',
     'frieren',
     'one-punch-man',
     'one-punch-man-s2',
@@ -93,6 +101,7 @@ class AnimeStreamResolver {
     'season-2-fallback',
     'season-3-fallback',
     'season-4-fallback',
+    'tokyo-revengers-s4',
   };
 
   /// Returns true if and only if the anime or season has a complete, authentic set
@@ -352,7 +361,7 @@ class AnimeStreamResolver {
         combined.contains('christmas showdown') ||
         combined.contains('arise from the shadow') ||
         combined.contains('missing pieces') ||
-        combined.contains('piece') ||
+        (combined.contains('piece') && !combined.contains('one piece')) ||
         combined.contains('tybw') ||
         combined.contains('sennen kessen') ||
         combined.contains('thousand year blood war')) {
@@ -940,11 +949,10 @@ class AnimeStreamResolver {
   // --- Demon Slayer Season 2 (11 Episodes, Entertainment District Arc) ---
   static List<_AnimeStreamEntry> _buildKnySeason2() {
     return List.generate(11, (index) {
-      const url =
-          'https://archive.org/download/knym1/Kimetsu%20no%20Yaiba%20-%20Mugen%20Ressha-hen%20tv%2001.mp4';
-      const s3Url =
-          'https://archive.org/cors/knym1/Kimetsu%20no%20Yaiba%20-%20Mugen%20Ressha-hen%20tv%2001.mp4';
-      return const _AnimeStreamEntry(
+      final epNum = index + 1;
+      final url = 'https://archive.org/download/kimetsu_20240913/GATON%202.$epNum.mp4';
+      final s3Url = 'https://archive.org/cors/kimetsu_20240913/GATON%202.$epNum.mp4';
+      return _AnimeStreamEntry(
         server1Url: url,
         server3Url: s3Url,
         server4Url: url,
@@ -1001,10 +1009,9 @@ class AnimeStreamResolver {
   // --- Attack on Titan Season 1 (25 Episodes, Japanese Audio + Eng Sub 1080p BluRay) ---
   static List<_AnimeStreamEntry> _buildAotSeason1() {
     return List.generate(25, (index) {
-      final epNum = index + 1;
-      final pad = epNum.toString().padLeft(2, '0');
+      final titlePart = OwnerVideoRepository.aotS1Titles[index];
       final fileName =
-          'Attack on Titan (2013) - S01E$pad ($pad) (1080p BluRay x265 ImE).mp4';
+          'Attack on Titan (2013) - $titlePart (1080p BluRay x265 ImE).mp4';
       final encoded = Uri.encodeComponent(
               'Attack on Titan (2013) Season 1 S01 (1080p BluRay x265 HEVC 10bit AAC 5.1 ImE) REPACK/$fileName')
           .replaceAll('%2F', '/');
@@ -1038,8 +1045,16 @@ class AnimeStreamResolver {
   // --- Jujutsu Kaisen 0 Movie (104 Minutes) ---
   static List<_AnimeStreamEntry> _buildJjk0() {
     const url =
-        'https://archive.org/download/jujustu-kaisen-0-subbed/Jujustu%20Kaisen%200%20%28Subbed%29.mp4';
-    return [const _AnimeStreamEntry(server1Url: url, server3Url: url)];
+        'https://archive.org/download/jujutsu-kaisen-0-1080p/Jujutsu-Kaisen-0_1080p.mp4';
+    const s3Url =
+        'https://archive.org/cors/jujutsu-kaisen-0-1080p/Jujutsu-Kaisen-0_1080p.mp4';
+    return [
+      const _AnimeStreamEntry(
+        server1Url: url,
+        server3Url: s3Url,
+        server4Url: url,
+      )
+    ];
   }
 
   // --- Death Note Season 1 (37 Episodes, ~23m each) ---
@@ -1196,29 +1211,19 @@ class AnimeStreamResolver {
     });
   }
 
-  // --- Tokyo Revengers Season 4 / Santen Sensou (Official Japanese Audio) ---
+  // --- Tokyo Revengers Season 4 / Santen Sensou (Explicitly Unavailable) ---
   static List<_AnimeStreamEntry> _buildTokyoRevengersS4() {
-    const url =
-        'https://archive.org/download/animelk-tokyo-revengers-santen-e01/Tokyo%20Revengers%3A%20Santen%20Sensou-hen%20E01_720p.mp4';
-    return [
-      _AnimeStreamEntry(
-        server1Url: url,
-        server3Url: url.replaceAll('/download/', '/cors/'),
-        server4Url: url,
-      )
-    ];
+    return const [];
   }
 
   // --- Yosuga no Sora (12 Episodes BluRay Japanese audio) ---
   static List<_AnimeStreamEntry> _buildYosugaNoSora() {
     return List.generate(12, (index) {
-      final epStr = (index + 1).toString().padLeft(2, '0');
-      final s1 =
-          'https://archive.org/download/yosuga-no-sora-0368ab60e9b77640d9c12f7f299b73232ba809e35d79a65b21b916ac4609ea085/Yosuga.no.Sora.S01E$epStr.1080p.BluRay.10-Bit.FLAC2.0.x265-YURASUKA.mp4';
-      final s3 =
-          'https://archive.org/cors/yosuga-no-sora-0368ab60e9b77640d9c12f7f299b73232ba809e35d79a65b21b916ac4609ea085/Yosuga.no.Sora.S01E$epStr.1080p.BluRay.10-Bit.FLAC2.0.x265-YURASUKA.mp4';
-      final s4 = s1;
-      return _AnimeStreamEntry(server1Url: s1, server3Url: s3, server4Url: s4);
+      final fileName = OwnerVideoRepository.yosugaFiles[index];
+      final encoded = Uri.encodeComponent(fileName);
+      final s1 = 'https://archive.org/download/ag_yosuga-no-sora/$encoded';
+      final s3 = 'https://archive.org/cors/ag_yosuga-no-sora/$encoded';
+      return _AnimeStreamEntry(server1Url: s1, server3Url: s3, server4Url: s1);
     });
   }
 
@@ -1227,13 +1232,13 @@ class AnimeStreamResolver {
     return List.generate(12, (index) {
       final epNum = index + 1;
       final pad = epNum.toString().padLeft(2, '0');
-      final fileName = '[AnimeSalt] Solo Leveling - S01E$pad [1080p] [Multi-Audio].mp4';
-      final encoded = Uri.encodeComponent(fileName);
       final url =
-          'https://archive.org/download/anime-salt-solo-leveling-s-01-e-01-1080p-multi-audio/$encoded';
+          'https://archive.org/download/sololevelinggggg/sololeveling-t01e$pad.mp4';
+      final corsUrl =
+          'https://archive.org/cors/sololevelinggggg/sololeveling-t01e$pad.mp4';
       return _AnimeStreamEntry(
         server1Url: url,
-        server3Url: url.replaceAll('/download/', '/cors/'),
+        server3Url: corsUrl,
         server4Url: url,
       );
     });
@@ -1280,9 +1285,9 @@ class AnimeStreamResolver {
 
   // --- Chainsaw Man: Reze Arc Movie (94 Minutes) ---
   static List<_AnimeStreamEntry> _buildCsmMovie() {
-    const url =
-        'https://archive.org/download/ssstwitter.com_1763419408768/ssstwitter.com_1763419408768.mp4';
-    return [const _AnimeStreamEntry(server1Url: url, server3Url: url)];
+    const url = 'https://archive.org/download/rezearc/csmrezearc.mp4';
+    const s3 = 'https://archive.org/cors/rezearc/csmrezearc.mp4';
+    return [const _AnimeStreamEntry(server1Url: url, server3Url: s3, server4Url: url)];
   }
 
   // --- Naruto Season 1 (25 Episodes, ~23m each, Japanese Audio) ---
@@ -1356,12 +1361,10 @@ class AnimeStreamResolver {
   // --- Bleach Season 1 (20 Episodes, Japanese Audio + Sub Indo / Eng Sub) ---
   static List<_AnimeStreamEntry> _buildBleach() {
     return List.generate(20, (index) {
-      final epNum = index + 1;
-      final epStr = epNum.toString().padLeft(2, '0');
-      final url =
-          'https://archive.org/download/bleach-complete/Bleach/S01/Bleach%20-%20S01E$epStr.mp4';
-      final s3Url =
-          'https://archive.org/cors/bleach-complete/Bleach/S01/Bleach%20-%20S01E$epStr.mp4';
+      final file = OwnerVideoRepository.bleachS1Files[index];
+      final encoded = Uri.encodeComponent(file);
+      final url = 'https://archive.org/download/bleach-127-c-p/$encoded';
+      final s3Url = 'https://archive.org/cors/bleach-127-c-p/$encoded';
       return _AnimeStreamEntry(
         server1Url: url,
         server3Url: s3Url,
@@ -1376,8 +1379,8 @@ class AnimeStreamResolver {
       final epNum = index + 1;
       final pad3 = epNum.toString().padLeft(3, '0');
       final s1 = 'https://archive.org/download/hxh11/$pad3.ia.mp4';
-      final s3 = 'https://archive.org/download/hxh11/$pad3.mp4';
-      return _AnimeStreamEntry(server1Url: s1, server3Url: s3);
+      final s3 = 'https://archive.org/cors/hxh11/$pad3.ia.mp4';
+      return _AnimeStreamEntry(server1Url: s1, server3Url: s3, server4Url: s1);
     });
   }
 
@@ -1435,15 +1438,20 @@ class AnimeStreamResolver {
     });
   }
 
-  // --- Re:Zero Season 1 (25 Episodes, ~24-49m each) ---
+  // --- Re:Zero Season 1 (25 Episodes, ~24-49m each, Authentic Japanese Audio) ---
   static List<_AnimeStreamEntry> _buildReZero() {
     return List.generate(25, (index) {
-      final epNum = index + 1;
-      final s1 =
-          'https://archive.org/download/re-zero-english-dub-season-1-all-episodes/ReZeroEnglishDubSeason1Episode$epNum.ia.mp4';
-      final s3 =
-          'https://archive.org/download/re-zero-english-dub-season-1-all-episodes/ReZeroEnglishDubSeason1Episode$epNum.mp4';
-      return _AnimeStreamEntry(server1Url: s1, server3Url: s3);
+      final file = OwnerVideoRepository.rezeroS1Files[index];
+      final encoded = Uri.encodeComponent(file);
+      final url =
+          'https://archive.org/download/rezerokarahajimeruisekaiseikatsu_202001/$encoded';
+      final s3Url =
+          'https://archive.org/cors/rezerokarahajimeruisekaiseikatsu_202001/$encoded';
+      return _AnimeStreamEntry(
+        server1Url: url,
+        server3Url: s3Url,
+        server4Url: url,
+      );
     });
   }
 
@@ -1466,8 +1474,16 @@ class AnimeStreamResolver {
   // --- Haikyuu Dumpster Battle Movie (81 Minutes) ---
   static List<_AnimeStreamEntry> _buildHaikyuuMovie() {
     const url =
-        'https://archive.org/download/Haikyuu-the-dumpster-battle-english-sub/%40AnimeArise%20Haikyuu%20The%20Dumpster%20Battle%20English%20sub.mp4';
-    return [const _AnimeStreamEntry(server1Url: url, server3Url: url)];
+        'https://archive.org/download/haikyu-the-dumpster-battle-2024/Haikyu%21%21%20The%20Dumpster%20Battle%20%282024%29.mp4';
+    const s3Url =
+        'https://archive.org/cors/haikyu-the-dumpster-battle-2024/Haikyu%21%21%20The%20Dumpster%20Battle%20%282024%29.mp4';
+    return [
+      const _AnimeStreamEntry(
+        server1Url: url,
+        server3Url: s3Url,
+        server4Url: url,
+      )
+    ];
   }
 
   // --- Gintama: The Final Movie (100 Minutes) ---
@@ -1479,9 +1495,16 @@ class AnimeStreamResolver {
 
   // --- A Silent Voice Movie (130 Minutes) ---
   static List<_AnimeStreamEntry> _buildSilentVoice() {
-    const url =
+    const url = 'https://archive.org/download/silent-voice/Silent%20voice.mp4';
+    const s3Url =
         'https://archive.org/download/a-silent-voice-2016-1080p/A%20Silent%20Voice%20%282016%29%20%5B1080p%5D.mp4';
-    return [const _AnimeStreamEntry(server1Url: url, server3Url: url)];
+    return [
+      const _AnimeStreamEntry(
+        server1Url: url,
+        server3Url: s3Url,
+        server4Url: url,
+      )
+    ];
   }
 
   // --- Tokyo Ghoul Season 1 (12 Episodes, ~24m each, Japanese Audio) ---
@@ -1522,8 +1545,9 @@ class AnimeStreamResolver {
   static List<_AnimeStreamEntry> _buildOnePunchManS2() {
     return List.generate(12, (index) {
       final epNum = (index + 1).toString().padLeft(2, '0');
-      final url = 'https://archive.org/download/opm-s2/O-S2-BD-$epNum.mp4';
-      final s3Url = 'https://archive.org/cors/opm-s2/O-S2-BD-$epNum.mp4';
+      final fileSuffix = epNum == '12' ? 'O-S2-BD-12.ia.mp4' : 'O-S2-BD-$epNum.mp4';
+      final url = 'https://archive.org/download/opm-s2/$fileSuffix';
+      final s3Url = 'https://archive.org/cors/opm-s2/$fileSuffix';
       return _AnimeStreamEntry(
         server1Url: url,
         server3Url: s3Url,
@@ -1572,7 +1596,6 @@ class AnimeStreamResolver {
     'dandadan-s2': _buildDandadanS2(),
     'tokyo-revengers-s2': _buildTokyoRevengersS2(),
     'tokyo-revengers-s3': _buildTokyoRevengersS3(),
-    'tokyo-revengers-s4': _buildTokyoRevengersS4(),
     'one-punch-man-s2': _buildOnePunchManS2(),
   };
 }

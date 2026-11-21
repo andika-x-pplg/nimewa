@@ -39,6 +39,104 @@ class OwnerVideoRepository {
     'O-S2-BD-12.mp4',
   ];
 
+  static const List<String> bleachS1Files = [
+    'Bleach - 001 - A Shinigami Is Born!.mp4',
+    'Bleach - 002 - Pay or Play.mp4',
+    'Bleach - 003 - Sibling Rivalry.mp4',
+    'Bleach - 004 - And Your Bird Can Speak.mp4',
+    'Bleach - 005 - Beat the Invisible Enemy!.mp4',
+    'Bleach - 006 - Fight to the Death! Ichigo vs Ichigo.mp4',
+    'Bleach - 007 - Greetings from a Stuffed Toy.mp4',
+    'Bleach - 008 - June 17th, A Memory of Rain.mp4',
+    'Bleach - 009 - Unbeatable Enemy.mp4',
+    'Bleach - 010 - Assault on Trip at Sacred Ground!.mp4',
+    'Bleach - 011 - The Legendary Quincy.mp4',
+    'Bleach - 012 - A Gentle Right Arm.mp4',
+    'Bleach - 013 - Flowers and Hollows.mp4',
+    'Bleach - 014 - Back to Back, A Fight to the Death!.mp4',
+    'Bleach - 015 - Kon\'s Great Plan.mp4',
+    'Bleach - 016 - Encounter, Renji Abarai!.mp4',
+    'Bleach - 017 - Ichigo Dies!.mp4',
+    'Bleach - 018 - Reclaim! The Power of the Shinigami.mp4',
+    'Bleach - 019 - Ichigo Becomes a Hollow!.mp4',
+    'Bleach - 020 - Ichimaru the Silver Shadow.mp4',
+  ];
+  static const List<String> _bleachS1Files = bleachS1Files;
+
+  static const List<String> rezeroS1Files = [
+    'ReZero kara Hajimeru Isekai Seikatsu Episode 1B(mp4).mp4',
+    'ReZero kara Hajimeru Isekai Seikatsu Episode 2(mp4).mp4',
+    'ReZero kara Hajimeru Isekai Seikatsu Episode 3(mp4).mp4',
+    'ReZero kara Hajimeru Isekai Seikatsu Episode 4(mp4).mp4',
+    'ReZero kara Hajimeru Isekai Seikatsu Episode 5(mp4).mp4',
+    'ReZero kara Hajimeru Isekai Seikatsu Episode 6(mp4)_1.mp4',
+    'ReZero kara Hajimeru Isekai Seikatsu Episode 7(mp4)_1.mp4',
+    'ReZero kara Hajimeru Isekai Seikatsu Episode 8(mp4)_1.mp4',
+    'ReZero kara Hajimeru Isekai Seikatsu Episode 9(mp4)_1.mp4',
+    'ReZero kara Hajimeru Isekai Seikatsu Episode 10(mp4)_1.mp4',
+    'ReZero kara Hajimeru Isekai Seikatsu Episode 11(mp4)_1.mp4',
+    'ReZero kara Hajimeru Isekai Seikatsu Episode 12(mp4)_1.mp4',
+    'ReZero kara Hajimeru Isekai Seikatsu Episode 13(mp4).mp4',
+    'ReZero kara Hajimeru Isekai Seikatsu Episode 14(mp4).mp4',
+    'ReZero kara Hajimeru Isekai Seikatsu Episode 15(mp4).mp4',
+    'ReZero kara Hajimeru Isekai Seikatsu Episode 16(mp4).mp4',
+    'ReZero kara Hajimeru Isekai Seikatsu Episode 17(mp4).mp4',
+    'ReZero kara Hajimeru Isekai Seikatsu Episode 18(mp4).mp4',
+    'ReZero kara Hajimeru Isekai Seikatsu Episode 19(mp4).mp4',
+    'ReZero kara Hajimeru Isekai Seikatsu Episode 20(mp4).mp4',
+    'ReZero kara Hajimeru Isekai Seikatsu Episode 21(mp4).mp4',
+    'ReZero kara Hajimeru Isekai Seikatsu Episode 22(mp4).mp4',
+    'ReZero kara Hajimeru Isekai Seikatsu Episode 23(mp4).mp4',
+    'ReZero kara Hajimeru Isekai Seikatsu Episode 24(mp4).mp4',
+    'ReZero kara Hajimeru Isekai Seikatsu Episode 25(mp4).mp4',
+  ];
+  static const List<String> _rezeroS1Files = rezeroS1Files;
+
+  static const List<String> _yosugaFiles = [
+    '[animegrimoire] Yosuga no Sora -  01 [BD720p][CC94803A].mp4',
+    '[animegrimoire] Yosuga no Sora -  02 [BD720p][6965D940].mp4',
+    '[animegrimoire] Yosuga no Sora -  03 [BD720p][45718E07].mp4',
+    '[animegrimoire] Yosuga no Sora -  04 [BD720p][F533E964].mp4',
+    '[animegrimoire] Yosuga no Sora -  05 [BD720p][9B862A54].mp4',
+    '[animegrimoire] Yosuga no Sora -  06 [BD720p][9AB4BF03].mp4',
+    '[animegrimoire] Yosuga no Sora -  07 [BD720p][A296380B].mp4',
+    '[animegrimoire] Yosuga no Sora -  08 [BD720p][00267C62].mp4',
+    '[animegrimoire] Yosuga no Sora -  09 [BD720p][53B7EE5A].mp4',
+    '[animegrimoire] Yosuga no Sora -  10 [BD720p][7ACF640F].mp4',
+    '[animegrimoire] Yosuga no Sora -  11 [BD720p][9D9B824B].mp4',
+    '[animegrimoire] Yosuga no Sora -  12 [BD720p][34C8DB2D].mp4',
+  ];
+  static const List<String> yosugaFiles = _yosugaFiles;
+
+  static const List<String> aotS1Titles = [
+    'S01E01 (1) - To You, in 2000 Years The Fall of Shiganshina, Part 1',
+    'S01E02 (2) - That Day The Fall of Shiganshina, Part 2',
+    'S01E03 (3) - A Dim Light Amid Despair Humanity\'s Comeback, Part 1',
+    'S01E04 (4) - The Night of the Closing Ceremony Humanity\'s Comeback, Part 2',
+    'S01E05 (5) - First Battle The Struggle for Trost, Part 1',
+    'S01E06 (6) - The World the Girl Saw The Struggle for Trost, Part 2',
+    'S01E07 (7) - Small Blade The Struggle for Trost, Part 3',
+    'S01E08 (8) - I Can Hear His Heartbeat The Struggle for Trost, Part 4',
+    'S01E09 (9) - Whereabouts of His Left Arm The Struggle for Trost, Part 5',
+    'S01E10 (10) - Response The Struggle for Trost, Part 6',
+    'S01E11 (11) - Idol The Struggle for Trost, Part 7',
+    'S01E12 (12) - Wound The Struggle for Trost, Part 8',
+    'S01E13 (13) - Primal Desire The Struggle for Trost, Part 9',
+    'S01E14 (14) - Can\'t Look into His Eyes Yet Eve of the Counterattack, Part 1',
+    'S01E15 (15) - Special Operations Squad Eve of the Counterattack, Part 2',
+    'S01E16 (16) - What Should Be Done Eve of the Counterattack, Part 3',
+    'S01E17 (17) - Female Titan The 57th Exterior Scouting Mission, Part 1',
+    'S01E18 (18) - Forest of Giant Trees The 57th Exterior Scouting Mission, Part 2',
+    'S01E19 (19) - Bite The 57th Exterior Scouting Mission, Part 3',
+    'S01E20 (20) - Erwin Smith The 57th Exterior Scouting Mission, Part 4',
+    'S01E21 (21) - Crushing Blow The 57th Exterior Scouting Mission, Part 5',
+    'S01E22 (22) - The Defeated The 57th Exterior Scouting Mission, Part 6',
+    'S01E23 (23) - Smile Raid on Stohess District, Part 1',
+    'S01E24 (24) - Mercy Raid on Stohess District, Part 2',
+    'S01E25 (25) - Wall Raid on Stohess District, Part 3',
+  ];
+  static const List<String> _aotS1Titles = aotS1Titles;
+
   /// Store keyed by "$aniListId-$seasonNumber-$episodeNumber"
   final Map<String, UploadedAnimeVideo> _videos = {};
 
@@ -113,11 +211,20 @@ class OwnerVideoRepository {
     final lowerTitle = seriesTitle.toLowerCase();
     String basePattern;
     if (lowerTitle.contains('chainsaw') || lowerTitle.contains('denji')) {
-      basePattern =
-          'https://archive.org/download/hi-10-chainsaw-man-s-1-1080p/%5BHi10%5D_Chainsaw_Man_S1_%5B1080p%5D%2F(Hi10)_Chainsaw_Man_S1_-_01_(1080p)_(GJM)_(62A0D357).mp4';
+      if (lowerTitle.contains('movie') || lowerTitle.contains('film') || lowerTitle.contains('reze')) {
+        basePattern = 'https://archive.org/download/rezearc/csmrezearc.mp4';
+      } else {
+        basePattern =
+            'https://archive.org/download/hi-10-chainsaw-man-s-1-1080p/%5BHi10%5D_Chainsaw_Man_S1_%5B1080p%5D%2F(Hi10)_Chainsaw_Man_S1_-_01_(1080p)_(GJM)_(62A0D357).mp4';
+      }
     } else if (lowerTitle.contains('dandadan') || lowerTitle.contains('okarun')) {
-      basePattern =
-          'https://archive.org/download/dan-da-dan-seasons-1-2/Dan%20Da%20Dan/dandadan_S01-E{EP}.mp4';
+      if (seasonNumber == 2 || lowerTitle.contains('season 2')) {
+        basePattern =
+            'https://archive.org/download/dan-da-dan-seasons-1-2/Dan%20Da%20Dan/dandadan_S02-E{EP}.mp4';
+      } else {
+        basePattern =
+            'https://archive.org/download/dan-da-dan-seasons-1-2/Dan%20Da%20Dan/dandadan_S01-E{EP}.mp4';
+      }
     } else if (lowerTitle.contains('spy') && lowerTitle.contains('family')) {
       for (int ep = 1; ep <= total; ep++) {
         final epStr = ep.toString().padLeft(2, '0');
@@ -140,28 +247,124 @@ class OwnerVideoRepository {
       }
       return;
     } else if (lowerTitle.contains('hunter') || lowerTitle.contains('hxh')) {
-      basePattern = 'https://archive.org/download/hxh11/{EP3}.mp4';
+      basePattern = 'https://archive.org/download/hxh11/{EP3}.ia.mp4';
     } else if (lowerTitle.contains('titan') || lowerTitle.contains('shingeki') || lowerTitle.contains('eren')) {
-      basePattern =
-          'https://archive.org/download/aot-s-1/Attack%20on%20Titan%20%282013%29%20Season%201%20S01%20%281080p%20BluRay%20x265%20HEVC%2010bit%20AAC%205.1%20ImE%29%20REPACK/Attack%20on%20Titan%20%282013%29%20-%20S01E{EP}%20%28{EP_NUM}%29%20%281080p%20BluRay%20x265%20ImE%29.mp4';
+      for (int ep = 1; ep <= total; ep++) {
+        final fileIndex = (ep - 1).clamp(0, _aotS1Titles.length - 1);
+        final fileName =
+            'Attack on Titan (2013) Season 1 S01 (1080p BluRay x265 HEVC 10bit AAC 5.1 ImE) REPACK/Attack on Titan (2013) - ${_aotS1Titles[fileIndex]} (1080p BluRay x265 ImE).mp4';
+        final encoded = Uri.encodeComponent(fileName).replaceAll('%2F', '/');
+        final url = 'https://archive.org/download/aot-s-1/$encoded';
+        registerVideo(UploadedAnimeVideo(
+          aniListId: aniListId,
+          seasonNumber: seasonNumber,
+          episodeNumber: ep,
+          episodeTitle: '$seriesTitle Episode $ep Sub Indo',
+          videoUrl: url,
+          server3Url: url.replaceAll('/download/', '/cors/'),
+          server4Url: url,
+          uploader: 'AppOwnerOfficial',
+          uploadedAt: now,
+        ));
+      }
+      return;
     } else if (lowerTitle.contains('demon slayer') || lowerTitle.contains('kimetsu') || lowerTitle.contains('tanjiro')) {
-      basePattern =
-          'https://archive.org/download/knys1/KNYS1-E{EP_NUM}.mp4';
+      if (seasonNumber == 2 || lowerTitle.contains('season 2') || lowerTitle.contains('yuukaku') || lowerTitle.contains('entertainment district')) {
+        for (int ep = 1; ep <= total; ep++) {
+          final url = 'https://archive.org/download/kimetsu_20240913/GATON%202.$ep.mp4';
+          registerVideo(UploadedAnimeVideo(
+            aniListId: aniListId,
+            seasonNumber: seasonNumber,
+            episodeNumber: ep,
+            episodeTitle: '$seriesTitle Episode $ep Sub Indo',
+            videoUrl: url,
+            server3Url: 'https://archive.org/cors/kimetsu_20240913/GATON%202.$ep.mp4',
+            server4Url: url,
+            uploader: 'AppOwnerOfficial',
+            uploadedAt: now,
+          ));
+        }
+        return;
+      }
+      basePattern = 'https://archive.org/download/knys1/KNYS1-E{EP_NUM}.mp4';
     } else if (lowerTitle.contains('jujutsu') || lowerTitle.contains('sukuna') || lowerTitle.contains('itadori')) {
-      basePattern =
-          'https://archive.org/download/jjk-s01CBT/Jujutsu%20Kaisen%20%282020%29%20-%20S01E{EP}%20%281080p%20BluRay%20AV1%2010bit%20Opus%202.0%20KaNNa%29.mp4';
+      if (lowerTitle.contains('0') || lowerTitle.contains('movie') || lowerTitle.contains('film')) {
+        basePattern =
+            'https://archive.org/download/jujutsu-kaisen-0-1080p/Jujutsu-Kaisen-0_1080p.mp4';
+      } else {
+        basePattern =
+            'https://archive.org/download/jjk-s01CBT/Jujutsu%20Kaisen%20%282020%29%20-%20S01E{EP}%20%281080p%20BluRay%20AV1%2010bit%20Opus%202.0%20KaNNa%29.mp4';
+      }
     } else if (lowerTitle.contains('tokyo ghoul') || lowerTitle.contains('kaneki')) {
-      basePattern =
-          'https://archive.org/download/tokyo-ghoul-s01-sm/S01E0{EP_NUM}.mp4';
+      if (lowerTitle.contains('movie') || lowerTitle.contains('film') || lowerTitle.contains('tokyo ghoul s')) {
+        basePattern = 'https://archive.org/download/tokyo-ghoul-s/TokyoGhoulS.mp4';
+      } else {
+        basePattern = 'https://archive.org/download/tokyo-ghoul-s01-sm/S01E0{EP_NUM}.mp4';
+      }
     } else if (lowerTitle.contains('naruto') || lowerTitle.contains('boruto')) {
       basePattern =
           'https://archive.org/download/naruto-completo/Naruto%20-%20{EP3}.mp4';
     } else if (lowerTitle.contains('piece') || lowerTitle.contains('luffy')) {
-      basePattern =
-          'https://archive.org/download/one-piece-episode-1/One%20Piece%20Episode%201.mp4';
+      for (int ep = 1; ep <= total; ep++) {
+        String url;
+        if (ep == 1) {
+          url = 'https://archive.org/download/one-piece-episode-1/One%20Piece%20Episode%201.mp4';
+        } else if (ep == 2) {
+          url = 'https://archive.org/download/one-piece-episode-9/%20One%20Piece%20episode%202.mp4';
+        } else {
+          url = 'https://archive.org/download/one-piece-episode-9/One%20Piece%20episode%20$ep.mp4';
+        }
+        registerVideo(UploadedAnimeVideo(
+          aniListId: aniListId,
+          seasonNumber: seasonNumber,
+          episodeNumber: ep,
+          episodeTitle: '$seriesTitle Episode $ep Sub Indo',
+          videoUrl: url,
+          server3Url: url.replaceAll('/download/', '/cors/'),
+          server4Url: url,
+          uploader: 'AppOwnerOfficial',
+          uploadedAt: now,
+        ));
+      }
+      return;
     } else if (lowerTitle.contains('bleach') || lowerTitle.contains('ichigo')) {
-      basePattern =
-          'https://archive.org/download/bleach-complete/Bleach/S01/Bleach%20-%20S01E{EP}.mp4';
+      for (int ep = 1; ep <= total; ep++) {
+        final fileIndex = (ep - 1).clamp(0, _bleachS1Files.length - 1);
+        final file = _bleachS1Files[fileIndex];
+        final encoded = Uri.encodeComponent(file);
+        final url = 'https://archive.org/download/bleach-127-c-p/$encoded';
+        registerVideo(UploadedAnimeVideo(
+          aniListId: aniListId,
+          seasonNumber: seasonNumber,
+          episodeNumber: ep,
+          episodeTitle: '$seriesTitle Episode $ep Sub Indo',
+          videoUrl: url,
+          server3Url: 'https://archive.org/cors/bleach-127-c-p/$encoded',
+          server4Url: url,
+          uploader: 'AppOwnerOfficial',
+          uploadedAt: now,
+        ));
+      }
+      return;
+    } else if (lowerTitle.contains('rezero') || lowerTitle.contains('re:zero') || lowerTitle.contains('subaru') || lowerTitle.contains('emilia')) {
+      for (int ep = 1; ep <= total; ep++) {
+        final fileIndex = (ep - 1).clamp(0, _rezeroS1Files.length - 1);
+        final file = _rezeroS1Files[fileIndex];
+        final encoded = Uri.encodeComponent(file);
+        final url = 'https://archive.org/download/rezerokarahajimeruisekaiseikatsu_202001/$encoded';
+        registerVideo(UploadedAnimeVideo(
+          aniListId: aniListId,
+          seasonNumber: seasonNumber,
+          episodeNumber: ep,
+          episodeTitle: '$seriesTitle Episode $ep Sub Indo',
+          videoUrl: url,
+          server3Url: 'https://archive.org/cors/rezerokarahajimeruisekaiseikatsu_202001/$encoded',
+          server4Url: url,
+          uploader: 'AppOwnerOfficial',
+          uploadedAt: now,
+        ));
+      }
+      return;
     } else if (lowerTitle.contains('alchemist') || lowerTitle.contains('elric')) {
       basePattern =
           'https://archive.org/download/ma-fullmetal-alchemist-2009-bdrip-1920x1080-av1-opus/%5BMA%5D%20FULLMETAL%20ALCHEMIST%20%282009%29%20%5BBDRip%201920x1080%20AV1%20OPUS%5D%2F%5BMA%5D%20FULLMETAL%20ALCHEMIST%20%282009%29%20{EP}%20%5BBDRip%201920x1080%20AV1%20OPUS%5D.mkv';
@@ -174,9 +377,29 @@ class OwnerVideoRepository {
       basePattern =
           'https://archive.org/download/a-silent-voice-2016-1080p/A%20Silent%20Voice%20%282016%29%20%5B1080p%5D.mp4';
     } else if (lowerTitle.contains('yosuga') || lowerTitle.contains('kasugano') || lowerTitle.contains('sora')) {
-      basePattern =
-          'https://archive.org/download/yosuga-no-sora-0368ab60e9b77640d9c12f7f299b73232ba809e35d79a65b21b916ac4609ea085/Yosuga.no.Sora.S01E{EP}.1080p.BluRay.10-Bit.FLAC2.0.x265-YURASUKA.mp4';
+      for (int ep = 1; ep <= total; ep++) {
+        final fileIndex = (ep - 1).clamp(0, _yosugaFiles.length - 1);
+        final file = _yosugaFiles[fileIndex];
+        final encoded = Uri.encodeComponent(file);
+        final url = 'https://archive.org/download/ag_yosuga-no-sora/$encoded';
+        registerVideo(UploadedAnimeVideo(
+          aniListId: aniListId,
+          seasonNumber: seasonNumber,
+          episodeNumber: ep,
+          episodeTitle: '$seriesTitle Episode $ep Sub Indo',
+          videoUrl: url,
+          server3Url: 'https://archive.org/cors/ag_yosuga-no-sora/$encoded',
+          server4Url: url,
+          uploader: 'AppOwnerOfficial',
+          uploadedAt: now,
+        ));
+      }
+      return;
     } else if (lowerTitle.contains('tokyo revengers') || lowerTitle.contains('takemichi') || lowerTitle.contains('mikey')) {
+      if (seasonNumber >= 4 || lowerTitle.contains('season 4') || lowerTitle.contains('santen')) {
+        // Tokyo Revengers Season 4 is explicitly NOT available per user request
+        return;
+      }
       if (seasonNumber == 3 || lowerTitle.contains('season 3') || lowerTitle.contains('tenjiku')) {
         basePattern =
             'https://archive.org/download/kyotoavenrgesrsamputahahaha/Tokyo%20Revengers%20%282021%29%20-%20S03e{EP}%20-%20The%20Longest%20Day%20%5BBluray-1080P%5D%5BOpus%202.0%5D%5BAv1%5D-Blackrabbit-{EP_NUM}.ia.mp4';
@@ -195,7 +418,7 @@ class OwnerVideoRepository {
           'https://archive.org/download/anime-pahe-sousou-no-frieren-{EP}-bd-1080p-sev/AnimePahe_Sousou_no_Frieren_-_{EP}_BD_1080p_SEV.mp4';
     } else if (lowerTitle.contains('solo') || lowerTitle.contains('leveling') || lowerTitle.contains('sung jinwoo') || lowerTitle.contains('jin-woo')) {
       basePattern =
-          'https://archive.org/download/anime-salt-solo-leveling-s-01-e-01-1080p-multi-audio/%5BAnimeSalt%5D%20Solo%20Leveling%20-%20S01E{EP}%20%5B1080p%5D%20%5BMulti-Audio%5D.mp4';
+          'https://archive.org/download/sololevelinggggg/sololeveling-t01e{EP}.mp4';
     } else if (lowerTitle.contains('punch') || lowerTitle.contains('saitama')) {
       for (int ep = 1; ep <= total; ep++) {
         final isS2 = seasonNumber == 2 || lowerTitle.contains('season 2') || lowerTitle.contains('2nd season');
@@ -298,11 +521,11 @@ class OwnerVideoRepository {
       seasonNumber: 1,
       count: 12,
       baseUrlPattern:
-          'https://archive.org/download/anime-salt-solo-leveling-s-01-e-01-1080p-multi-audio/%5BAnimeSalt%5D%20Solo%20Leveling%20-%20S01E{EP}%20%5B1080p%5D%20%5BMulti-Audio%5D.mp4',
+          'https://archive.org/download/sololevelinggggg/sololeveling-t01e{EP}.mp4',
       server3BaseUrlPattern:
-          'https://archive.org/cors/anime-salt-solo-leveling-s-01-e-01-1080p-multi-audio/%5BAnimeSalt%5D%20Solo%20Leveling%20-%20S01E{EP}%20%5B1080p%5D%20%5BMulti-Audio%5D.mp4',
+          'https://archive.org/cors/sololevelinggggg/sololeveling-t01e{EP}.mp4',
       server4BaseUrlPattern:
-          'https://archive.org/download/anime-salt-solo-leveling-s-01-e-01-1080p-multi-audio/%5BAnimeSalt%5D%20Solo%20Leveling%20-%20S01E{EP}%20%5B1080p%5D%20%5BMulti-Audio%5D.mp4',
+          'https://archive.org/download/sololevelinggggg/sololeveling-t01e{EP}.ia.mp4',
       seriesTitle: 'Solo Leveling',
     );
 
@@ -419,32 +642,26 @@ class OwnerVideoRepository {
       ));
     }
 
-    // 5. Tokyo Revengers Season 4 - Santen Sensou-hen (AniList ID 178945, Japanese Audio)
-    registerVideo(UploadedAnimeVideo(
-      aniListId: 178945,
-      seasonNumber: 4,
-      episodeNumber: 1,
-      episodeTitle: 'Tokyo Revengers S4 Santen Sensou-hen Episode 1 Sub Indo',
-      videoUrl: 'https://archive.org/download/animelk-tokyo-revengers-santen-e01/Tokyo%20Revengers%3A%20Santen%20Sensou-hen%20E01_720p.mp4',
-      server3Url: 'https://archive.org/cors/animelk-tokyo-revengers-santen-e01/Tokyo%20Revengers%3A%20Santen%20Sensou-hen%20E01_720p.mp4',
-      server4Url: 'https://archive.org/download/animelk-tokyo-revengers-santen-e01/Tokyo%20Revengers%3A%20Santen%20Sensou-hen%20E01_720p.mp4',
-      uploader: 'AppOwnerOfficial',
-      uploadedAt: now,
-    ));
+    // 5. Tokyo Revengers Season 4 - Santen Sensou-hen: Explicitly NOT available per user request
 
-    // 6. Yosuga no Sora (AniList ID 8861, 12 Episodes BluRay Japanese audio)
-    registerEpisodes(
-      aniListId: 8861,
-      seasonNumber: 1,
-      count: 12,
-      baseUrlPattern:
-          'https://archive.org/download/yosuga-no-sora-0368ab60e9b77640d9c12f7f299b73232ba809e35d79a65b21b916ac4609ea085/Yosuga.no.Sora.S01E{EP}.1080p.BluRay.10-Bit.FLAC2.0.x265-YURASUKA.mp4',
-      server3BaseUrlPattern:
-          'https://ia600904.us.archive.org/11/items/yosuga-no-sora-0368ab60e9b77640d9c12f7f299b73232ba809e35d79a65b21b916ac4609ea085/Yosuga.no.Sora.S01E{EP}.1080p.BluRay.10-Bit.FLAC2.0.x265-YURASUKA.mp4',
-      server4BaseUrlPattern:
-          'https://dn720005.ca.archive.org/0/items/yosuga-no-sora-0368ab60e9b77640d9c12f7f299b73232ba809e35d79a65b21b916ac4609ea085/Yosuga.no.Sora.S01E{EP}.1080p.BluRay.10-Bit.FLAC2.0.x265-YURASUKA.mp4',
-      seriesTitle: 'Yosuga no Sora',
-    );
+    // 6. Yosuga no Sora (AniList ID 8861, 12 Episodes BluRay H.264 Japanese audio)
+    for (int ep = 1; ep <= _yosugaFiles.length; ep++) {
+      final file = _yosugaFiles[ep - 1];
+      final encoded = Uri.encodeComponent(file);
+      final url = 'https://archive.org/download/ag_yosuga-no-sora/$encoded';
+      final s3Url = 'https://archive.org/cors/ag_yosuga-no-sora/$encoded';
+      registerVideo(UploadedAnimeVideo(
+        aniListId: 8861,
+        seasonNumber: 1,
+        episodeNumber: ep,
+        episodeTitle: 'Yosuga no Sora Episode $ep Sub Indo',
+        videoUrl: url,
+        server3Url: s3Url,
+        server4Url: url,
+        uploader: 'AppOwnerOfficial',
+        uploadedAt: now,
+      ));
+    }
 
     // 7. Demon Slayer Season 1 (AniList ID 101922, 26 Episodes, Japanese Audio)
     for (int ep = 1; ep <= 26; ep++) {
@@ -463,19 +680,21 @@ class OwnerVideoRepository {
       ));
     }
 
-    // 8. Demon Slayer Season 2 (AniList ID 142329)
-    registerEpisodes(
-      aniListId: 142329,
-      seasonNumber: 2,
-      count: 11,
-      baseUrlPattern:
-          'https://archive.org/download/knym1/Kimetsu%20no%20Yaiba%20-%20Mugen%20Ressha-hen%20tv%2001.mp4',
-      server3BaseUrlPattern:
-          'https://archive.org/cors/knym1/Kimetsu%20no%20Yaiba%20-%20Mugen%20Ressha-hen%20tv%2001.mp4',
-      server4BaseUrlPattern:
-          'https://archive.org/download/knym1/Kimetsu%20no%20Yaiba%20-%20Mugen%20Ressha-hen%20tv%2001.mp4',
-      seriesTitle: 'Demon Slayer S2',
-    );
+    // 8. Demon Slayer Season 2 - Entertainment District Arc (AniList ID 142329, 11 Episodes)
+    for (int ep = 1; ep <= 11; ep++) {
+      final url = 'https://archive.org/download/kimetsu_20240913/GATON%202.$ep.mp4';
+      registerVideo(UploadedAnimeVideo(
+        aniListId: 142329,
+        seasonNumber: 2,
+        episodeNumber: ep,
+        episodeTitle: 'Demon Slayer S2 Yuukaku-hen Episode $ep Sub Indo',
+        videoUrl: url,
+        server3Url: 'https://archive.org/cors/kimetsu_20240913/GATON%202.$ep.mp4',
+        server4Url: url,
+        uploader: 'AppOwnerOfficial',
+        uploadedAt: now,
+      ));
+    }
 
     // 9. Demon Slayer Season 3 (AniList ID 145139)
     registerEpisodes(
@@ -652,11 +871,11 @@ class OwnerVideoRepository {
       seasonNumber: 1,
       count: 148,
       baseUrlPattern:
-          'https://archive.org/download/hxh11/{EP3}.mp4',
+          'https://archive.org/download/hxh11/{EP3}.ia.mp4',
       server3BaseUrlPattern:
-          'https://dn720602.ca.archive.org/0/items/hxh11/{EP3}.mp4',
+          'https://archive.org/cors/hxh11/{EP3}.ia.mp4',
       server4BaseUrlPattern:
-          'https://ia820602.us.archive.org/0/items/hxh11/{EP3}.mp4',
+          'https://archive.org/download/hxh11/{EP3}.ia.mp4',
       seriesTitle: 'Hunter x Hunter',
     );
 
@@ -674,19 +893,28 @@ class OwnerVideoRepository {
       seriesTitle: 'Fullmetal Alchemist: Brotherhood',
     );
 
-    // 19. One Piece (AniList ID 21)
-    registerEpisodes(
-      aniListId: 21,
-      seasonNumber: 1,
-      count: 1000,
-      baseUrlPattern:
-          'https://archive.org/download/one-piece-episode-1/One%20Piece%20Episode%201.mp4',
-      server3BaseUrlPattern:
-          'https://dn720602.ca.archive.org/0/items/one-piece-episode-1/One%20Piece%20Episode%201.mp4',
-      server4BaseUrlPattern:
-          'https://ia820602.us.archive.org/0/items/one-piece-episode-1/One%20Piece%20Episode%201.mp4',
-      seriesTitle: 'One Piece',
-    );
+    // 19. One Piece (AniList ID 21, Season 1 East Blue)
+    for (int ep = 1; ep <= 25; ep++) {
+      String url;
+      if (ep == 1) {
+        url = 'https://archive.org/download/one-piece-episode-1/One%20Piece%20Episode%201.mp4';
+      } else if (ep == 2) {
+        url = 'https://archive.org/download/one-piece-episode-9/%20One%20Piece%20episode%202.mp4';
+      } else {
+        url = 'https://archive.org/download/one-piece-episode-9/One%20Piece%20episode%20$ep.mp4';
+      }
+      registerVideo(UploadedAnimeVideo(
+        aniListId: 21,
+        seasonNumber: 1,
+        episodeNumber: ep,
+        episodeTitle: 'One Piece Episode $ep Sub Indo',
+        videoUrl: url,
+        server3Url: url.replaceAll('/download/', '/cors/'),
+        server4Url: url,
+        uploader: 'AppOwnerOfficial',
+        uploadedAt: now,
+      ));
+    }
 
     // 20. Naruto (AniList ID 20)
     registerEpisodes(
@@ -702,19 +930,60 @@ class OwnerVideoRepository {
       seriesTitle: 'Naruto',
     );
 
-    // 21. Bleach (AniList ID 269)
-    registerEpisodes(
-      aniListId: 269,
-      seasonNumber: 1,
-      count: 20,
-      baseUrlPattern:
-          'https://archive.org/download/bleach-complete/Bleach/S01/Bleach%20-%20S01E{EP}.mp4',
-      server3BaseUrlPattern:
-          'https://archive.org/cors/bleach-complete/Bleach/S01/Bleach%20-%20S01E{EP}.mp4',
-      server4BaseUrlPattern:
-          'https://archive.org/download/bleach-complete/Bleach/S01/Bleach%20-%20S01E{EP}.mp4',
-      seriesTitle: 'Bleach',
-    );
+    // 21. Bleach (AniList ID 269, 20 Episodes Season 1)
+    for (int ep = 1; ep <= _bleachS1Files.length; ep++) {
+      final file = _bleachS1Files[ep - 1];
+      final encoded = Uri.encodeComponent(file);
+      final url = 'https://archive.org/download/bleach-127-c-p/$encoded';
+      registerVideo(UploadedAnimeVideo(
+        aniListId: 269,
+        seasonNumber: 1,
+        episodeNumber: ep,
+        episodeTitle: 'Bleach Episode $ep Sub Indo',
+        videoUrl: url,
+        server3Url: 'https://archive.org/cors/bleach-127-c-p/$encoded',
+        server4Url: url,
+        uploader: 'AppOwnerOfficial',
+        uploadedAt: now,
+      ));
+    }
+
+    // 21b. Re:Zero - Starting Life in Another World (AniList ID 21355, 25 Episodes Season 1)
+    for (int ep = 1; ep <= _rezeroS1Files.length; ep++) {
+      final file = _rezeroS1Files[ep - 1];
+      final encoded = Uri.encodeComponent(file);
+      final url = 'https://archive.org/download/rezerokarahajimeruisekaiseikatsu_202001/$encoded';
+      registerVideo(UploadedAnimeVideo(
+        aniListId: 21355,
+        seasonNumber: 1,
+        episodeNumber: ep,
+        episodeTitle: 'Re:Zero Episode $ep Sub Indo',
+        videoUrl: url,
+        server3Url: 'https://archive.org/cors/rezerokarahajimeruisekaiseikatsu_202001/$encoded',
+        server4Url: url,
+        uploader: 'AppOwnerOfficial',
+        uploadedAt: now,
+      ));
+    }
+
+    // 21c. Dan Da Dan Season 2 (AniList ID 178526 and Season 2 under 166240, 12 Episodes)
+    for (final dddId in [166240, 178526]) {
+      for (int ep = 1; ep <= 12; ep++) {
+        final epStr = ep.toString().padLeft(2, '0');
+        final url = 'https://archive.org/download/dan-da-dan-seasons-1-2/Dan%20Da%20Dan/dandadan_S02-E$epStr.mp4';
+        registerVideo(UploadedAnimeVideo(
+          aniListId: dddId,
+          seasonNumber: 2,
+          episodeNumber: ep,
+          episodeTitle: 'Dan Da Dan S2 Episode $ep Sub Indo',
+          videoUrl: url,
+          server3Url: url.replaceAll('/download/', '/cors/'),
+          server4Url: url,
+          uploader: 'AppOwnerOfficial',
+          uploadedAt: now,
+        ));
+      }
+    }
 
     // 22. Steins;Gate (AniList ID 9253)
     registerEpisodes(
@@ -823,7 +1092,8 @@ class OwnerVideoRepository {
       for (int i = 0; i < opmS2Titles.length; i++) {
         final ep = i + 1;
         final epStr = ep.toString().padLeft(2, '0');
-        final url = 'https://archive.org/download/opm-s2/O-S2-BD-$epStr.mp4';
+        final file = ep == 12 ? 'O-S2-BD-12.ia.mp4' : 'O-S2-BD-$epStr.mp4';
+        final url = 'https://archive.org/download/opm-s2/$file';
         registerVideo(UploadedAnimeVideo(
           aniListId: s2Id,
           seasonNumber: 2,
@@ -854,5 +1124,70 @@ class OwnerVideoRepository {
         uploadedAt: now,
       ));
     }
+
+    // 29. Jujutsu Kaisen 0 Movie (AniList ID 131573)
+    registerVideo(UploadedAnimeVideo(
+      aniListId: 131573,
+      seasonNumber: 1,
+      episodeNumber: 1,
+      episodeTitle: 'Jujutsu Kaisen 0 Full Movie Sub Indo',
+      videoUrl: 'https://archive.org/download/jujutsu-kaisen-0-1080p/Jujutsu-Kaisen-0_1080p.mp4',
+      server3Url: 'https://archive.org/cors/jujutsu-kaisen-0-1080p/Jujutsu-Kaisen-0_1080p.mp4',
+      server4Url: 'https://archive.org/download/jujutsu-kaisen-0-1080p/Jujutsu-Kaisen-0_1080p.mp4',
+      uploader: 'AppOwnerOfficial',
+      uploadedAt: now,
+    ));
+
+    // 30. Demon Slayer: Mugen Ressha-hen Movie (AniList ID 112151)
+    registerVideo(UploadedAnimeVideo(
+      aniListId: 112151,
+      seasonNumber: 1,
+      episodeNumber: 1,
+      episodeTitle: 'Demon Slayer: Mugen Ressha-hen Movie Sub Indo',
+      videoUrl: 'https://archive.org/download/knym-ressha-hen-s/knym%20Ressha-hen%20s.mp4',
+      server3Url: 'https://archive.org/cors/knym-ressha-hen-s/knym%20Ressha-hen%20s.mp4',
+      server4Url: 'https://archive.org/download/knym-ressha-hen-s/knym%20Ressha-hen%20s.mp4',
+      uploader: 'AppOwnerOfficial',
+      uploadedAt: now,
+    ));
+
+    // 31. Haikyuu!! The Dumpster Battle Movie (AniList ID 152865)
+    registerVideo(UploadedAnimeVideo(
+      aniListId: 152865,
+      seasonNumber: 1,
+      episodeNumber: 1,
+      episodeTitle: 'Haikyuu!! The Dumpster Battle Movie Sub Indo',
+      videoUrl: 'https://archive.org/download/haikyu-the-dumpster-battle-2024/Haikyu%21%21%20The%20Dumpster%20Battle%20%282024%29.mp4',
+      server3Url: 'https://archive.org/cors/haikyu-the-dumpster-battle-2024/Haikyu%21%21%20The%20Dumpster%20Battle%20%282024%29.mp4',
+      server4Url: 'https://archive.org/download/haikyu-the-dumpster-battle-2024/Haikyu%21%21%20The%20Dumpster%20Battle%20%282024%29.mp4',
+      uploader: 'AppOwnerOfficial',
+      uploadedAt: now,
+    ));
+
+    // 32. Chainsaw Man: Reze Arc Movie (AniList ID 172905)
+    registerVideo(UploadedAnimeVideo(
+      aniListId: 172905,
+      seasonNumber: 1,
+      episodeNumber: 1,
+      episodeTitle: 'Chainsaw Man: Reze Arc Movie Sub Indo',
+      videoUrl: 'https://archive.org/download/rezearc/csmrezearc.mp4',
+      server3Url: 'https://archive.org/cors/rezearc/csmrezearc.mp4',
+      server4Url: 'https://archive.org/download/rezearc/csmrezearc.mp4',
+      uploader: 'AppOwnerOfficial',
+      uploadedAt: now,
+    ));
+
+    // 33. Tokyo Ghoul Movie (AniList ID 99920)
+    registerVideo(UploadedAnimeVideo(
+      aniListId: 99920,
+      seasonNumber: 1,
+      episodeNumber: 1,
+      episodeTitle: 'Tokyo Ghoul Movie Sub Indo',
+      videoUrl: 'https://archive.org/download/tokyo-ghoul-s/TokyoGhoulS.mp4',
+      server3Url: 'https://archive.org/cors/tokyo-ghoul-s/TokyoGhoulS.mp4',
+      server4Url: 'https://archive.org/download/tokyo-ghoul-s/TokyoGhoulS.mp4',
+      uploader: 'AppOwnerOfficial',
+      uploadedAt: now,
+    ));
   }
 }
