@@ -44,7 +44,7 @@ void main() {
 
     test('inauthentic anime and fake season fallbacks are strictly rejected by hasCompleteEpisodes', () {
       final fakeAnime = [
-        ('tokyo-revengers-s4', 'Tokyo Revengers Season 4'),
+        ('unreleased-season-s4', 'Unreleased Season 4'),
         ('blue-lock', 'Blue Lock'),
         ('oshi-no-ko', 'Oshi no Ko'),
         ('kaiju-no-8', 'Kaiju No. 8'),

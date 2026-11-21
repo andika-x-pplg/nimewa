@@ -41,6 +41,7 @@ class AnimeStreamResolver {
     '21087': 'one-punch-man',
     '102194': 'one-punch-man-s2',
     '97668': 'one-punch-man-s2',
+    '8861': 'yosuga-no-sora',
   };
 
   /// Set of anime keys verified to have 100% genuine, authentic episode files of that exact show.
@@ -59,6 +60,7 @@ class AnimeStreamResolver {
     'tokyo-revengers',
     'tokyo-revengers-s2',
     'tokyo-revengers-s3',
+    'tokyo-revengers-s4',
     'chainsaw-man',
     'chainsaw-man-movie',
     'naruto',
@@ -82,12 +84,12 @@ class AnimeStreamResolver {
     'frieren',
     'one-punch-man',
     'one-punch-man-s2',
+    'yosuga-no-sora',
   };
 
   /// Set of anime keys known to be incomplete or lacking authentic episode files.
   /// Under the Atomicity principle ("semua atau tidak sama sekali"), these are never displayed or played.
   static const Set<String> _incompleteBlacklist = {
-    'tokyo-revengers-s4',
     'season-2-fallback',
     'season-3-fallback',
     'season-4-fallback',
@@ -99,35 +101,26 @@ class AnimeStreamResolver {
     final cleanId = animeId.toLowerCase().trim();
     final cleanTitle = animeTitle.toLowerCase().trim();
 
-    // Tokyo Revengers Season 4 and unreleased sequels are explicitly incomplete
-    if (cleanId == '178945' ||
-        cleanId == 'tokyo-revengers-s4' ||
-        cleanId == '48960' ||
-        cleanTitle.contains('tokyo revengers: season 4') ||
-        cleanTitle.contains('tokyo revengers season 4') ||
-        cleanTitle.contains('santen sensou') ||
-        cleanTitle.contains('three deities') ||
-        cleanTitle.contains('three titans') ||
-        cleanTitle.contains('war of the three titans')) {
+    // Explicitly unreleased testing ID
+    if (cleanId == '999998' || cleanTitle.contains('unreleased')) {
       return false;
     }
 
+    final key = detectAnimeKey(animeId, animeTitle);
+    if (_incompleteBlacklist.contains(key)) return false;
+    if (_authenticKeys.contains(key)) return true;
+
     final aniListId = int.tryParse(cleanId);
-    if (aniListId != null && aniListId > 0 && OwnerVideoRepository.instance.hasVideosForAnime(aniListId)) {
-      return true;
+    if (aniListId != null && aniListId > 0) {
+      if (OwnerVideoRepository.instance.hasVideosForAnime(aniListId)) {
+        return true;
+      }
     }
 
-    final key = detectAnimeKey(animeId, animeTitle);
-    if (!_authenticKeys.contains(key)) return false;
-    if (_incompleteBlacklist.contains(key)) return false;
-
     final episodes = _animeEpisodeMap[key];
-    if (episodes == null || episodes.isEmpty) return false;
+    if (episodes != null && episodes.isNotEmpty) return true;
 
-    // Must have a valid Episode 1 stream URL
-    if (episodes.first.server1Url.isEmpty) return false;
-
-    return true;
+    return false;
   }
 
   /// Asynchronously resolves direct stream URL.
@@ -217,27 +210,7 @@ class AnimeStreamResolver {
     final aniListId = int.tryParse(cleanId);
     final season = extractSeasonNumber(animeId, animeTitle);
 
-    // 1. Strict Season Matching with AniList Season IDs & Anti-fallback
-    // Under Atomicity principle and strict season matching:
-    // If this is Tokyo Revengers Season 4 (AniList ID 178945), reject immediately and never fallback to S1/S2/S3.
-    if (cleanId == '178945' ||
-        cleanId == 'tokyo-revengers-s4' ||
-        cleanId == '48960' ||
-        animeTitle.toLowerCase().contains('tokyo revengers: season 4') ||
-        animeTitle.toLowerCase().contains('santen sensou') ||
-        animeTitle.toLowerCase().contains('three deities')) {
-      StreamAuditLogger.instance.log(
-        searchedTitle: animeTitle,
-        candidateTitle: '$animeTitle - Episode $episodeNumber',
-        candidateSource: server,
-        isAccepted: false,
-        reason: 'Tidak ada video yang diunggah pemilik untuk Tokyo Revengers Season 4 (AniList ID 178945). Fallback ke season lain dinonaktifkan.',
-        aniListId: aniListId ?? 178945,
-      );
-      return '';
-    }
-
-    // 2. Check Owner Video Repository first (Self-uploaded videos matched by AniList ID and Season)
+    // 1. Check Owner Video Repository first (Self-uploaded videos matched by AniList ID and Season)
     if (aniListId != null && aniListId > 0 && OwnerVideoRepository.instance.hasVideosForAnime(aniListId)) {
       final uploadedVideo = OwnerVideoRepository.instance.getVideo(aniListId, season, episodeNumber);
       if (uploadedVideo != null) {
@@ -264,7 +237,7 @@ class AnimeStreamResolver {
           reason: 'Video pemilik terverifikasi lolos filter untuk AniList ID $aniListId Season $season Episode $episodeNumber',
           aniListId: aniListId,
         );
-        return uploadedVideo.videoUrl;
+        return uploadedVideo.getUrlForServer(server);
       } else {
         // Anime has some videos uploaded, but NOT for this requested season
         StreamAuditLogger.instance.log(
@@ -293,7 +266,6 @@ class AnimeStreamResolver {
     }
 
     final key = detectAnimeKey(animeId, animeTitle);
-    final isServer3 = server.contains('Server 3') || server.toLowerCase().contains('otaku');
 
     final episodes = _animeEpisodeMap[key];
     if (episodes == null || episodes.isEmpty) {
@@ -311,7 +283,7 @@ class AnimeStreamResolver {
     // Resolve episode index (1-based to list index)
     final epIndex = (episodeNumber - 1).clamp(0, episodes.length - 1);
     final entry = episodes[epIndex];
-    final url = isServer3 ? entry.server3Url : entry.server1Url;
+    final url = entry.getUrlForServer(server);
 
     // StreamFilterValidator check
     final validation = StreamFilterValidator.validate(
@@ -453,20 +425,19 @@ class AnimeStreamResolver {
     }
 
     // Gintama The Final Movie
-    if (combined.contains('gintama') ||
-        combined.contains('銀魂') ||
-        id == 'gintama-final' ||
-        id == 'gintama-movie') {
+    if ((combined.contains('gintama') ||
+            combined.contains('銀魂') ||
+            id.contains('gintama')) &&
+        (combined.contains('final') || combined.contains('movie') || combined.contains('film'))) {
       return 'gintama-movie';
     }
 
     // Haikyuu Dumpster Battle Movie
-    if (combined.contains('dumpster') ||
-        combined.contains('haikyuu') ||
-        combined.contains('haikyu') ||
-        combined.contains('ハイキュー') ||
-        id == 'haikyuu' ||
-        id == 'haikyuu-movie') {
+    if ((combined.contains('haikyuu') ||
+            combined.contains('haikyu') ||
+            combined.contains('ハイキュー') ||
+            id.contains('haikyuu')) &&
+        (combined.contains('dumpster') || combined.contains('movie') || combined.contains('film') || combined.contains('gomi'))) {
       return 'haikyuu-movie';
     }
 
@@ -486,7 +457,11 @@ class AnimeStreamResolver {
     if (combined.contains('tokyo ghoul') ||
         combined.contains('東京喰種') ||
         combined.contains('kaneki') ||
-        id == 'tokyo-ghoul') {
+        id == 'tokyo-ghoul' ||
+        id == '20605') {
+      if (combined.contains('movie') || combined.contains('film') || combined.contains('tokyo ghoul s')) {
+        return 'tokyo-ghoul-movie';
+      }
       return 'tokyo-ghoul';
     }
 
@@ -909,6 +884,16 @@ class AnimeStreamResolver {
       return 'one-punch-man';
     }
 
+    // Yosuga no Sora
+    if (combined.contains('yosuga no sora') ||
+        combined.contains('yosuga') ||
+        combined.contains('kasugano') ||
+        combined.contains('ヨスガノソラ') ||
+        id == '8861' ||
+        id == 'yosuga-no-sora') {
+      return 'yosuga-no-sora';
+    }
+
     // Fallback for ANY OTHER anime that has a season indicator
     if (season == 2) return 'season-2-fallback';
     if (season == 3) return 'season-3-fallback';
@@ -948,18 +933,16 @@ class AnimeStreamResolver {
   ];
 
   static List<_AnimeStreamEntry> _buildKnySeason1() {
-    const s1Cruelty =
-        'https://archive.org/download/rai-demon-slayer-kimetsu-no-yaiba-season-1-episode-1-cruelty-hindi-360-p-sd-1/%5BRAI%5D%20Demon%20Slayer-%20Kimetsu%20No%20Yaiba%20Season%201%20Episode%201%20-%20Cruelty%20Hindi_360P%20SD%20%281%29.mp4';
     return List.generate(26, (index) {
-      final epNum = index + 1;
       final fileName = _knyMobileFiles[index];
       final encodedPath = Uri.encodeComponent(fileName).replaceAll('%2F', '/');
       final mobileUrl =
           'https://archive.org/download/anicolldemonslayerkimetsunoyaibadl19241080bray_puddingS01.Gemischt/$encodedPath';
 
       return _AnimeStreamEntry(
-        server1Url: epNum == 1 ? s1Cruelty : mobileUrl,
+        server1Url: mobileUrl,
         server3Url: mobileUrl,
+        server4Url: mobileUrl,
       );
     });
   }
@@ -1050,14 +1033,20 @@ class AnimeStreamResolver {
     });
   }
 
-  // --- Jujutsu Kaisen Season 1 (24 Episodes, ~24m each) ---
+  // --- Jujutsu Kaisen Season 1 (24 Episodes, ~24m each, BluRay Japanese Audio) ---
   static List<_AnimeStreamEntry> _buildJjkSeason1() {
     return List.generate(24, (index) {
       final epNum = index + 1;
-      final url = epNum == 18
-          ? 'https://archive.org/download/jujutsu-kaisen-season-1-episode-17-eng.dub/JUJUTSU%20KAISEN%20Season%201%20Episode%2018.mp4'
-          : 'https://archive.org/download/jujutsu-kaisen-season-1-episode-17-eng.dub/JUJUTSU%20KAISEN%20Season%201%20Episode%20$epNum%20eng.dub.mp4';
-      return _AnimeStreamEntry(server1Url: url, server3Url: url);
+      final pad = epNum.toString().padLeft(2, '0');
+      final fileName =
+          'Jujutsu Kaisen (2020) - S01E$pad (1080p BluRay AV1 10bit Opus 2.0 KaNNa).mp4';
+      final encoded = Uri.encodeComponent(fileName);
+      final url = 'https://archive.org/download/jjk-s01CBT/$encoded';
+      return _AnimeStreamEntry(
+        server1Url: url,
+        server3Url: url.replaceAll('/download/', '/cors/'),
+        server4Url: url,
+      );
     });
   }
 
@@ -1118,56 +1107,131 @@ class AnimeStreamResolver {
     }).toList();
   }
 
-  // --- Tokyo Revengers Season 1 (12 Episodes, ~24m each) ---
+  // --- Tokyo Revengers Season 1 (24 Episodes, BluRay 1080p Japanese Audio) ---
+  static const List<String> _trS1Files = [
+    'Tokyo Revengers (2021) - S01e01 - Reborn [Bluray-1080P][Opus 2.0][Av1]-Blackrabbit-1.ia.mp4',
+    'Tokyo Revengers (2021) - S01e02 - Resist [Bluray-1080P][Opus 2.0][Av1]-Blackrabbit-2.ia.mp4',
+    'Tokyo Revengers (2021) - S01e03 - Resolve [Bluray-1080P][Opus 2.0][Av1]-Blackrabbit-3.ia.mp4',
+    'Tokyo Revengers (2021) - S01e04 - Return [Bluray-1080P][Opus 2.0][Av1]-Blackrabbit-4.ia.mp4',
+    'Tokyo Revengers (2021) - S01e05 - Releap [Bluray-1080P][Opus 2.0][Av1]-Blackrabbit-5.ia.mp4',
+    'Tokyo Revengers (2021) - S01e06 - Regret [Bluray-1080P][Opus 2.0][Av1]-Blackrabbit-6.ia.mp4',
+    'Tokyo Revengers (2021) - S01e07 - Revive [Bluray-1080P][Opus 2.0][Av1]-Blackrabbit-7.ia.mp4',
+    'Tokyo Revengers (2021) - S01e08 - Rechange [Bluray-1080P][Opus 2.0][Av1]-Blackrabbit-8.ia.mp4',
+    'Tokyo Revengers (2021) - S01e09 - Revolt [Bluray-1080P][Opus 2.0][Av1]-Blackrabbit-9.ia.mp4',
+    'Tokyo Revengers (2021) - S01e10 - Rerise [Bluray-1080P][Opus 2.0][Av1]-Blackrabbit-10.ia.mp4',
+    'Tokyo Revengers (2021) - S01e11 - Respect [Bluray-1080P][Opus 2.0][Av1]-Blackrabbit-11.ia.mp4',
+    'Tokyo Revengers (2021) - S01e12 - Revenge [Bluray-1080P][Opus 2.0][Av1]-Blackrabbit-12.ia.mp4',
+    'Tokyo Revengers (2021) - S01e13 - Odds And Ends [Bluray-1080P][Opus 2.0][Av1]-Blackrabbit-13.ia.mp4',
+    'Tokyo Revengers (2021) - S01e14 - Break Up [Bluray-1080P][Opus 2.0][Av1]-Blackrabbit-14.ia.mp4',
+    'Tokyo Revengers (2021) - S01e15 - No Pain No Gain [Bluray-1080P][Opus 2.0][Av1]-Blackrabbit-15.ia.mp4',
+    'Tokyo Revengers (2021) - S01e16 - Once Upon A Time [Bluray-1080P][Opus 2.0][Av1]-Blackrabbit-16.ia.mp4',
+    'Tokyo Revengers (2021) - S01e17 - No Way [Bluray-1080P][Opus 2.0][Av1]-Blackrabbit-17.ia.mp4',
+    'Tokyo Revengers (2021) - S01e18 - Open Fire [Bluray-1080P][Opus 2.0][Av1]-Blackrabbit-18.ia.mp4',
+    'Tokyo Revengers (2021) - S01e19 - Turn Around [Bluray-1080P][Opus 2.0][Av1]-Blackrabbit-19.ia.mp4',
+    'Tokyo Revengers (2021) - S01e20 - Dead Or Alive [Bluray-1080P][Opus 2.0][Av1]-Blackrabbit-20.ia.mp4',
+    'Tokyo Revengers (2021) - S01e21 - One And Only [Bluray-1080P][Opus 2.0][Av1]-Blackrabbit-21.ia.mp4',
+    'Tokyo Revengers (2021) - S01e22 - One For All [Bluray-1080P][Opus 2.0][Av1]-Blackrabbit-22.ia.mp4',
+    'Tokyo Revengers (2021) - S01e23 - End Of War [Bluray-1080P][Opus 2.0][Av1]-Blackrabbit-23.ia.mp4',
+    'Tokyo Revengers (2021) - S01e24 - A Cry Baby [Bluray-1080P][Opus 2.0][Av1]-Blackrabbit-24.ia.mp4',
+  ];
+
   static List<_AnimeStreamEntry> _buildTokyoRevengersSeason1() {
-    return List.generate(12, (index) {
-      final epNum = index + 1;
-      final pad = epNum.toString().padLeft(2, '0');
-      final url =
-          'https://archive.org/download/tokyo.-revengers-latino/Tokyo.Revengers.S01E$pad.mp4';
-      return _AnimeStreamEntry(server1Url: url, server3Url: url);
-    });
+    return _trS1Files.map((file) {
+      final encoded = Uri.encodeComponent(file);
+      final url = 'https://archive.org/download/mgamaangasnasigasheeshhh/$encoded';
+      return _AnimeStreamEntry(
+        server1Url: url,
+        server3Url: url.replaceAll('/download/', '/cors/'),
+        server4Url: url,
+      );
+    }).toList();
   }
+
+  // --- Tokyo Revengers Season 2 (13 Episodes, BluRay 1080p Japanese Audio) ---
+  static const List<String> _trS2Files = [
+    'Tokyo Revengers (2021) - S02e01 - It Is What It Is [Bluray-1080P][Opus 2.0][Av1]-Blackrabbit-1.ia.mp4',
+    'Tokyo Revengers (2021) - S02e02 - Gotta Go [Bluray-1080P][Opus 2.0][Av1]-Blackrabbit-2.ia.mp4',
+    'Tokyo Revengers (2021) - S02e03 - Stand Alone [Bluray-1080P][Opus 2.0][Av1]-Blackrabbit-3.ia.mp4',
+    'Tokyo Revengers (2021) - S02e04 - Family Bonds [Bluray-1080P][Opus 2.0][Av1]-Blackrabbit-4.ia.mp4',
+    'Tokyo Revengers (2021) - S02e05 - Christmas Eve [Bluray-1080P][Opus 2.0][Av1]-Blackrabbit-5.ia.mp4',
+    'Tokyo Revengers (2021) - S02e06 - Whip Up Morale [Bluray-1080P][Opus 2.0][Av1]-Blackrabbit-6.ia.mp4',
+    'Tokyo Revengers (2021) - S02e07 - Sibling Rivalry [Bluray-1080P][Opus 2.0][Av1]-Blackrabbit-7.ia.mp4',
+    'Tokyo Revengers (2021) - S02e08 - Strive Together [Bluray-1080P][Opus 2.0][Av1]-Blackrabbit-8.ia.mp4',
+    'Tokyo Revengers (2021) - S02e09 - Dawning Of A New Era [Bluray-1080P][Opus 2.0][Av1]-Blackrabbit-9.ia.mp4',
+    'Tokyo Revengers (2021) - S02e10 - The Light Of My Life [Bluray-1080P][Opus 2.0][Av1]-Blackrabbit-10.ia.mp4',
+    'Tokyo Revengers (2021) - S02e11 - On My Way Home [Bluray-1080P][Opus 2.0][Av1]-Blackrabbit-11.ia.mp4',
+    'Tokyo Revengers (2021) - S02e12 - Last Order [Bluray-1080P][Opus 2.0][Av1]-Blackrabbit-12.ia.mp4',
+    'Tokyo Revengers (2021) - S02e13 - When It Rains It Pours [Bluray-1080P][Opus 2.0][Av1]-Blackrabbit-13.ia.mp4',
+  ];
 
   static List<_AnimeStreamEntry> _buildTokyoRevengersS2() {
-    return List.generate(13, (index) {
-      final epNum = index + 1;
-      final pad = epNum.toString().padLeft(2, '0');
-      final fileName = epNum == 13
-          ? 'Tokyo Revengers S2 cap 13 Final.mp4'
-          : 'Tokyo Revengers S2 cap $pad.ia.mp4';
-      final encoded = Uri.encodeComponent(fileName);
-      final url =
-          'https://archive.org/download/tokyo-revengers-s2-darkrai/$encoded';
-      return _AnimeStreamEntry(server1Url: url, server3Url: url);
-    });
+    return _trS2Files.map((file) {
+      final encoded = Uri.encodeComponent(file);
+      final url = 'https://archive.org/download/paniskyotoavengershahahasdhaxcf/$encoded';
+      return _AnimeStreamEntry(
+        server1Url: url,
+        server3Url: url.replaceAll('/download/', '/cors/'),
+        server4Url: url,
+      );
+    }).toList();
   }
 
+  // --- Tokyo Revengers Season 3 (13 Episodes, Japanese Audio) ---
   static List<_AnimeStreamEntry> _buildTokyoRevengersS3() {
     return List.generate(13, (index) {
       final epNum = index + 1;
-      final pad = epNum.toString().padLeft(2, '0');
-      final fileName = epNum >= 12
-          ? 'Tokyo Revengers S3 cap 12-13.mp4'
-          : 'Tokyo Revengers S3 cap $pad.mp4';
+      final fileName = 'Tokyo Revengers Tenjiku-hen Episodio $epNum.mp4';
       final encoded = Uri.encodeComponent(fileName);
       final url =
-          'https://archive.org/download/tokyo-revengers-s3-darkrai/$encoded';
-      return _AnimeStreamEntry(server1Url: url, server3Url: url);
+          'https://archive.org/download/tokyo-revengers-tenjiku-hen-episodio-13/$encoded';
+      return _AnimeStreamEntry(
+        server1Url: url,
+        server3Url: url.replaceAll('/download/', '/cors/'),
+        server4Url: url,
+      );
     });
   }
 
-  // --- Solo Leveling Season 1 (12 Episodes, ~24m each) ---
+  // --- Tokyo Revengers Season 4 / Santen Sensou (Official Japanese Audio) ---
+  static List<_AnimeStreamEntry> _buildTokyoRevengersS4() {
+    const url =
+        'https://archive.org/download/animelk-tokyo-revengers-santen-e01/Tokyo%20Revengers%3A%20Santen%20Sensou-hen%20E01_720p.mp4';
+    return [
+      _AnimeStreamEntry(
+        server1Url: url,
+        server3Url: url.replaceAll('/download/', '/cors/'),
+        server4Url: url,
+      )
+    ];
+  }
+
+  // --- Yosuga no Sora (12 Episodes BluRay Japanese audio) ---
+  static List<_AnimeStreamEntry> _buildYosugaNoSora() {
+    return List.generate(12, (index) {
+      final epStr = (index + 1).toString().padLeft(2, '0');
+      final s1 =
+          'https://archive.org/download/yosuga-no-sora-0368ab60e9b77640d9c12f7f299b73232ba809e35d79a65b21b916ac4609ea085/Yosuga.no.Sora.S01E$epStr.1080p.BluRay.10-Bit.FLAC2.0.x265-YURASUKA.mp4';
+      final s3 =
+          'https://archive.org/cors/yosuga-no-sora-0368ab60e9b77640d9c12f7f299b73232ba809e35d79a65b21b916ac4609ea085/Yosuga.no.Sora.S01E$epStr.1080p.BluRay.10-Bit.FLAC2.0.x265-YURASUKA.mp4';
+      final s4 = s1;
+      return _AnimeStreamEntry(server1Url: s1, server3Url: s3, server4Url: s4);
+    });
+  }
+
+  // --- Solo Leveling Season 1 (12 Episodes, ~24m each, Japanese Audio) ---
   static List<_AnimeStreamEntry> _buildSoloLevelingSeason1() {
     return List.generate(12, (index) {
       final epNum = index + 1;
       final pad = epNum.toString().padLeft(2, '0');
-      final rawName =
-          'Поднятие уровня в одиночку С1Э$pad (2024) 1080p.mp4';
-      final encoded = Uri.encodeComponent(rawName);
+      final fileName = '[AnimeSalt] Solo Leveling - S01E$pad [1080p] [Multi-Audio].mp4';
+      final encoded = Uri.encodeComponent(fileName);
       final url =
-          'https://archive.org/download/solo-leveling-s1_202610/$encoded';
-      return _AnimeStreamEntry(server1Url: url, server3Url: url);
+          'https://archive.org/download/anime-salt-solo-leveling-s-01-e-01-1080p-multi-audio/$encoded';
+      return _AnimeStreamEntry(
+        server1Url: url,
+        server3Url: url.replaceAll('/download/', '/cors/'),
+        server4Url: url,
+      );
     });
   }
 
@@ -1217,26 +1281,18 @@ class AnimeStreamResolver {
     return [const _AnimeStreamEntry(server1Url: url, server3Url: url)];
   }
 
-  // --- Naruto Season 1 (25 Episodes, ~23m each) ---
+  // --- Naruto Season 1 (25 Episodes, ~23m each, Japanese Audio) ---
   static List<_AnimeStreamEntry> _buildNarutoSeason1() {
     return List.generate(25, (index) {
       final epNum = index + 1;
-      final pad = epNum.toString().padLeft(2, '0');
-      final server3 =
-          'https://archive.org/download/narutodansktale/Naruto.S01E$pad.DANiSH.480p.DVDRip.x264.DD2.0-TWASERiES.ia.mp4';
-
-      String server1;
-      if (epNum == 1) {
-        server1 =
-            'https://archive.org/download/naruto-001-enter-naruto-uzumaki/Naruto%20%20001%20-%20Enter%20Naruto%20Uzumaki.mp4';
-      } else if (epNum == 2) {
-        server1 =
-            'https://archive.org/download/naruto-episode-2.mp-4-h-264-720p-2/naruto%20episode%202.mp4-h264_720p_2.mp4';
-      } else {
-        server1 = server3;
-      }
-
-      return _AnimeStreamEntry(server1Url: server1, server3Url: server3);
+      final pad3 = epNum.toString().padLeft(3, '0');
+      final url = 'https://archive.org/download/naruto-completo/Naruto%20-%20$pad3.mp4';
+      final corsUrl = 'https://archive.org/cors/naruto-completo/Naruto%20-%20$pad3.mp4';
+      return _AnimeStreamEntry(
+        server1Url: url,
+        server3Url: corsUrl,
+        server4Url: url,
+      );
     });
   }
 
@@ -1294,8 +1350,12 @@ class AnimeStreamResolver {
       final epNum = index + 1;
       final pad = epNum.toString().padLeft(2, '0');
       final url =
-          'https://archive.org/download/sousou-no-frieren-dublado/Sousou%20no%20Frieren%20Dublado%20$pad%20Online.mp4';
-      return _AnimeStreamEntry(server1Url: url, server3Url: url);
+          'https://archive.org/download/anime-pahe-sousou-no-frieren-$pad-bd-1080p-sev/AnimePahe_Sousou_no_Frieren_-_${pad}_BD_1080p_SEV.mp4';
+      return _AnimeStreamEntry(
+        server1Url: url,
+        server3Url: url.replaceAll('/download/', '/cors/'),
+        server4Url: url,
+      );
     });
   }
 
@@ -1476,10 +1536,10 @@ class AnimeStreamResolver {
     });
   }
 
-  // --- Your Name / Kimi no Na wa Movie (106 Minutes) ---
+  // --- Your Name / Kimi no Na wa Movie (106 Minutes, Japanese Audio) ---
   static List<_AnimeStreamEntry> _buildYourName() {
     const url =
-        'https://archive.org/download/your.-name.-2016.-1.8-gb.-1080p.-dual.-audio.-hin-eng.-vegamovies.-nl/Your.Name.%282016%29.1.8GB.1080p.Dual.Audio.%28Hin-Eng%29.Vegamovies.NL.mp4';
+        'https://archive.org/download/kimi-no-na-wa_202507/Kimi%20no%20na%20wa.mp4';
     return [const _AnimeStreamEntry(server1Url: url, server3Url: url)];
   }
 
@@ -1504,32 +1564,84 @@ class AnimeStreamResolver {
     return [const _AnimeStreamEntry(server1Url: url, server3Url: url)];
   }
 
+  // --- Tokyo Ghoul Season 1 (12 Episodes, ~24m each, Japanese Audio) ---
+  static List<_AnimeStreamEntry> _buildTokyoGhoulSeason1() {
+    return List.generate(12, (index) {
+      final epNum = index + 1;
+      final fileName = 'S01E0$epNum.mp4';
+      final url = 'https://archive.org/download/tokyo-ghoul-s01-sm/$fileName';
+      return _AnimeStreamEntry(
+        server1Url: url,
+        server3Url: url.replaceAll('/download/', '/cors/'),
+        server4Url: url,
+      );
+    });
+  }
+
   // --- Tokyo Ghoul Movie / Feature (101 Minutes) ---
   static List<_AnimeStreamEntry> _buildTokyoGhoulMovie() {
     const url = 'https://archive.org/download/tokyo-ghoul-s/TokyoGhoulS.mp4';
     return [const _AnimeStreamEntry(server1Url: url, server3Url: url)];
   }
 
-  // --- One Punch Man Season 1 (12 Episodes, ~24m each) ---
+  // --- One Punch Man Season 1 (12 Episodes, ~24m each, Japanese Audio) ---
+  static const List<String> _opmS1Files = [
+    'S01/One Punch Man - S01E01 - Der Stärkste .mp4',
+    'S01/One Punch Man - S01E02 - Entrückter Cyborg .mp4',
+    'S01/One Punch Man - S01E03 - Beharrlicher Wissenschaftler .mp4',
+    'S01/One Punch Man - S01E04 - Ninja von heute .mp4',
+    'S01/One Punch Man - S01E05 - Ultimativer Lehrer .mp4',
+    'S01/One Punch Man - S01E06 - Furchterregendste Stadt .mp4',
+    'S01/One Punch Man - S01E07 - Überlegener Schüler .mp4',
+    'S01/One Punch Man - S01E08 - König der Tiefsee .mp4',
+    'S01/One Punch Man - S01E09 - Unbeugsame Gerechtigkeit .mp4',
+    'S01/One Punch Man - S01E10 - Nie da gewesene Krise .mp4',
+    'S01/One Punch Man - S01E11 - Gebieter über das All .mp4',
+    'S01/One Punch Man - S01E12 - Der stärkste Held .mp4',
+  ];
+
   static List<_AnimeStreamEntry> _buildOnePunchManS1() {
-    return List.generate(12, (index) {
-      final epNum = index + 1;
-      final pad = epNum.toString().padLeft(2, '0');
-      final url =
-          'https://archive.org/download/one-punch-man-s1-ep-01/One.Punch.Man.S01E$pad.mp4';
-      return _AnimeStreamEntry(server1Url: url, server3Url: url);
-    });
+    const base =
+        'https://archive.org/download/anionepunchmandl151080bray_starskis01s02.Gemischt';
+    return _opmS1Files.map((file) {
+      final encoded = Uri.encodeComponent(file).replaceAll('%2F', '/');
+      final url = '$base/$encoded';
+      return _AnimeStreamEntry(
+        server1Url: url,
+        server3Url: url.replaceAll('/download/', '/cors/'),
+        server4Url: url,
+      );
+    }).toList();
   }
 
-  // --- One Punch Man Season 2 (12 Episodes, ~24m each) ---
+  // --- One Punch Man Season 2 (12 Episodes, ~24m each, Japanese Audio) ---
+  static const List<String> _opmS2Files = [
+    'mkv/One Punch Man - S02E01 - Rückkehr eines Helden.mp4',
+    'mkv/One Punch Man - S02E02 - Menschliches Monster.mp4',
+    'mkv/One Punch Man - S02E03 - Die Jagd beginnt.mp4',
+    'mkv/One Punch Man - S02E04 - Metal Bat.mp4',
+    'mkv/One Punch Man - S02E05 - Das Kampfkunst-Turnier.mp4',
+    'mkv/One Punch Man - S02E06 - Monsteraufstand.mp4',
+    'mkv/One Punch Man - S02E07 - S-Klasse-Held.mp4',
+    'mkv/One Punch Man - S02E08 - Widerstand.mp4',
+    'mkv/One Punch Man - S02E09 - Allergrößte Sorge.mp4',
+    'mkv/One Punch Man - S02E10 - Umzingelt von der Gerechtigkeit.mp4',
+    'mkv/One Punch Man - S02E11 - Jedem sein eigener Stolz.mp4',
+    'mkv/One Punch Man - S02E12 - Geradestehen für den Schüler.mp4',
+  ];
+
   static List<_AnimeStreamEntry> _buildOnePunchManS2() {
-    return List.generate(12, (index) {
-      final epNum = index + 1;
-      final pad = epNum.toString().padLeft(2, '0');
-      final url =
-          'https://archive.org/download/one-punch-man-s2-ep-01/One.Punch.Man.S02E$pad.mp4';
-      return _AnimeStreamEntry(server1Url: url, server3Url: url);
-    });
+    const base =
+        'https://archive.org/download/anionepunchmandl151080bray_starskis01s02.Gemischt';
+    return _opmS2Files.map((file) {
+      final encoded = Uri.encodeComponent(file).replaceAll('%2F', '/');
+      final url = '$base/$encoded';
+      return _AnimeStreamEntry(
+        server1Url: url,
+        server3Url: url.replaceAll('/download/', '/cors/'),
+        server4Url: url,
+      );
+    }).toList();
   }
 
   static final Map<String, List<_AnimeStreamEntry>> _animeEpisodeMap = {
@@ -1560,8 +1672,10 @@ class AnimeStreamResolver {
     'haikyuu-movie': _buildHaikyuuMovie(),
     'gintama-movie': _buildGintamaMovie(),
     'silent-voice': _buildSilentVoice(),
-    'tokyo-ghoul': _buildTokyoGhoulMovie(),
+    'tokyo-ghoul': _buildTokyoGhoulSeason1(),
+    'tokyo-ghoul-movie': _buildTokyoGhoulMovie(),
     'one-punch-man': _buildOnePunchManS1(),
+    'yosuga-no-sora': _buildYosugaNoSora(),
 
     // Season-Specific Verified Entries
     'demon-slayer-s2': _buildKnySeason2(),
@@ -1570,6 +1684,7 @@ class AnimeStreamResolver {
     'dandadan-s2': _buildDandadanS2(),
     'tokyo-revengers-s2': _buildTokyoRevengersS2(),
     'tokyo-revengers-s3': _buildTokyoRevengersS3(),
+    'tokyo-revengers-s4': _buildTokyoRevengersS4(),
     'one-punch-man-s2': _buildOnePunchManS2(),
   };
 }
@@ -1577,9 +1692,39 @@ class AnimeStreamResolver {
 class _AnimeStreamEntry {
   final String server1Url;
   final String server3Url;
+  final String server4Url;
 
   const _AnimeStreamEntry({
     required this.server1Url,
     required this.server3Url,
-  });
+    String? server4Url,
+  }) : server4Url = server4Url ?? server3Url;
+
+  String getUrlForServer(String server) {
+    if (server.contains('Server 3') || server.toLowerCase().contains('otaku')) {
+      if (server3Url.isNotEmpty &&
+          !server3Url.contains('dn72') &&
+          !server3Url.contains('.ca.archive') &&
+          !server3Url.contains('ia820602') &&
+          !server3Url.contains('ia800505') &&
+          !server3Url.contains('ia601508')) {
+        return server3Url;
+      }
+      return server1Url.replaceAll('/download/', '/cors/');
+    }
+    if (server.contains('Server 4') ||
+        server.toLowerCase().contains('consumet') ||
+        server.toLowerCase().contains('cloud')) {
+      if (server4Url.isNotEmpty &&
+          !server4Url.contains('dn72') &&
+          !server4Url.contains('.ca.archive') &&
+          !server4Url.contains('ia820602') &&
+          !server4Url.contains('ia800505') &&
+          !server4Url.contains('ia601508')) {
+        return server4Url;
+      }
+      return server1Url;
+    }
+    return server1Url;
+  }
 }

@@ -136,7 +136,7 @@ void main() {
         MaterialApp(
           theme: AppTheme.darkTheme,
           home: const AnimeDetailScreen(
-            animeId: 'tokyo-revengers-s4',
+            animeId: 'unreleased-anime',
           ),
         ),
       );

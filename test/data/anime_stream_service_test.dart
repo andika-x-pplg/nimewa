@@ -79,10 +79,9 @@ void main() {
     });
 
     test('getAnimeDetail for incomplete anime returns hasVideoAvailable false and empty episodes', () async {
-      final detail = await service.getAnimeDetail('tokyo-revengers-s4');
+      final detail = await service.getAnimeDetail('unreleased-anime');
       expect(detail.hasVideoAvailable, isFalse);
       expect(detail.episodes, isEmpty);
-      expect(detail.relations, isNotEmpty);
     });
   });
 }

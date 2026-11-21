@@ -367,13 +367,63 @@ void main() {
       await tester.pumpWidget(createWatchScreen());
       await tester.pumpAndSettle();
 
+      // Subtitles are enabled by default and displayed on screen
+      expect(find.byKey(const Key('in_player_subtitle_box')), findsOneWidget);
+      expect(find.textContaining('[Sub Indo] Solo Leveling'), findsOneWidget);
+
       final subBtn = find.byKey(const Key('btn_toggle_subtitles'));
       expect(subBtn, findsOneWidget);
       expect(find.text('SUB INDO'), findsOneWidget);
 
+      // Tap to disable subtitles
       await tester.tap(subBtn);
       await tester.pumpAndSettle();
-      expect(find.byKey(const Key('btn_toggle_subtitles')), findsOneWidget);
+      expect(find.byKey(const Key('in_player_subtitle_box')), findsNothing);
+
+      // Tap again to re-enable subtitles
+      await tester.tap(subBtn);
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('in_player_subtitle_box')), findsOneWidget);
+      expect(find.textContaining('[Sub Indo] Solo Leveling'), findsOneWidget);
+    });
+
+    testWidgets('manual subtitle offset controls adjust offset in 0.1s increments and persist', (tester) async {
+      tester.view.physicalSize = const Size(500, 1200);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await tester.pumpWidget(createWatchScreen());
+      await tester.pumpAndSettle();
+
+      // Subtitle sync bar is rendered
+      expect(find.byKey(const Key('subtitle_sync_bar')), findsOneWidget);
+      expect(find.text('Sinkron Sub:'), findsOneWidget);
+      final offsetBadge = find.byKey(const Key('txt_sub_offset_value'));
+      expect(offsetBadge, findsOneWidget);
+      expect(find.descendant(of: offsetBadge, matching: find.text('+0.0s')), findsOneWidget);
+
+      // Tap +0.1s button
+      await tester.tap(find.byKey(const Key('btn_sub_offset_plus')));
+      await tester.pumpAndSettle();
+      expect(find.descendant(of: offsetBadge, matching: find.text('+0.1s')), findsOneWidget);
+      expect(find.byKey(const Key('btn_sub_offset_reset')), findsOneWidget);
+
+      // Tap +0.1s again
+      await tester.tap(find.byKey(const Key('btn_sub_offset_plus')));
+      await tester.pumpAndSettle();
+      expect(find.descendant(of: offsetBadge, matching: find.text('+0.2s')), findsOneWidget);
+
+      // Tap -0.1s button
+      await tester.tap(find.byKey(const Key('btn_sub_offset_minus')));
+      await tester.pumpAndSettle();
+      expect(find.descendant(of: offsetBadge, matching: find.text('+0.1s')), findsOneWidget);
+
+      // Tap Reset button
+      await tester.tap(find.byKey(const Key('btn_sub_offset_reset')));
+      await tester.pumpAndSettle();
+      expect(find.descendant(of: offsetBadge, matching: find.text('+0.0s')), findsOneWidget);
+      expect(find.byKey(const Key('btn_sub_offset_reset')), findsNothing);
     });
   });
 }

@@ -111,23 +111,23 @@ void main() {
 
     test('marks hasVideoAvailable correctly without hiding anime with 0 or missing videos', () {
       final incompleteAnimeJson = {
-        'id': 178945, // Tokyo Revengers Season 4 / Santen Sensou (unreleased / no video)
+        'id': 999998, // Unreleased anime / no video uploaded
         'title': {
-          'romaji': 'Tokyo Revengers: Santen Sensou-hen',
-          'english': 'Tokyo Revengers: Three Deities Arc',
+          'romaji': 'Unreleased Anime Project',
+          'english': 'Unreleased Anime Project',
         },
         'coverImage': {
-          'large': 'https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx178945.png',
+          'large': 'https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx999998.png',
         },
         'episodes': 0,
         'status': 'NOT_YET_RELEASED',
         'averageScore': 0,
-        'description': 'Upcoming arc of Tokyo Revengers.',
+        'description': 'Upcoming unreleased anime.',
         'genres': ['Action'],
       };
 
       final item = client.parseMediaItem(incompleteAnimeJson);
-      expect(item.aniListId, equals(178945));
+      expect(item.aniListId, equals(999998));
       expect(item.hasVideoAvailable, isFalse);
     });
 

@@ -147,7 +147,7 @@ void main() {
       );
 
       // Successfully falls back to authentic local stream
-      expect(streamUrl, contains('Cruelty'));
+      expect(streamUrl, contains('Demon%20Slayer'));
       expect(streamUrl, contains('.mp4'));
     });
 
@@ -155,8 +155,8 @@ void main() {
       final nullClient = _FakeConsumetClient(fakeStreamUrl: null);
 
       final streamUrl = await AnimeStreamResolver.resolveStreamUrlAsync(
-        animeId: 'tokyo-revengers-s4',
-        animeTitle: 'Tokyo Revengers: Season 4',
+        animeId: 'season-4-fallback',
+        animeTitle: 'Unknown Anime Season 4',
         server: 'Server 1 (Fast HD)',
         episodeNumber: 1,
         client: nullClient,

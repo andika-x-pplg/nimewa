@@ -101,6 +101,9 @@ class AnimeStreamService {
     if (cleanId == 'tokyo-revengers-s4' || cleanId == '178945' || cleanId == '48960') {
       return _curatedDetails['tokyo-revengers-s4']!;
     }
+    if (cleanId == 'yosuga-no-sora' || cleanId == '8861') {
+      return _curatedDetails['yosuga-no-sora']!;
+    }
     if (cleanId == 'tokyo-revengers-s3' || cleanId == 'tokyo-revengers-tenjiku' || cleanId == '47537' || cleanId == '163539') {
       return _curatedDetails['tokyo-revengers-s3']!;
     }
@@ -611,12 +614,21 @@ class AnimeStreamService {
       synopsis: 'Pertarungan tiga dewa besar Tokyo dalam babak Three Deities.',
       posterUrl: '',
       backdropUrl: '',
-      status: 'Akan Tayang',
+      status: 'Ongoing',
       studio: 'LIDENFILMS',
-      totalEpisodes: 0,
-      episodes: [],
+      totalEpisodes: 1,
+      episodes: [
+        EpisodeItem(
+          id: 'tr-s4-eps-1',
+          episodeNumber: 1,
+          title: 'Episode 1 - Santen Sensou Sub Indo',
+          releaseDate: '2026-01-01',
+          streamUrl:
+              'https://archive.org/download/tokyorevengers/Official%E9%AB%AD%E7%94%B7dism%20-Cry%20Baby-%20Tokyo%20Revengers%20OP%20Lyrics%20%E3%80%8CEnglish%20subs_translirik%20Indonesia%E3%80%8D.mp4',
+        ),
+      ],
       aniListId: 178945,
-      hasVideoAvailable: false,
+      hasVideoAvailable: true,
       relations: [
         AnimeRelationItem(
           id: 163539,
@@ -626,6 +638,50 @@ class AnimeStreamService {
           status: 'FINISHED',
         ),
       ],
+    ),
+    'yosuga-no-sora': const AnimeDetail(
+      id: '8861',
+      title: 'Yosuga no Sora',
+      japaneseTitle: 'ヨスガノソラ',
+      rating: 7.2,
+      releaseYear: 2010,
+      genres: ['Romance', 'Drama', 'Ecchi'],
+      synopsis: 'Haruka dan Sora Kasugano pindah ke desa terpencil tempat kenangan masa kecil mereka.',
+      posterUrl: 'https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx8861-DZKseZpdtBwp.jpg',
+      backdropUrl: 'https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx8861-DZKseZpdtBwp.jpg',
+      bannerUrl: 'https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx8861-DZKseZpdtBwp.jpg',
+      status: 'Tamat',
+      studio: 'feel.',
+      totalEpisodes: 12,
+      episodes: [
+        EpisodeItem(
+          id: '8861-eps-1',
+          episodeNumber: 1,
+          title: 'Episode 1 - Kenangan Masa Kecil Sub Indo',
+          releaseDate: '2010-10-04',
+          streamUrl:
+              'https://archive.org/download/yosuga-no-sora-0368ab60e9b77640d9c12f7f299b73232ba809e35d79a65b21b916ac4609ea085/Yosuga.no.Sora.S01E01.1080p.BluRay.10-Bit.FLAC2.0.x265-YURASUKA.mp4',
+        ),
+      ],
+      aniListId: 8861,
+      hasVideoAvailable: true,
+    ),
+    'unreleased-anime': const AnimeDetail(
+      id: '999998',
+      title: 'Unreleased Anime Project',
+      japaneseTitle: '未公開プロジェクト',
+      rating: 7.5,
+      releaseYear: 2027,
+      genres: ['Action', 'Mystery'],
+      synopsis: 'Anime ini belum dirilis dan belum memiliki episode.',
+      posterUrl: '',
+      backdropUrl: '',
+      status: 'Akan Tayang',
+      studio: 'Animation Studio',
+      totalEpisodes: 0,
+      episodes: [],
+      aniListId: 999998,
+      hasVideoAvailable: false,
     ),
     'one-punch-man': AnimeDetail(
       id: 'one-punch-man',

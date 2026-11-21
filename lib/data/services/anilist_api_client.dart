@@ -460,6 +460,14 @@ query ($id: Int) {
         : (totalEpisodes == 1 ? 'SUB · MOVIE' : 'SUB · Ongoing');
 
     final hasVideo = _computeHasVideoAvailable(aniListId, title);
+    if (hasVideo && aniListId > 0) {
+      OwnerVideoRepository.instance.ensureVideosForAnime(
+        aniListId: aniListId,
+        seasonNumber: 1,
+        count: totalEpisodes > 0 ? totalEpisodes : 12,
+        seriesTitle: title,
+      );
+    }
 
     return AnimeItem(
       id: aniListId > 0 ? aniListId.toString() : title.toLowerCase().replaceAll(RegExp(r'\W+'), '-'),
@@ -505,7 +513,16 @@ query ($id: Int) {
         : 'Animation Studio';
 
     // Episode list: only populated if video is available
-    final uploadedVideos = OwnerVideoRepository.instance.getVideosForAnime(item.aniListId);
+    var uploadedVideos = OwnerVideoRepository.instance.getVideosForAnime(item.aniListId);
+    if (uploadedVideos.isEmpty && item.hasVideoAvailable && item.aniListId > 0) {
+      OwnerVideoRepository.instance.ensureVideosForAnime(
+        aniListId: item.aniListId,
+        seasonNumber: 1,
+        count: count,
+        seriesTitle: item.title,
+      );
+      uploadedVideos = OwnerVideoRepository.instance.getVideosForAnime(item.aniListId);
+    }
     final episodeList = item.hasVideoAvailable
         ? (uploadedVideos.isNotEmpty
             ? uploadedVideos
@@ -614,17 +631,12 @@ query ($id: Int) {
   }
 
   bool _computeHasVideoAvailable(int aniListId, String title) {
-    // Explicit blacklist of anime seasons known to lack video
-    if (aniListId == 178945 ||
-        title.toLowerCase().contains('tokyo revengers: season 4') ||
-        title.toLowerCase().contains('santen sensou') ||
-        title.toLowerCase().contains('three deities')) {
+    if (aniListId <= 0 && title.isEmpty) return false;
+    if (aniListId == 999998 || title.toLowerCase().contains('unreleased')) {
       return false;
     }
-    if (aniListId > 0 && OwnerVideoRepository.instance.hasVideosForAnime(aniListId)) {
-      return true;
-    }
-    return AnimeStreamResolver.hasCompleteEpisodes(aniListId.toString(), title);
+    final idStr = aniListId > 0 ? aniListId.toString() : title;
+    return AnimeStreamResolver.hasCompleteEpisodes(idStr, title);
   }
 
   Future<Map<String, dynamic>> _postGraphQL(
@@ -843,7 +855,7 @@ query ($id: Int) {
       episodeInfo: 'SUB · 12 EPS (Tamat)',
       statusLabel: 'Tamat',
       aniListId: 8861,
-      hasVideoAvailable: false,
+      hasVideoAvailable: true,
     ),
     AnimeItem(
       id: '21087',
@@ -872,10 +884,10 @@ query ($id: Int) {
       posterUrl: '',
       backdropUrl: '',
       bannerUrl: null,
-      episodeInfo: 'Upcoming',
+      episodeInfo: 'SUB · 1 EPS (Preview)',
       statusLabel: 'Ongoing',
       aniListId: 178945,
-      hasVideoAvailable: false,
+      hasVideoAvailable: true,
     ),
   ];
 
