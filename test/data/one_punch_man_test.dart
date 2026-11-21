@@ -25,17 +25,17 @@ void main() {
       expect(s1Videos[11].episodeTitle, contains('Pahlawan Terkuat'));
 
       // Check video URL matches authentic OPM pattern
-      expect(s1Videos[0].videoUrl, contains('One%20Punch%20Man'));
-      expect(s1Videos[0].videoUrl, contains('S01E01'));
-      expect(s1Videos[11].videoUrl, contains('S01E12'));
+      expect(s1Videos[0].videoUrl, contains('opm-s1'));
+      expect(s1Videos[0].videoUrl, contains('OPM-BD-01'));
+      expect(s1Videos[11].videoUrl, contains('OPM-BD-12'));
 
       // Season 2 (AniList ID 102194)
       expect(repo.hasVideosForAnime(102194, seasonNumber: 2), isTrue);
       final s2Videos = repo.getVideosForAnime(102194, seasonNumber: 2);
       expect(s2Videos.length, equals(12));
       expect(s2Videos[0].episodeTitle, contains('Kembalinya Sang Pahlawan'));
-      expect(s2Videos[0].videoUrl, contains('One%20Punch%20Man'));
-      expect(s2Videos[0].videoUrl, contains('S02E01'));
+      expect(s2Videos[0].videoUrl, contains('opm-s2'));
+      expect(s2Videos[0].videoUrl, contains('O-S2-BD-01'));
     });
 
     test('AnimeStreamResolver resolves One Punch Man episodes accurately without season bleeding', () {
@@ -46,8 +46,8 @@ void main() {
         server: 'Server 1 (Fast HD)',
         episodeNumber: 1,
       );
-      expect(s1Ep1, contains('S01E01'));
-      expect(s1Ep1, contains('One%20Punch%20Man'));
+      expect(s1Ep1, contains('opm-s1'));
+      expect(s1Ep1, contains('OPM-BD-01'));
 
       // Season 1 Episode 12
       final s1Ep12 = AnimeStreamResolver.resolveStreamUrl(
@@ -56,7 +56,8 @@ void main() {
         server: 'Server 1 (Fast HD)',
         episodeNumber: 12,
       );
-      expect(s1Ep12, contains('S01E12'));
+      expect(s1Ep12, contains('opm-s1'));
+      expect(s1Ep12, contains('OPM-BD-12'));
       expect(s1Ep12, isNot(equals(s1Ep1)));
 
       // Season 2 Episode 1 (ID 102194)
@@ -66,8 +67,8 @@ void main() {
         server: 'Server 1 (Fast HD)',
         episodeNumber: 1,
       );
-      expect(s2Ep1, contains('S02E01'));
-      expect(s2Ep1, contains('One%20Punch%20Man'));
+      expect(s2Ep1, contains('opm-s2'));
+      expect(s2Ep1, contains('O-S2-BD-01'));
       expect(s2Ep1, isNot(equals(s1Ep1)));
 
       // Anime key detection
@@ -85,7 +86,7 @@ void main() {
       expect(detail.totalEpisodes, equals(12));
       expect(detail.episodes.length, equals(12));
       expect(detail.episodes[0].title, contains('Pria Terkuat'));
-      expect(detail.episodes[0].streamUrl, contains('S01E01'));
+      expect(detail.episodes[0].streamUrl, contains('OPM-BD-01'));
       expect(detail.studio.toUpperCase(), equals('MADHOUSE'));
 
       // Check relation to Season 2 (AniList SEQUEL relation is either 102194 or 97668)

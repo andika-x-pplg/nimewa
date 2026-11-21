@@ -82,11 +82,13 @@ class AnimeSubtitleService {
     }
 
     final aligned = <SubtitleCue>[];
+
+    // Preserve title header up to just before target speech onset so viewer sees anime badge during intro,
+    // handing over cleanly to character dialogue exactly at targetOnset.
     final headerEnd = targetOnset > const Duration(milliseconds: 100)
         ? targetOnset - const Duration(milliseconds: 100)
         : targetOnset;
 
-    // Preserve title header up to the target speech onset so viewer sees anime badge during intro
     for (int i = 0; i < dialogueIndex; i++) {
       final header = unaligned[i];
       aligned.add(SubtitleCue(
@@ -820,7 +822,7 @@ class AnimeSubtitleService {
         SubtitleCue(
           start: Duration(seconds: 0),
           end: Duration(seconds: 8),
-          text: '[Sub Indo] Demon Slayer: Kimetsu no Yaiba - Episode 2: Pelatih Sakonji Urokodaki (Nezuko & Tanjiro)',
+          text: '[Sub Indo] Demon Slayer: Kimetsu no Yaiba - Episode 2: Pelatih Sakonji Urokodaki',
         ),
         SubtitleCue(
           start: Duration(seconds: 8),

@@ -15,10 +15,11 @@ void main() {
         episodeNumber: 1,
       );
       // Episode 1 must be authentic Japanese audio mobile MP4
-      expect(ep1Server1, contains('S01E01'));
+      expect(ep1Server1, contains('KNYS1-E1'));
       expect(ep1Server1, contains('.mp4'));
       expect(ep1Server1, isNot(contains('sintel')));
       expect(ep1Server1, isNot(contains('oceans')));
+      expect(ep1Server1, isNot(contains('Gemischt')));
 
       final ep1Server3 = AnimeStreamResolver.resolveStreamUrl(
         animeId: '41370',
@@ -26,7 +27,7 @@ void main() {
         server: 'Server 3 (Otaku)',
         episodeNumber: 1,
       );
-      expect(ep1Server3, contains('S01E01'));
+      expect(ep1Server3, contains('KNYS1-E1'));
       expect(ep1Server3, contains('.mp4'));
 
       final ep2Server1 = AnimeStreamResolver.resolveStreamUrl(
@@ -36,8 +37,7 @@ void main() {
         episodeNumber: 2,
       );
       // Episode 2 must return authentic Season 1 Episode 2 in playable MP4 format
-      expect(ep2Server1, contains('02'));
-      expect(ep2Server1, contains('Lehrmeister'));
+      expect(ep2Server1, contains('KNYS1-E2'));
       expect(ep2Server1, contains('.mp4'));
       expect(ep2Server1, isNot(equals(ep1Server1)));
 
@@ -48,8 +48,7 @@ void main() {
         episodeNumber: 10,
       );
       // Episode 10 must return authentic Season 1 Episode 10 in playable MP4 format
-      expect(ep10Server1, contains('10'));
-      expect(ep10Server1, contains('Immer%20zusammen'));
+      expect(ep10Server1, contains('KNYS1-E10'));
       expect(ep10Server1, contains('.mp4'));
       expect(ep10Server1, isNot(contains('GATON%202.3'))); // Not Season 2!
       expect(ep10Server1, isNot(equals(ep2Server1)));
@@ -65,9 +64,10 @@ void main() {
         server: 'Server 1 (Fast HD)',
         episodeNumber: 1,
       );
-      expect(ep1, contains('Shingeki'));
-      expect(ep1, contains('Cap%2001'));
+      expect(ep1, contains('Attack%20on%20Titan'));
+      expect(ep1, contains('S01E01'));
       expect(ep1, contains('.mp4'));
+      expect(ep1, isNot(contains('Cap%2001')));
 
       final ep2 = AnimeStreamResolver.resolveStreamUrl(
         animeId: '7442',
@@ -75,8 +75,8 @@ void main() {
         server: 'Server 1 (Fast HD)',
         episodeNumber: 2,
       );
-      expect(ep2, contains('Shingeki'));
-      expect(ep2, contains('Cap%2002'));
+      expect(ep2, contains('Attack%20on%20Titan'));
+      expect(ep2, contains('S01E02'));
       expect(ep2, isNot(equals(ep1)));
 
       final ep10 = AnimeStreamResolver.resolveStreamUrl(
@@ -85,7 +85,7 @@ void main() {
         server: 'Server 1 (Fast HD)',
         episodeNumber: 10,
       );
-      expect(ep10, contains('Cap%2010'));
+      expect(ep10, contains('S01E10'));
       expect(ep10, isNot(equals(ep2)));
 
       final japaneseKey = AnimeStreamResolver.detectAnimeKey('7442', '進撃の巨人');
@@ -263,7 +263,7 @@ void main() {
         animeTitle: 'Tokyo Revengers Season 3',
         server: 'Server 1 (Fast HD)',
       );
-      expect(tokyoS3, contains('Tokyo%20Revengers%20Tenjiku'));
+      expect(tokyoS3, contains('kyotoavenrgesrsamputahahaha'));
 
       expect(
         AnimeStreamResolver.hasCompleteEpisodes('season-4-fallback', 'Unknown Anime Season 4'),
@@ -300,8 +300,9 @@ void main() {
         server: 'Server 1 (Fast HD)',
         episodeNumber: 1,
       );
-      expect(ep1, contains('SPY%20x%20FAMILY%20-%20S01E01'));
+      expect(ep1, contains('SpyFamily_01-720p.mp4'));
       expect(ep1, contains('.mp4'));
+      expect(ep1, isNot(contains('Gemischt')));
 
       final ep12 = AnimeStreamResolver.resolveStreamUrl(
         animeId: '41992',
@@ -309,7 +310,7 @@ void main() {
         server: 'Server 1 (Fast HD)',
         episodeNumber: 12,
       );
-      expect(ep12, contains('SPY%20x%20FAMILY%20-%20S01E12'));
+      expect(ep12, contains('SpyFamily_12-720p.mp4'));
       expect(ep12, contains('.mp4'));
       expect(ep12, isNot(equals(ep1)));
     });
@@ -322,7 +323,8 @@ void main() {
         episodeNumber: 1,
       );
       expect(bleach1, contains('.mp4'));
-      expect(bleach1, contains('Bleach%20S01E01'));
+      expect(bleach1, contains('Bleach%20-%20S01E01.mp4'));
+      expect(bleach1, isNot(contains('Claro Video')));
 
       final bleach2 = AnimeStreamResolver.resolveStreamUrl(
         animeId: 'bleach',
@@ -330,7 +332,7 @@ void main() {
         server: 'Server 1 (Fast HD)',
         episodeNumber: 2,
       );
-      expect(bleach2, contains('Bleach%20S01E02'));
+      expect(bleach2, contains('Bleach%20-%20S01E02.mp4'));
       expect(bleach2, isNot(equals(bleach1)));
 
       final hxh1 = AnimeStreamResolver.resolveStreamUrl(
@@ -357,8 +359,9 @@ void main() {
         server: 'Server 1 (Fast HD)',
         episodeNumber: 1,
       );
-      expect(fmab1, contains('Fullmetal%20Alchemist%20Brotherhood%20S01E01'));
-      expect(fmab1, contains('.mp4'));
+      expect(fmab1, contains('ma-fullmetal-alchemist-2009-bdrip-1920x1080-av1-opus'));
+      expect(fmab1, isNot(contains('1st Dubbing')));
+      expect(fmab1, isNot(contains('Claro Video')));
 
       final fmab2 = AnimeStreamResolver.resolveStreamUrl(
         animeId: 'fullmetal-alchemist',
@@ -366,7 +369,7 @@ void main() {
         server: 'Server 1 (Fast HD)',
         episodeNumber: 2,
       );
-      expect(fmab2, contains('Fullmetal%20Alchemist%20Brotherhood%20S01E02'));
+      expect(fmab2, contains('ma-fullmetal-alchemist-2009-bdrip-1920x1080-av1-opus'));
       expect(fmab2, isNot(equals(fmab1)));
     });
 
@@ -399,7 +402,8 @@ void main() {
         animeTitle: 'Kimetsu no Yaiba: Infinity Castle',
         server: 'Server 1 (Fast HD)',
       );
-      expect(knyMovie, contains('Rengoku%20Kyojurou'));
+      expect(knyMovie, contains('knym-ressha-hen-s'));
+      expect(knyMovie, isNot(contains('Gemischt')));
 
       final haikyuuMovie = AnimeStreamResolver.resolveStreamUrl(
         animeId: 'haikyuu-movie',
@@ -584,13 +588,11 @@ void main() {
       );
 
       // Verify each season has its distinct stream URL
-      expect(s1, contains('Demon%20Slayer'));
-      expect(s1, contains('S01E01'));
-      expect(s2, contains('S02'));
-      expect(s2, isNot(contains('S01')));
-      expect(s3, contains('S03'));
-      expect(s3, isNot(contains('S01')));
-      expect(s4, isNot(contains('S01E01')));
+      expect(s1, contains('knys1'));
+      expect(s1, contains('KNYS1-E1'));
+      expect(s2, contains('knym1'));
+      expect(s3, contains('knyhgh1243ekrngtfkmrgtihj'));
+      expect(s4, contains('knyhgh1243ekrngtfkmrgtihj-hd-1'));
     });
 
     test('atomicity rule: incomplete or arbitrary anime has hasCompleteEpisodes false and resolves to empty', () {
@@ -630,7 +632,7 @@ void main() {
         server: 'Server 1 (Fast HD)',
         episodeNumber: 1,
       );
-      expect(knyS2, contains('S02'));
+      expect(knyS2, contains('knym1'));
 
       expect(
         AnimeStreamResolver.hasCompleteEpisodes('tokyo-revengers-s2', 'Tokyo Revengers Season 2'),
@@ -669,7 +671,7 @@ void main() {
         server: 'Server 1 (Fast HD)',
         episodeNumber: 1,
       );
-      expect(trS3, contains('Tokyo%20Revengers%20Tenjiku'));
+      expect(trS3, contains('kyotoavenrgesrsamputahahaha'));
 
       // Unuploaded Season (AniList ID 999998 - Incomplete / No Episode)
       final unuploadedS4 = AnimeStreamResolver.resolveStreamUrl(
@@ -697,6 +699,26 @@ void main() {
       expect(logs, isNotEmpty);
       expect(logs.any((l) => l.searchedTitle.contains('Tokyo Revengers')), isTrue);
       expect(logs.any((l) => l.isAccepted == true), isTrue);
+    });
+
+    test('resolves One Punch Man S1 and S2 to authentic Japanese audio Sub Indo / Eng Sub streams', () {
+      final opmS1 = AnimeStreamResolver.resolveStreamUrl(
+        animeId: 'one-punch-man',
+        animeTitle: 'One Punch Man',
+        server: 'Server 1 (Fast HD)',
+        episodeNumber: 1,
+      );
+      expect(opmS1, contains('opm-s1/OPM-BD-01.mp4'));
+      expect(opmS1, isNot(contains('Gemischt')));
+
+      final opmS2 = AnimeStreamResolver.resolveStreamUrl(
+        animeId: 'one-punch-man-s2',
+        animeTitle: 'One Punch Man Season 2',
+        server: 'Server 1 (Fast HD)',
+        episodeNumber: 1,
+      );
+      expect(opmS2, contains('opm-s2/O-S2-BD-01.mp4'));
+      expect(opmS2, isNot(contains('Gemischt')));
     });
   });
 

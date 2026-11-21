@@ -147,7 +147,7 @@ void main() {
       );
 
       // Successfully falls back to authentic local stream
-      expect(streamUrl, contains('Demon%20Slayer'));
+      expect(streamUrl, anyOf(contains('knys1'), contains('KNYS1-E1'), contains('Demon%20Slayer')));
       expect(streamUrl, contains('.mp4'));
     });
 

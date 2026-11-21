@@ -5,9 +5,7 @@ import '../../core/theme/app_typography.dart';
 import '../../data/models/anime_detail.dart';
 import '../../data/models/episode_item.dart';
 import '../../data/services/anime_stream_resolver.dart';
-import '../../data/services/anime_subtitle_service.dart';
-import '../../data/services/subtitle_offset_repository.dart';
-import '../../data/services/subtitle_sync_validator.dart';
+import '../../data/services/owner_subtitle_repository.dart';
 
 /// Screen for watching anime video streams with interactive video controls,
 /// server selection, episode navigation, and quick playback actions.
@@ -42,38 +40,21 @@ class _AnimeWatchScreenState extends State<AnimeWatchScreen> {
   bool _isFullscreen = false;
   String? _serverErrorMessage;
   bool _isSubtitleEnabled = true;
-  double _subtitleOffsetSeconds = 0.0;
 
   VideoPlayerController? _videoController;
   bool _isVideoInitialized = false;
   bool _isVideoBuffering = false;
 
-  String get _currentVideoKey =>
-      SubtitleOffsetRepository.buildKey(widget.anime.id, _currentEpisode.episodeNumber);
-
   String get _currentSubtitleText {
     if (!_isSubtitleEnabled) return '';
-    final key = AnimeStreamResolver.detectAnimeKey(widget.anime.id, widget.anime.title);
-    return AnimeSubtitleService.getSubtitleForPosition(
-      animeKey: key,
+    final aniListId = AnimeStreamResolver.detectAniListId(widget.anime.id, widget.anime.title);
+    final seasonNumber = AnimeStreamResolver.extractSeasonNumber(widget.anime.id, widget.anime.title);
+    return OwnerSubtitleRepository.instance.getSubtitleForVideo(
+      aniListId: aniListId,
+      seasonNumber: seasonNumber,
       episodeNumber: _currentEpisode.episodeNumber,
       position: _currentPosition,
-      manualOffsetSeconds: _subtitleOffsetSeconds,
     );
-  }
-
-  void _adjustSubtitleOffset(double delta) {
-    setState(() {
-      _subtitleOffsetSeconds =
-          SubtitleOffsetRepository.instance.adjustOffset(_currentVideoKey, delta);
-    });
-  }
-
-  void _resetSubtitleOffset() {
-    setState(() {
-      SubtitleOffsetRepository.instance.resetOffset(_currentVideoKey);
-      _subtitleOffsetSeconds = 0.0;
-    });
   }
 
   @override
@@ -81,15 +62,6 @@ class _AnimeWatchScreenState extends State<AnimeWatchScreen> {
     super.initState();
     _currentEpisode = widget.initialEpisode;
     _selectedServer = availableServers.first;
-    _subtitleOffsetSeconds = SubtitleOffsetRepository.instance.getOffset(_currentVideoKey);
-    // Log initial sync diagnostic report
-    final key = AnimeStreamResolver.detectAnimeKey(widget.anime.id, widget.anime.title);
-    SubtitleSyncValidator.verifySync(
-      animeKey: key,
-      episodeNumber: _currentEpisode.episodeNumber,
-      manualOffsetSeconds: _subtitleOffsetSeconds,
-      printToConsole: false,
-    );
     _initializePlayer();
   }
 
@@ -258,9 +230,6 @@ class _AnimeWatchScreenState extends State<AnimeWatchScreen> {
       _currentEpisode = episode;
       _currentPosition = Duration.zero;
       _isPlaying = true;
-      _subtitleOffsetSeconds = SubtitleOffsetRepository.instance.getOffset(
-        SubtitleOffsetRepository.buildKey(widget.anime.id, episode.episodeNumber),
-      );
     });
     _initializePlayer();
   }
@@ -353,11 +322,6 @@ class _AnimeWatchScreenState extends State<AnimeWatchScreen> {
             : Column(
                 children: [
                   _buildVideoPlayerContainer(isExpanded: false),
-                  if (_isSubtitleEnabled)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8, bottom: 2),
-                      child: _buildSubtitleSyncBar(),
-                    ),
                   Expanded(
                     child: SingleChildScrollView(
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -439,8 +403,8 @@ class _AnimeWatchScreenState extends State<AnimeWatchScreen> {
               ),
             ),
 
-          // In-player Subtitle Indonesia display
-          if (_serverErrorMessage == null && _currentSubtitleText.isNotEmpty)
+          // In-player Subtitle Indonesia display (loaded strictly from generated owner .srt file)
+          if (_serverErrorMessage == null && _isSubtitleEnabled && _currentSubtitleText.isNotEmpty)
             Align(
               alignment: Alignment.bottomCenter,
               child: Padding(
@@ -624,7 +588,6 @@ class _AnimeWatchScreenState extends State<AnimeWatchScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           _buildTopBar(),
-          if (_isFullscreen && _isSubtitleEnabled) _buildSubtitleSyncBar(),
           _buildCenterControls(),
           _buildBottomBar(),
         ],
@@ -730,129 +693,6 @@ class _AnimeWatchScreenState extends State<AnimeWatchScreen> {
               ),
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSubtitleSyncBar() {
-    final sign = _subtitleOffsetSeconds >= 0 ? '+' : '';
-    final offsetStr = '$sign${_subtitleOffsetSeconds.toStringAsFixed(1)}s';
-
-    return Container(
-      key: const Key('subtitle_sync_bar'),
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.75),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border, width: 0.8),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.sync_rounded, color: AppColors.accentBlue, size: 14),
-          const SizedBox(width: 6),
-          Text(
-            'Sinkron Sub:',
-            style: AppTypography.labelSmall.copyWith(
-              color: AppColors.textSecondary,
-              fontSize: 10,
-            ),
-          ),
-          const SizedBox(width: 6),
-          // Minus 0.1s
-          GestureDetector(
-            key: const Key('btn_sub_offset_minus'),
-            onTap: () => _adjustSubtitleOffset(-0.1),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(
-                color: AppColors.surfaceElevated,
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: Text(
-                '-0.1s',
-                style: AppTypography.labelSmall.copyWith(
-                  color: AppColors.textPrimary,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 10,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 4),
-          // Offset Value Badge
-          Container(
-            key: const Key('txt_sub_offset_value'),
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-            decoration: BoxDecoration(
-              color: _subtitleOffsetSeconds != 0.0
-                  ? AppColors.accentBlue.withValues(alpha: 0.25)
-                  : Colors.transparent,
-              borderRadius: BorderRadius.circular(4),
-              border: Border.all(
-                color: _subtitleOffsetSeconds != 0.0
-                    ? AppColors.accentBlue
-                    : AppColors.border,
-                width: 0.6,
-              ),
-            ),
-            child: Text(
-              offsetStr,
-              style: AppTypography.labelSmall.copyWith(
-                color: _subtitleOffsetSeconds != 0.0
-                    ? AppColors.accentBlue
-                    : AppColors.textPrimary,
-                fontWeight: FontWeight.bold,
-                fontSize: 10,
-              ),
-            ),
-          ),
-          const SizedBox(width: 4),
-          // Plus 0.1s
-          GestureDetector(
-            key: const Key('btn_sub_offset_plus'),
-            onTap: () => _adjustSubtitleOffset(0.1),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(
-                color: AppColors.surfaceElevated,
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: Text(
-                '+0.1s',
-                style: AppTypography.labelSmall.copyWith(
-                  color: AppColors.textPrimary,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 10,
-                ),
-              ),
-            ),
-          ),
-          if (_subtitleOffsetSeconds != 0.0) ...[
-            const SizedBox(width: 4),
-            // Reset
-            GestureDetector(
-              key: const Key('btn_sub_offset_reset'),
-              onTap: _resetSubtitleOffset,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: Colors.redAccent.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(4),
-                  border: Border.all(color: Colors.redAccent, width: 0.6),
-                ),
-                child: Text(
-                  'Reset',
-                  style: AppTypography.labelSmall.copyWith(
-                    color: Colors.redAccent,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 10,
-                  ),
-                ),
-              ),
-            ),
-          ],
         ],
       ),
     );

@@ -387,7 +387,7 @@ void main() {
       expect(find.textContaining('[Sub Indo] Solo Leveling'), findsOneWidget);
     });
 
-    testWidgets('manual subtitle offset controls adjust offset in 0.1s increments and persist', (tester) async {
+    testWidgets('loads subtitle strictly from generated owner .srt file and disappears during pause', (tester) async {
       tester.view.physicalSize = const Size(500, 1200);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
@@ -396,34 +396,76 @@ void main() {
       await tester.pumpWidget(createWatchScreen());
       await tester.pumpAndSettle();
 
-      // Subtitle sync bar is rendered
-      expect(find.byKey(const Key('subtitle_sync_bar')), findsOneWidget);
-      expect(find.text('Sinkron Sub:'), findsOneWidget);
-      final offsetBadge = find.byKey(const Key('txt_sub_offset_value'));
-      expect(offsetBadge, findsOneWidget);
-      expect(find.descendant(of: offsetBadge, matching: find.text('+0.0s')), findsOneWidget);
+      // At position 00:00 (intro), owner .srt intro title cue is displayed
+      expect(find.byKey(const Key('in_player_subtitle_box')), findsOneWidget);
+      expect(find.textContaining('[Sub Indo] Solo Leveling Season 1 - Episode 1'), findsOneWidget);
 
-      // Tap +0.1s button
-      await tester.tap(find.byKey(const Key('btn_sub_offset_plus')));
+      // Forward 10s: position 00:10 (silent intro gap between 8s and 19.5s)
+      await tester.tap(find.byKey(const Key('video_forward_10')));
       await tester.pumpAndSettle();
-      expect(find.descendant(of: offsetBadge, matching: find.text('+0.1s')), findsOneWidget);
-      expect(find.byKey(const Key('btn_sub_offset_reset')), findsOneWidget);
+      expect(find.byKey(const Key('in_player_subtitle_box')), findsNothing);
 
-      // Tap +0.1s again
-      await tester.tap(find.byKey(const Key('btn_sub_offset_plus')));
+      // Forward 10s more: position 00:20 (active dialogue from owner .srt file)
+      await tester.tap(find.byKey(const Key('video_forward_10')));
       await tester.pumpAndSettle();
-      expect(find.descendant(of: offsetBadge, matching: find.text('+0.2s')), findsOneWidget);
+      expect(find.byKey(const Key('in_player_subtitle_box')), findsOneWidget);
+      expect(find.textContaining('Hunter terlemah di dunia'), findsOneWidget);
 
-      // Tap -0.1s button
-      await tester.tap(find.byKey(const Key('btn_sub_offset_minus')));
+      // Forward 10s more: position 00:30 (next dialogue from owner .srt file)
+      await tester.tap(find.byKey(const Key('video_forward_10')));
       await tester.pumpAndSettle();
-      expect(find.descendant(of: offsetBadge, matching: find.text('+0.1s')), findsOneWidget);
+      expect(find.byKey(const Key('in_player_subtitle_box')), findsOneWidget);
+      expect(find.textContaining('Double Dungeon?!'), findsOneWidget);
 
-      // Tap Reset button
-      await tester.tap(find.byKey(const Key('btn_sub_offset_reset')));
+      // Verify that sync bar and AI live translator box are NOT present in the player UI
+      expect(find.byKey(const Key('subtitle_sync_bar')), findsNothing);
+      expect(find.byKey(const Key('in_player_live_translator_box')), findsNothing);
+    });
+
+    testWidgets('does not load subtitle from internet for non-owner anime video', (tester) async {
+      tester.view.physicalSize = const Size(500, 1200);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      // Non-owner anime with random unregistered ID
+      final nonOwnerAnime = AnimeDetail(
+        id: '999999',
+        title: 'Random Unknown Anime',
+        japaneseTitle: '未知のアニメ',
+        rating: 6.0,
+        releaseYear: 2020,
+        genres: const ['Comedy'],
+        synopsis: 'Anime tanpa video pemilik resmi.',
+        posterUrl: 'https://images.unsplash.com/poster.jpg',
+        backdropUrl: 'https://images.unsplash.com/backdrop.jpg',
+        status: 'Finished',
+        studio: 'Random Studio',
+        totalEpisodes: 1,
+        episodes: [
+          const EpisodeItem(
+            id: 'random-ep-1',
+            episodeNumber: 1,
+            title: 'Episode 1',
+            releaseDate: '2020-01-01',
+            streamUrl: 'https://sample.com/random.mp4',
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.darkTheme,
+          home: AnimeWatchScreen(
+            anime: nonOwnerAnime,
+            initialEpisode: nonOwnerAnime.episodes.first,
+          ),
+        ),
+      );
       await tester.pumpAndSettle();
-      expect(find.descendant(of: offsetBadge, matching: find.text('+0.0s')), findsOneWidget);
-      expect(find.byKey(const Key('btn_sub_offset_reset')), findsNothing);
+
+      // For non-owner anime, subtitle is never loaded from internet and remains empty
+      expect(find.byKey(const Key('in_player_subtitle_box')), findsNothing);
     });
   });
 }

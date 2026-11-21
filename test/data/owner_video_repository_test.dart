@@ -103,6 +103,50 @@ void main() {
       expect(latestLog.isAccepted, isFalse);
       expect(latestLog.reason, contains('reaksi'));
     });
+
+    test('One Punch Man S1 and S2 resolve to Japanese audio with Sub Indo/Eng Sub without German dub', () {
+      final repo = OwnerVideoRepository.instance;
+      // S1 Ep 1
+      final opmS1Ep1 = repo.getVideo(21087, 1, 1);
+      expect(opmS1Ep1, isNotNull);
+      expect(opmS1Ep1!.videoUrl, contains('opm-s1/OPM-BD-01.mp4'));
+      expect(opmS1Ep1.videoUrl, isNot(contains('Der%20St%C3%A4rkste')));
+      expect(opmS1Ep1.videoUrl, isNot(contains('Gemischt')));
+
+      // S1 Ep 12
+      final opmS1Ep12 = repo.getVideo(21087, 1, 12);
+      expect(opmS1Ep12, isNotNull);
+      expect(opmS1Ep12!.videoUrl, contains('opm-s1/OPM-BD-12.mp4'));
+
+      // S2 Ep 1
+      final opmS2Ep1 = repo.getVideo(102194, 2, 1);
+      expect(opmS2Ep1, isNotNull);
+      expect(opmS2Ep1!.videoUrl, contains('opm-s2/O-S2-BD-01.mp4'));
+      expect(opmS2Ep1.videoUrl, isNot(contains('R%C3%BCckkehr')));
+      expect(opmS2Ep1.videoUrl, isNot(contains('Gemischt')));
+    });
+
+    test('Demon Slayer, Tokyo Revengers S3, and FMAB resolve to authentic Japanese audio streams', () {
+      final repo = OwnerVideoRepository.instance;
+      // Demon Slayer S1
+      final kny1 = repo.getVideo(101922, 1, 1);
+      expect(kny1, isNotNull);
+      expect(kny1!.videoUrl, contains('knys1/KNYS1-E1.mp4'));
+      expect(kny1.videoUrl, isNot(contains('Grausamkeit')));
+      expect(kny1.videoUrl, isNot(contains('Gemischt')));
+
+      // Tokyo Revengers S3
+      final trS3 = repo.getVideo(163539, 3, 1);
+      expect(trS3, isNotNull);
+      expect(trS3!.videoUrl, contains('kyotoavenrgesrsamputahahaha'));
+      expect(trS3.videoUrl, isNot(contains('animeflv')));
+
+      // FMAB
+      final fmab = repo.getVideo(5114, 1, 1);
+      expect(fmab, isNotNull);
+      expect(fmab!.videoUrl, contains('ma-fullmetal-alchemist-2009'));
+      expect(fmab.videoUrl, isNot(contains('1st%20Dubbing')));
+    });
   });
 }
 

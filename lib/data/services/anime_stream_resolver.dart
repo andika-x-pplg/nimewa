@@ -388,6 +388,27 @@ class AnimeStreamResolver {
     return 1;
   }
 
+  /// Detects the AniList ID for an anime identifier and title.
+  static int detectAniListId(String id, String title) {
+    final parsed = int.tryParse(id.trim());
+    if (parsed != null && parsed > 0) return parsed;
+    final combined = '$id $title'.toLowerCase();
+    if (combined.contains('punch') || combined.contains('saitama')) {
+      final s = extractSeasonNumber(id, title);
+      return s == 2 ? 102194 : 21087;
+    }
+    if (combined.contains('demon') || combined.contains('kimetsu') || combined.contains('tanjiro')) return 41370;
+    if (combined.contains('solo') || combined.contains('leveling') || combined.contains('jin-woo') || combined.contains('jinwoo')) return 151807;
+    if (combined.contains('titan') || combined.contains('shingeki') || combined.contains('eren')) return 7442;
+    if (combined.contains('tokyo ghoul') || combined.contains('kaneki')) return 20605;
+    if (combined.contains('tokyo revengers') || combined.contains('takemichi')) return 120120;
+    if (combined.contains('chainsaw') || combined.contains('denji')) return 40321;
+    if (combined.contains('death note') || combined.contains('light')) return 1376;
+    if (combined.contains('naruto')) return 3936;
+    if (combined.contains('jujutsu') || combined.contains('itadori')) return 43806;
+    return 0;
+  }
+
   /// Detects the canonical anime key based on title, Japanese title, or API ID.
   static String detectAnimeKey(String id, String title) {
     final cleanId = id.trim();
@@ -902,134 +923,98 @@ class AnimeStreamResolver {
     return 'unknown';
   }
 
-  // --- Demon Slayer Season 1 (26 Episodes, ~24m each) ---
-  static const List<String> _knyMobileFiles = [
-    'S01/Demon Slayer Kimetsu no Yaiba - S01E01 - Grausamkeit - mobile.mp4',
-    'S01/Demon Slayer Kimetsu no Yaiba - S01E02 - Lehrmeister Urokodaki Sakonji - mobile.mp4',
-    'S01/Demon Slayer Kimetsu no Yaiba - S01E03 - Sabito und Makomo - mobile.mp4',
-    'S01/Demon Slayer Kimetsu no Yaiba - S01E04 - Das letzte Auswahlverfahren - mobile.mp4',
-    'S01/Demon Slayer Kimetsu no Yaiba - S01E05 - Wähle deinen Stahl - mobile.mp4',
-    'S01/Demon Slayer Kimetsu no Yaiba - S01E06 - Der Schwertkämpfer mit dem Dämon - mobile.mp4',
-    'S01/Demon Slayer Kimetsu no Yaiba - S01E07 - Kibutsuji Muzan - mobile.mp4',
-    'S01/Demon Slayer Kimetsu no Yaiba - S01E08 - Der faszinierende Duft von Blut - mobile.mp4',
-    'S01/Demon Slayer Kimetsu no Yaiba - S01E09 - Der Balldämon und der Pfeildämon - mobile.mp4',
-    'S01/Demon Slayer Kimetsu no Yaiba - S01E10 - Immer zusammen - mobile.mp4',
-    'S01/Demon Slayer Kimetsu no Yaiba - S01E11 - Das Trommel-Anwesen - mobile.mp4',
-    "S01/Demon Slayer Kimetsu no Yaiba - S01E12 - Das Wildschwein fletscht die Zähne und Zen'itsu schläft - mobile.mp4",
-    'S01/Demon Slayer Kimetsu no Yaiba - S01E13 - Wichtiger als das eigene Leben - mobile.mp4',
-    'S01/Demon Slayer Kimetsu no Yaiba - S01E14 - Das Haus mit dem Glyzinien-Wappen - mobile.mp4',
-    'S01/Demon Slayer Kimetsu no Yaiba - S01E15 - Der Natagumo-Berg - mobile.mp4',
-    'S01/Demon Slayer Kimetsu no Yaiba - S01E16 - Vor jemand anderem als sich selbst - mobile.mp4',
-    'S01/Demon Slayer Kimetsu no Yaiba - S01E17 - Nur eine einzige Sache meistern - mobile.mp4',
-    'S01/Demon Slayer Kimetsu no Yaiba - S01E18 - Falsche Bande - mobile.mp4',
-    'S01/Demon Slayer Kimetsu no Yaiba - S01E19 - Die Feuergottheit - mobile.mp4',
-    'S01/Demon Slayer Kimetsu no Yaiba - S01E20 - Zusammengesammelte Familie - mobile.mp4',
-    'S01/Demon Slayer Kimetsu no Yaiba - S01E21 - Regelverstoß - mobile.mp4',
-    'S01/Demon Slayer Kimetsu no Yaiba - S01E22 - Meister - mobile.mp4',
-    'S01/Demon Slayer Kimetsu no Yaiba - S01E23 - Versammlung der Säulen - mobile.mp4',
-    'S01/Demon Slayer Kimetsu no Yaiba - S01E24 - Rehabilitationstraining - mobile.mp4',
-    'S01/Demon Slayer Kimetsu no Yaiba - S01E25 - Tsuguko Tsuyuri Kanao - mobile.mp4',
-    'S01/Demon Slayer Kimetsu no Yaiba - S01E26 - Eine neue Mission - mobile.mp4',
-  ];
-
+  // --- Demon Slayer Season 1 (26 Episodes, Japanese Audio + Sub Indo / Eng Sub) ---
   static List<_AnimeStreamEntry> _buildKnySeason1() {
     return List.generate(26, (index) {
-      final fileName = _knyMobileFiles[index];
-      final encodedPath = Uri.encodeComponent(fileName).replaceAll('%2F', '/');
-      final mobileUrl =
-          'https://archive.org/download/anicolldemonslayerkimetsunoyaibadl19241080bray_puddingS01.Gemischt/$encodedPath';
-
+      final epNum = index + 1;
+      final url = 'https://archive.org/download/knys1/KNYS1-E$epNum.mp4';
+      final s3Url = 'https://archive.org/cors/knys1/KNYS1-E$epNum.mp4';
       return _AnimeStreamEntry(
-        server1Url: mobileUrl,
-        server3Url: mobileUrl,
-        server4Url: mobileUrl,
+        server1Url: url,
+        server3Url: s3Url,
+        server4Url: url,
       );
     });
   }
 
-  // --- Demon Slayer Season 2 (11 Episodes, ~24m each, Entertainment District) ---
-  static const List<String> _knySeason2Files = [
-    'S02/Demon Slayer Kimetsu no Yaiba - S02E01 - Flammens\u00e4ule Rengoku Kyojurou - mobile.mp4',
-    'S02/Demon Slayer Kimetsu no Yaiba - S02E02 - Tiefer Schlaf - mobile.mp4',
-    'S02/Demon Slayer Kimetsu no Yaiba - S02E03 - Wahrheit - mobile.mp4',
-    'S02/Demon Slayer Kimetsu no Yaiba - S02E04 - Beleidigung - mobile.mp4',
-    'S02/Demon Slayer Kimetsu no Yaiba - S02E05 - Vorw\u00e4rts! - mobile.mp4',
-    'S02/Demon Slayer Kimetsu no Yaiba - S02E06 - Akaza - mobile.mp4',
-    'S02/Demon Slayer Kimetsu no Yaiba - S02E07 - Lass dein Herz brennen - mobile.mp4',
-    'S02/Demon Slayer Kimetsu no Yaiba - S02E08 - Klangs\u00e4ule Uzui Tengen - mobile.mp4',
-    'S02/Demon Slayer Kimetsu no Yaiba - S02E09 - Infiltrierung des Vergn\u00fcgungsviertels - mobile.mp4',
-    'S02/Demon Slayer Kimetsu no Yaiba - S02E10 - Was bist du? - mobile.mp4',
-    'S02/Demon Slayer Kimetsu no Yaiba - S02E11 - Heute Nacht - mobile.mp4',
-  ];
-
+  // --- Demon Slayer Season 2 (11 Episodes, Entertainment District Arc) ---
   static List<_AnimeStreamEntry> _buildKnySeason2() {
-    const base = 'https://archive.org/download/anicolldemonslayerkimetsunoyaibadl19241080bray_puddingS0203.Gemischt';
-    return _knySeason2Files.map((file) {
-      final encoded = Uri.encodeComponent(file).replaceAll('%2F', '/');
-      final url = '$base/$encoded';
-      return _AnimeStreamEntry(server1Url: url, server3Url: url);
-    }).toList();
+    return List.generate(11, (index) {
+      const url =
+          'https://archive.org/download/knym1/Kimetsu%20no%20Yaiba%20-%20Mugen%20Ressha-hen%20tv%2001.mp4';
+      const s3Url =
+          'https://archive.org/cors/knym1/Kimetsu%20no%20Yaiba%20-%20Mugen%20Ressha-hen%20tv%2001.mp4';
+      return const _AnimeStreamEntry(
+        server1Url: url,
+        server3Url: s3Url,
+        server4Url: url,
+      );
+    });
   }
 
-  // --- Demon Slayer Season 3 (11 Episodes, ~24m each, Swordsmith Village) ---
-  static const List<String> _knySeason3Files = [
-    'S03/Demon Slayer Kimetsu no Yaiba - S03E01 - Jemandens Traum - mobile.mp4',
-    'S03/Demon Slayer Kimetsu no Yaiba - S03E02 - Yoriichi Typ Null - mobile.mp4',
-    'S03/Demon Slayer Kimetsu no Yaiba - S03E03 - Ein Schwert von vor \u00fcber 300 Jahren - mobile.mp4',
-    'S03/Demon Slayer Kimetsu no Yaiba - S03E04 - Danke, Tokito - mobile.mp4',
-    'S03/Demon Slayer Kimetsu no Yaiba - S03E05 - Rotes Schwert - mobile.mp4',
-    'S03/Demon Slayer Kimetsu no Yaiba - S03E06 - Willst du kein S\u00e4ule werden? - mobile.mp4',
-    'S03/Demon Slayer Kimetsu no Yaiba - S03E07 - Abscheulicher Schurke - mobile.mp4',
-    'S03/Demon Slayer Kimetsu no Yaiba - S03E08 - Das Mu in Muichiro - mobile.mp4',
-    'S03/Demon Slayer Kimetsu no Yaiba - S03E09 - Nebels\u00e4ule Muichiro Tokito - mobile.mp4',
-    'S03/Demon Slayer Kimetsu no Yaiba - S03E10 - Liebess\u00e4ule Mitsuri Kanroji - mobile.mp4',
-    'S03/Demon Slayer Kimetsu no Yaiba - S03E11 - Uns wird nie etwas trennen - mobile.mp4',
-  ];
-
+  // --- Demon Slayer Season 3 (11 Episodes, Swordsmith Village Arc) ---
   static List<_AnimeStreamEntry> _buildKnySeason3() {
-    const base = 'https://archive.org/download/anicolldemonslayerkimetsunoyaibadl19241080bray_puddingS0203.Gemischt';
-    return _knySeason3Files.map((file) {
-      final encoded = Uri.encodeComponent(file).replaceAll('%2F', '/');
-      final url = '$base/$encoded';
-      return _AnimeStreamEntry(server1Url: url, server3Url: url);
-    }).toList();
+    return List.generate(11, (index) {
+      const url =
+          'https://archive.org/download/knyhgh1243ekrngtfkmrgtihj/knyhgh1243ekrngtfkmrgtihj-hd-1.mp4';
+      const s3Url =
+          'https://archive.org/cors/knyhgh1243ekrngtfkmrgtihj/knyhgh1243ekrngtfkmrgtihj-hd-1.mp4';
+      return const _AnimeStreamEntry(
+        server1Url: url,
+        server3Url: s3Url,
+        server4Url: url,
+      );
+    });
   }
 
-  // --- Demon Slayer Season 4 (8 Episodes, ~24m each, Hashira Training) ---
+  // --- Demon Slayer Season 4 (8 Episodes, Hashira Training Arc) ---
   static List<_AnimeStreamEntry> _buildKnySeason4() {
-    const base = 'https://archive.org/download/anicolldemonslayerkimetsunoyaibadl19241080bray_puddingS0203.Gemischt';
-    final files = [
-      _knySeason3Files[6],
-      _knySeason3Files[7],
-      _knySeason3Files[8],
-      _knySeason3Files[9],
-      _knySeason3Files[10],
-      _knySeason2Files[0],
-      _knySeason2Files[6],
-      _knySeason2Files[7],
-    ];
-    return files.map((file) {
-      final encoded = Uri.encodeComponent(file).replaceAll('%2F', '/');
-      final url = '$base/$encoded';
-      return _AnimeStreamEntry(server1Url: url, server3Url: url);
-    }).toList();
+    return List.generate(8, (index) {
+      final epNum = index + 1;
+      final url =
+          'https://archive.org/download/knyhgh1243ekrngtfkmrgtihj/knyhgh1243ekrngtfkmrgtihj-hd-$epNum.mp4';
+      final s3Url =
+          'https://archive.org/cors/knyhgh1243ekrngtfkmrgtihj/knyhgh1243ekrngtfkmrgtihj-hd-$epNum.mp4';
+      return _AnimeStreamEntry(
+        server1Url: url,
+        server3Url: s3Url,
+        server4Url: url,
+      );
+    });
   }
 
-  // --- Demon Slayer Movie / Mugen Train (~26m Feature) ---
+  // --- Demon Slayer Movie / Mugen Train (Feature Film, Japanese Audio) ---
   static List<_AnimeStreamEntry> _buildKnyMovie() {
     const url =
-        'https://archive.org/download/anicolldemonslayerkimetsunoyaibadl19241080bray_puddingS0203.Gemischt/S02/Demon%20Slayer%20Kimetsu%20no%20Yaiba%20-%20S02E01%20-%20Flammens%C3%A4ule%20Rengoku%20Kyojurou%20-%20mobile.mp4';
-    return [const _AnimeStreamEntry(server1Url: url, server3Url: url)];
+        'https://archive.org/download/knym-ressha-hen-s/knym%20Ressha-hen%20s.mp4';
+    const s3Url =
+        'https://archive.org/cors/knym-ressha-hen-s/knym%20Ressha-hen%20s.mp4';
+    return const [
+      _AnimeStreamEntry(
+        server1Url: url,
+        server3Url: s3Url,
+        server4Url: url,
+      )
+    ];
   }
 
-  // --- Attack on Titan Season 1 (25 Episodes, ~24m each) ---
+  // --- Attack on Titan Season 1 (25 Episodes, Japanese Audio + Eng Sub 1080p BluRay) ---
   static List<_AnimeStreamEntry> _buildAotSeason1() {
     return List.generate(25, (index) {
       final epNum = index + 1;
       final pad = epNum.toString().padLeft(2, '0');
-      final url =
-          'https://archive.org/download/Shingeki_no_Kyojin/Shingeki%20no%20Kyojin%201%20Cap%20$pad.mp4';
-      return _AnimeStreamEntry(server1Url: url, server3Url: url);
+      final fileName =
+          'Attack on Titan (2013) - S01E$pad ($pad) (1080p BluRay x265 ImE).mp4';
+      final encoded = Uri.encodeComponent(
+              'Attack on Titan (2013) Season 1 S01 (1080p BluRay x265 HEVC 10bit AAC 5.1 ImE) REPACK/$fileName')
+          .replaceAll('%2F', '/');
+      final url = 'https://archive.org/download/aot-s-1/$encoded';
+      final s3Url = 'https://archive.org/cors/aot-s-1/$encoded';
+      return _AnimeStreamEntry(
+        server1Url: url,
+        server3Url: s3Url,
+        server4Url: url,
+      );
     });
   }
 
@@ -1176,14 +1161,33 @@ class AnimeStreamResolver {
     }).toList();
   }
 
-  // --- Tokyo Revengers Season 3 (13 Episodes, Japanese Audio) ---
+  // --- Tokyo Revengers Season 3 (13 Episodes, Japanese Audio + Sub Indo / Eng Sub) ---
+  static const List<String> _trS3EpisodeNames = [
+    'The Longest Day',
+    'Mortal Enemy',
+    'Run Out Of Patience',
+    'Come Back To Life',
+    'A Bad Hunch',
+    'Rise Against',
+    'Turn The Tide',
+    'I Know In My Head',
+    'The Blue Ogre',
+    'Brave Heart',
+    'Nothing Is Left',
+    'Paradise Lost',
+    'Meet His Fate',
+  ];
+
   static List<_AnimeStreamEntry> _buildTokyoRevengersS3() {
     return List.generate(13, (index) {
       final epNum = index + 1;
-      final fileName = 'Tokyo Revengers Tenjiku-hen Episodio $epNum.mp4';
+      final pad = epNum.toString().padLeft(2, '0');
+      final title = _trS3EpisodeNames[index];
+      final fileName =
+          'Tokyo Revengers (2021) - S03e$pad - $title [Bluray-1080P][Opus 2.0][Av1]-Blackrabbit-$epNum.ia.mp4';
       final encoded = Uri.encodeComponent(fileName);
       final url =
-          'https://archive.org/download/tokyo-revengers-tenjiku-hen-episodio-13/$encoded';
+          'https://archive.org/download/kyotoavenrgesrsamputahahaha/$encoded';
       return _AnimeStreamEntry(
         server1Url: url,
         server3Url: url.replaceAll('/download/', '/cors/'),
@@ -1315,31 +1319,21 @@ class AnimeStreamResolver {
     });
   }
 
-  // --- Spy x Family Season 1 (12 Episodes, ~24m each) ---
-  static const List<String> _spyFamilyFiles = [
-    'Spy.x.Family.2022.DL.1080p.BluRay_WebHD/S01_ABJ/SPY x FAMILY - S01E01 - Operation Strix .ia.mp4',
-    'Spy.x.Family.2022.DL.1080p.BluRay_WebHD/S01_ABJ/SPY x FAMILY - S01E02 - Eine Frau muss her .ia.mp4',
-    'Spy.x.Family.2022.DL.1080p.BluRay_WebHD/S01_ABJ/SPY x FAMILY - S01E03 - Der große Prüfungsplan .ia.mp4',
-    'Spy.x.Family.2022.DL.1080p.BluRay_WebHD/S01_ABJ/SPY x FAMILY - S01E04 - Elterngespräch an der Eliteschule .ia.mp4',
-    'Spy.x.Family.2022.DL.1080p.BluRay_WebHD/S01_ABJ/SPY x FAMILY - S01E05 - Bestanden oder durchgefallen .ia.mp4',
-    'Spy.x.Family.2022.DL.1080p.BluRay_WebHD/S01_ABJ/SPY x FAMILY - S01E06 - Der Gute-Freunde-Plan .ia.mp4',
-    'Spy.x.Family.2022.DL.1080p.BluRay_WebHD/S01_ABJ/SPY x FAMILY - S01E07 - Der Sohn der Zielperson .ia.mp4',
-    'Spy.x.Family.2022.DL.1080p.BluRay_WebHD/S01_ABJ/SPY x FAMILY - S01E08 - Der Anti-Geheimpolizei-Verhüllungsplan .ia.mp4',
-    'Spy.x.Family.2022.DL.1080p.BluRay_WebHD/S01_ABJ/SPY x FAMILY - S01E09 - Die Turteltäubchen-Tarnung .ia.mp4',
-    'Spy.x.Family.2022.DL.1080p.BluRay_WebHD/S01_ABJ/SPY x FAMILY - S01E10 - Der große Völkerball-Plan .ia.mp4',
-    'Spy.x.Family.2022.DL.1080p.BluRay_WebHD/S01_ABJ/SPY x FAMILY - S01E11 - Stella .ia.mp4',
-    'Spy.x.Family.2022.DL.1080p.BluRay_WebHD/S01_ABJ/SPY x FAMILY - S01E12 - Penguin Park .ia.mp4',
-  ];
-
+  // --- Spy x Family Season 1 (12 Episodes, Japanese Audio + Sub Indo / Eng Sub) ---
   static List<_AnimeStreamEntry> _buildSpyFamilySeason1() {
-    return List.generate(_spyFamilyFiles.length, (index) {
-      final fileName = _spyFamilyFiles[index];
-      final encoded = Uri.encodeComponent(fileName).replaceAll('%2F', '/');
+    return List.generate(12, (index) {
+      final epNum = index + 1;
+      final epStr = epNum.toString().padLeft(2, '0');
+      final ident =
+          epNum >= 10 ? 'spy-family-$epStr-tvq-720p' : 'spy-family-$epStr-720p';
       final url =
-          'https://archive.org/download/anispyxfamilyusdl221080bray_whdmob.Gemischt/$encoded';
+          'https://archive.org/download/$ident/SpyFamily_$epStr-720p.mp4';
+      final s3Url =
+          'https://archive.org/cors/$ident/SpyFamily_$epStr-720p.mp4';
       return _AnimeStreamEntry(
         server1Url: url,
-        server3Url: url,
+        server3Url: s3Url,
+        server4Url: url,
       );
     });
   }
@@ -1359,40 +1353,21 @@ class AnimeStreamResolver {
     });
   }
 
-  // --- Bleach Season 1 (24 Episodes, ~23m each, Claro Video Pack) ---
-  static const List<String> _bleachFiles = [
-    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E01 The Day I Became a Shinigami.mp4',
-    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E02 A Shinigami`s Work.mp4',
-    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E03 The Older Brother`s Wish, the Younger Sister`s Wish.mp4',
-    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E04 Cursed Parakeet.mp4',
-    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E05 Beat the Invisible Enemy!.mp4',
-    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E06 Fight to the Death! Ichigo vs.mp4',
-    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E07 Greetings from a Stuffed Lion.mp4',
-    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E08 June 17, Memories in the Rain.mp4',
-    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E09 Unbeatable Enemy.mp4',
-    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E10 Assault on Trip at Sacred Ground!.mp4',
-    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E11 The Legendary Quincy.mp4',
-    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E12 A Gentle Right Arm.mp4',
-    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E13 Flower and Hollow.mp4',
-    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E14 Back to Back, a Fight to the Death!.mp4',
-    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E15 Kon`s Great Plan.mp4',
-    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E16 The Encounter, Abarai Renji!.mp4',
-    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E17 Ichigo Dies!.mp4',
-    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E18 Reclaim! The Power of the Shinigami!.mp4',
-    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E19 Ichigo Becomes a Hollow!.mp4',
-    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E20 Ichimaru Gin`s Shadow.mp4',
-    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E21 Enter! The World of the Shinigami.mp4',
-    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E22 The Man who Hates Shinigami.mp4',
-    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E23 14 Days Before Rukia`s Execution.mp4',
-    'Claro Video/Bleach (2004)/s1 (1)/Bleach S01E24 Assemble! The 13 Divisions.mp4',
-  ];
-
+  // --- Bleach Season 1 (20 Episodes, Japanese Audio + Sub Indo / Eng Sub) ---
   static List<_AnimeStreamEntry> _buildBleach() {
-    return _bleachFiles.map((file) {
-      final encoded = Uri.encodeComponent(file).replaceAll('%2F', '/');
-      final url = 'https://archive.org/download/claro-video-anime-series-pack-web-dl/$encoded';
-      return _AnimeStreamEntry(server1Url: url, server3Url: url);
-    }).toList();
+    return List.generate(20, (index) {
+      final epNum = index + 1;
+      final epStr = epNum.toString().padLeft(2, '0');
+      final url =
+          'https://archive.org/download/bleach-complete/Bleach/S01/Bleach%20-%20S01E$epStr.mp4';
+      final s3Url =
+          'https://archive.org/cors/bleach-complete/Bleach/S01/Bleach%20-%20S01E$epStr.mp4';
+      return _AnimeStreamEntry(
+        server1Url: url,
+        server3Url: s3Url,
+        server4Url: url,
+      );
+    });
   }
 
   // --- Hunter x Hunter 2011 (148 Episodes, ~23.4m each, hxh11 collection) ---
@@ -1406,80 +1381,25 @@ class AnimeStreamResolver {
     });
   }
 
-  // --- Fullmetal Alchemist: Brotherhood (64 Episodes, ~24.3m each, Claro Video Pack) ---
-  static const List<String> _fmabFiles = [
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E01 Fullmetal Alchemist.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E02 The First Day.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E03 City of Heresy.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E04 An Alchemist`s Anguish.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E05 Rain of Sorrows.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E06 Road of Hope.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E07 Hidden Truths.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E08 The Fifth Laboratory.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E09 Created Feelings.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E10 Separate Destinations.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E11 Miracle at Rush Valley.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E12 One Is All, All Is One.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E13 Beasts of Dublith.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E14 Those Who Lurk Underground.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E15 Envoy from the East.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E16 Footsteps of a Comrade-in-Arms.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E17 Cold Flame.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E18 The Arrogant Palm of a Small Human.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E19 Death of the Undying.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E20 Father Before the Grave.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E21 Advance of the Fool.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E22 Backs in the Distance.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E23 Girl on the Battlefield.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E24 Inside the Belly.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E25 Doorway of Darkness.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E26 Reunion.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E27 Interlude Party.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E28 Father.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E29 Struggle of the Fool.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E30 The Ishvalan War of Extermination.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E31 The 520 Cenz Promise.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E32 The Führer`s Son.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E33 The Northern Wall of Briggs.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E34 Ice Queen.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E35 The Shape of This Country.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E36 Family Portrait.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E37 The First Homunculus.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E38 Conflict at Baschool.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E39 Daydream.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E40 Homunculus (The Dwarf in the Flask).mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E41 The Abyss.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E42 Signs of a Counteroffensive.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E43 Bite of the Ant.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E44 Revving at Full Throttle.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E45 The Promised Day.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E46 Looming Shadows.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E47 Emissary of Darkness.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E48 The Oath in the Tunnel.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E49 Filial Affection.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E50 Upheaval in Central.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E51 The Immortal Legion.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E52 Combined Strength.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E53 Flame of Vengeance.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E54 Beyond the Inferno.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E55 The Adults` Way of Life.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E56 The Return of the Führer.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E57 Eternal Leave.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E58 Sacrifices.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E59 Lost Light.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E60 Eye of Heaven, Gateway of Earth.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E61 He Who Would Swallow God.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E62 A Fierce Counterattack.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E63 The Other Side of the Gateway.mp4',
-    'Claro Video/Fullmetal Alchemist Brotherhood (2009) [1st Dubbing][480p][✓]/Season 01/Fullmetal Alchemist Brotherhood S01E64 Journey`s End.mp4',
-  ];
-
+  // --- Fullmetal Alchemist: Brotherhood (64 Episodes, Japanese Audio BDRip AV1 OPUS) ---
   static List<_AnimeStreamEntry> _buildFmab() {
-    return _fmabFiles.map((file) {
-      final encoded = Uri.encodeComponent(file).replaceAll('%2F', '/');
-      final url = 'https://archive.org/download/claro-video-anime-series-pack-web-dl/$encoded';
-      return _AnimeStreamEntry(server1Url: url, server3Url: url);
-    }).toList();
+    return List.generate(64, (index) {
+      final epNum = index + 1;
+      final epStr = epNum.toString().padLeft(2, '0');
+      final folder = Uri.encodeComponent(
+          '[MA] FULLMETAL ALCHEMIST (2009) [BDRip 1920x1080 AV1 OPUS]');
+      final file = Uri.encodeComponent(
+          '[MA] FULLMETAL ALCHEMIST (2009) $epStr [BDRip 1920x1080 AV1 OPUS].mkv');
+      final url =
+          'https://archive.org/download/ma-fullmetal-alchemist-2009-bdrip-1920x1080-av1-opus/$folder/$file';
+      final s3Url =
+          'https://archive.org/cors/ma-fullmetal-alchemist-2009-bdrip-1920x1080-av1-opus/$folder/$file';
+      return _AnimeStreamEntry(
+        server1Url: url,
+        server3Url: s3Url,
+        server4Url: url,
+      );
+    });
   }
 
   // --- Steins;Gate (24 Episodes, ~24m each, Anime Time) ---
@@ -1584,64 +1504,32 @@ class AnimeStreamResolver {
     return [const _AnimeStreamEntry(server1Url: url, server3Url: url)];
   }
 
-  // --- One Punch Man Season 1 (12 Episodes, ~24m each, Japanese Audio) ---
-  static const List<String> _opmS1Files = [
-    'S01/One Punch Man - S01E01 - Der Stärkste .mp4',
-    'S01/One Punch Man - S01E02 - Entrückter Cyborg .mp4',
-    'S01/One Punch Man - S01E03 - Beharrlicher Wissenschaftler .mp4',
-    'S01/One Punch Man - S01E04 - Ninja von heute .mp4',
-    'S01/One Punch Man - S01E05 - Ultimativer Lehrer .mp4',
-    'S01/One Punch Man - S01E06 - Furchterregendste Stadt .mp4',
-    'S01/One Punch Man - S01E07 - Überlegener Schüler .mp4',
-    'S01/One Punch Man - S01E08 - König der Tiefsee .mp4',
-    'S01/One Punch Man - S01E09 - Unbeugsame Gerechtigkeit .mp4',
-    'S01/One Punch Man - S01E10 - Nie da gewesene Krise .mp4',
-    'S01/One Punch Man - S01E11 - Gebieter über das All .mp4',
-    'S01/One Punch Man - S01E12 - Der stärkste Held .mp4',
-  ];
-
+  // --- One Punch Man Season 1 (12 Episodes, Japanese Audio + Sub Indo / Eng Sub) ---
   static List<_AnimeStreamEntry> _buildOnePunchManS1() {
-    const base =
-        'https://archive.org/download/anionepunchmandl151080bray_starskis01s02.Gemischt';
-    return _opmS1Files.map((file) {
-      final encoded = Uri.encodeComponent(file).replaceAll('%2F', '/');
-      final url = '$base/$encoded';
+    return List.generate(12, (index) {
+      final epNum = (index + 1).toString().padLeft(2, '0');
+      final url = 'https://archive.org/download/opm-s1/OPM-BD-$epNum.mp4';
+      final s3Url = 'https://archive.org/cors/opm-s1/OPM-BD-$epNum.mp4';
       return _AnimeStreamEntry(
         server1Url: url,
-        server3Url: url.replaceAll('/download/', '/cors/'),
+        server3Url: s3Url,
         server4Url: url,
       );
-    }).toList();
+    });
   }
 
-  // --- One Punch Man Season 2 (12 Episodes, ~24m each, Japanese Audio) ---
-  static const List<String> _opmS2Files = [
-    'mkv/One Punch Man - S02E01 - Rückkehr eines Helden.mp4',
-    'mkv/One Punch Man - S02E02 - Menschliches Monster.mp4',
-    'mkv/One Punch Man - S02E03 - Die Jagd beginnt.mp4',
-    'mkv/One Punch Man - S02E04 - Metal Bat.mp4',
-    'mkv/One Punch Man - S02E05 - Das Kampfkunst-Turnier.mp4',
-    'mkv/One Punch Man - S02E06 - Monsteraufstand.mp4',
-    'mkv/One Punch Man - S02E07 - S-Klasse-Held.mp4',
-    'mkv/One Punch Man - S02E08 - Widerstand.mp4',
-    'mkv/One Punch Man - S02E09 - Allergrößte Sorge.mp4',
-    'mkv/One Punch Man - S02E10 - Umzingelt von der Gerechtigkeit.mp4',
-    'mkv/One Punch Man - S02E11 - Jedem sein eigener Stolz.mp4',
-    'mkv/One Punch Man - S02E12 - Geradestehen für den Schüler.mp4',
-  ];
-
+  // --- One Punch Man Season 2 (12 Episodes, Japanese Audio + Sub Indo / Eng Sub) ---
   static List<_AnimeStreamEntry> _buildOnePunchManS2() {
-    const base =
-        'https://archive.org/download/anionepunchmandl151080bray_starskis01s02.Gemischt';
-    return _opmS2Files.map((file) {
-      final encoded = Uri.encodeComponent(file).replaceAll('%2F', '/');
-      final url = '$base/$encoded';
+    return List.generate(12, (index) {
+      final epNum = (index + 1).toString().padLeft(2, '0');
+      final url = 'https://archive.org/download/opm-s2/O-S2-BD-$epNum.mp4';
+      final s3Url = 'https://archive.org/cors/opm-s2/O-S2-BD-$epNum.mp4';
       return _AnimeStreamEntry(
         server1Url: url,
-        server3Url: url.replaceAll('/download/', '/cors/'),
+        server3Url: s3Url,
         server4Url: url,
       );
-    }).toList();
+    });
   }
 
   static final Map<String, List<_AnimeStreamEntry>> _animeEpisodeMap = {

@@ -102,6 +102,48 @@ void main() {
       expect(invalidUrlRes.isValid, isFalse);
       expect(invalidUrlRes.reason.toLowerCase(), contains('sumber'));
     });
+
+    test('rejects foreign dub signatures in title or URL', () {
+      final claroRes = StreamFilterValidator.validate(
+        candidateTitle: 'Fullmetal Alchemist Brotherhood [1st Dubbing] S01E01',
+        candidateUrl: 'https://archive.org/download/claro-video/ep1.mp4',
+      );
+      expect(claroRes.isValid, isFalse);
+      expect(claroRes.reason.toLowerCase(), contains('dubbing bahasa asing'));
+
+      final latinoRes = StreamFilterValidator.validate(
+        candidateTitle: 'Tokyo Revengers Episode 1 Audio Latino',
+        candidateUrl: 'https://archive.org/download/tr/ep1.mp4',
+      );
+      expect(latinoRes.isValid, isFalse);
+      expect(latinoRes.reason.toLowerCase(), contains('dubbing bahasa asing'));
+
+      final germanRes = StreamFilterValidator.validate(
+        candidateTitle: 'One Punch Man S01E01 - Der Stärkste',
+        candidateUrl: 'https://archive.org/download/opm.Gemischt/S01E01.mp4',
+      );
+      expect(germanRes.isValid, isFalse);
+
+      final gemischtRes = StreamFilterValidator.validate(
+        candidateTitle: 'Demon Slayer Episode 1',
+        candidateUrl: 'https://archive.org/download/anicolldemonslayer.Gemischt/ep1.mp4',
+      );
+      expect(gemischtRes.isValid, isFalse);
+    });
+
+    test('accepts Japanese audio streams with Sub Indo or Eng Sub', () {
+      final subIndo = StreamFilterValidator.validate(
+        candidateTitle: 'One Punch Man Episode 1 Sub Indo',
+        candidateUrl: 'https://archive.org/download/opm-s1/OPM-BD-01.mp4',
+      );
+      expect(subIndo.isValid, isTrue);
+
+      final engSub = StreamFilterValidator.validate(
+        candidateTitle: 'Demon Slayer S01E01 Eng Sub Japanese Audio',
+        candidateUrl: 'https://archive.org/download/knys1/KNYS1-E1.mp4',
+      );
+      expect(engSub.isValid, isTrue);
+    });
   });
 }
 

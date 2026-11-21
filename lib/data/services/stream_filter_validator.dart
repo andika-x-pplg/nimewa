@@ -36,6 +36,16 @@ class StreamFilterValidator {
     caseSensitive: false,
   );
 
+  static final RegExp _foreignDubRegex = RegExp(
+    r'\b(1st\s*dubbing|dublado|audio\s*latino|latino|castellano|deutsch|german\s*dub|fandub|spain\s*dub|espanol\s*dub)\b',
+    caseSensitive: false,
+  );
+
+  static final RegExp _foreignTitleRegex = RegExp(
+    r'\b(der\s*st[äa]rkste|grausamkeit|flammens[äa]ule)\b',
+    caseSensitive: false,
+  );
+
   /// Validates a video candidate title and stream URL.
   static StreamValidationResult validate({
     required String candidateTitle,
@@ -77,6 +87,25 @@ class StreamFilterValidator {
     if (_promoRegex.hasMatch(cleanTitle)) {
       final match = _promoRegex.firstMatch(cleanTitle)!.group(0);
       return StreamValidationResult(false, 'Judul mengandung kata trailer/AMV: "$match"');
+    }
+
+    // 7. Filter foreign dub signatures (German, Spanish, Portuguese, etc.)
+    if (_foreignDubRegex.hasMatch(cleanTitle) || _foreignDubRegex.hasMatch(cleanUrl)) {
+      final match = _foreignDubRegex.firstMatch(cleanTitle)?.group(0) ??
+          _foreignDubRegex.firstMatch(cleanUrl)!.group(0);
+      return StreamValidationResult(false, 'Stream terdeteksi dubbing bahasa asing: "$match"');
+    }
+
+    // 8. Filter foreign German/Spanish title keywords
+    if (_foreignTitleRegex.hasMatch(cleanTitle) || _foreignTitleRegex.hasMatch(cleanUrl)) {
+      final match = _foreignTitleRegex.firstMatch(cleanTitle)?.group(0) ??
+          _foreignTitleRegex.firstMatch(cleanUrl)!.group(0);
+      return StreamValidationResult(false, 'Stream terdeteksi judul bahasa Jerman/asing: "$match"');
+    }
+
+    // 9. Filter German dub archive packages (.Gemischt)
+    if (cleanUrl.contains('.gemischt')) {
+      return const StreamValidationResult(false, 'Stream berasal dari arsip paket dubbing asing (.Gemischt)');
     }
 
     return StreamValidationResult.valid;
