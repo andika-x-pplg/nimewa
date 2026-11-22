@@ -108,6 +108,22 @@ class OwnerVideoRepository {
   ];
   static const List<String> yosugaFiles = _yosugaFiles;
 
+  static const List<String> _soloLevelingFiles = [
+    'Solo.Leveling.S01E01.Im.Used.to.It.1080p.CR.WEB-DL.MULTi.AAC2.0.H.264.MSubs-ToonsHub.mkv',
+    'Solo.Leveling.S01E02.If.I.Had.One.More.Chance.1080p.CR.WEB-DL.MULTi.AAC2.0.H.264.MSubs-ToonsHub.mkv',
+    'Solo.Leveling.S01E03.Its.Like.a.Game.1080p.CR.WEB-DL.MULTi.AAC2.0.H.264.MSubs-ToonsHub.mkv',
+    'Solo.Leveling.S01E04.Ive.Gotta.Get.Stronger.1080p.CR.WEB-DL.MULTi.AAC2.0.H.264.MSubs-ToonsHub.mkv',
+    'Solo.Leveling.S01E05.A.Pretty.Good.Deal.1080p.CR.WEB-DL.MULTi.AAC2.0.H.264.MSubs-ToonsHub.mkv',
+    'Solo.Leveling.S01E06.The.Real.Hunt.Begins.1080p.CR.WEB-DL.MULTi.AAC2.0.H.264.MSubs-ToonsHub.mkv',
+    'Solo.Leveling.S01E07.Lets.See.How.Far.I.Can.Go.1080p.CR.WEB-DL.MULTi.AAC2.0.H.264.MSubs-ToonsHub.mkv',
+    'Solo.Leveling.S01E08.This.Is.Frustrating.1080p.CR.WEB-DL.MULTi.AAC2.0.H.264.MSubs-ToonsHub.mkv',
+    'Solo.Leveling.S01E09.Youve.Been.Hiding.Your.Skills.1080p.CR.WEB-DL.MULTi.AAC2.0.H.264.MSubs-ToonsHub.mkv',
+    'Solo.Leveling.S01E10.What.Is.This.a.Picnic.1080p.CR.WEB-DL.MULTi.AAC2.0.H.264.MSubs-ToonsHub.mkv',
+    'Solo.Leveling.S01E11.A.Knight.Who.Defends.an.Empty.Throne.1080p.CR.WEB-DL.MULTi.AAC2.0.H.264.MSubs-ToonsHub.mkv',
+    'Solo.Leveling.S01E12.Arise.1080p.CR.WEB-DL.MULTi.AAC2.0.H.264.MSubs-ToonsHub.mkv',
+  ];
+  static const List<String> soloLevelingFiles = _soloLevelingFiles;
+
   static const List<String> aotS1Titles = [
     'S01E01 (1) - To You, in 2000 Years The Fall of Shiganshina, Part 1',
     'S01E02 (2) - That Day The Fall of Shiganshina, Part 2',
@@ -375,7 +391,7 @@ class OwnerVideoRepository {
       basePattern = 'https://archive.org/download/AY-YourLieInApril/{EP}.mp4';
     } else if (lowerTitle.contains('silent voice') || lowerTitle.contains('koe no katachi') || lowerTitle.contains('shouko')) {
       basePattern =
-          'https://archive.org/download/a-silent-voice-2016-1080p/A%20Silent%20Voice%20%282016%29%20%5B1080p%5D.mp4';
+          'https://archive.org/download/koe-no-katachi-1080p/KoeNoKatachi_1080p.mp4';
     } else if (lowerTitle.contains('yosuga') || lowerTitle.contains('kasugano') || lowerTitle.contains('sora')) {
       for (int ep = 1; ep <= total; ep++) {
         final fileIndex = (ep - 1).clamp(0, _yosugaFiles.length - 1);
@@ -417,8 +433,24 @@ class OwnerVideoRepository {
       basePattern =
           'https://archive.org/download/anime-pahe-sousou-no-frieren-{EP}-bd-1080p-sev/AnimePahe_Sousou_no_Frieren_-_{EP}_BD_1080p_SEV.mp4';
     } else if (lowerTitle.contains('solo') || lowerTitle.contains('leveling') || lowerTitle.contains('sung jinwoo') || lowerTitle.contains('jin-woo')) {
-      basePattern =
-          'https://archive.org/download/sololevelinggggg/sololeveling-t01e{EP}.mp4';
+      for (int ep = 1; ep <= total; ep++) {
+        final fileIndex = (ep - 1).clamp(0, _soloLevelingFiles.length - 1);
+        final file = _soloLevelingFiles[fileIndex];
+        final encoded = Uri.encodeComponent(file);
+        final url = 'https://archive.org/download/solo-leveling-s01-jeovanne-souza/$encoded';
+        registerVideo(UploadedAnimeVideo(
+          aniListId: aniListId,
+          seasonNumber: seasonNumber,
+          episodeNumber: ep,
+          episodeTitle: '$seriesTitle Episode $ep Sub Indo',
+          videoUrl: url,
+          server3Url: 'https://archive.org/cors/solo-leveling-s01-jeovanne-souza/$encoded',
+          server4Url: url,
+          uploader: 'AppOwnerOfficial',
+          uploadedAt: now,
+        ));
+      }
+      return;
     } else if (lowerTitle.contains('punch') || lowerTitle.contains('saitama')) {
       for (int ep = 1; ep <= total; ep++) {
         final isS2 = seasonNumber == 2 || lowerTitle.contains('season 2') || lowerTitle.contains('2nd season');
@@ -516,18 +548,25 @@ class OwnerVideoRepository {
     }
 
     // 1. Solo Leveling (AniList ID 151807, Season 1)
-    registerEpisodes(
-      aniListId: 151807,
-      seasonNumber: 1,
-      count: 12,
-      baseUrlPattern:
-          'https://archive.org/download/sololevelinggggg/sololeveling-t01e{EP}.mp4',
-      server3BaseUrlPattern:
-          'https://archive.org/cors/sololevelinggggg/sololeveling-t01e{EP}.mp4',
-      server4BaseUrlPattern:
-          'https://archive.org/download/sololevelinggggg/sololeveling-t01e{EP}.ia.mp4',
-      seriesTitle: 'Solo Leveling',
-    );
+    for (int ep = 1; ep <= _soloLevelingFiles.length; ep++) {
+      final file = _soloLevelingFiles[ep - 1];
+      final encoded = Uri.encodeComponent(file);
+      final url =
+          'https://archive.org/download/solo-leveling-s01-jeovanne-souza/$encoded';
+      final corsUrl =
+          'https://archive.org/cors/solo-leveling-s01-jeovanne-souza/$encoded';
+      registerVideo(UploadedAnimeVideo(
+        aniListId: 151807,
+        seasonNumber: 1,
+        episodeNumber: ep,
+        episodeTitle: 'Solo Leveling Episode $ep Sub Indo',
+        videoUrl: url,
+        server3Url: corsUrl,
+        server4Url: url,
+        uploader: 'AppOwnerOfficial',
+        uploadedAt: now,
+      ));
+    }
 
     // 2. Tokyo Revengers Season 1 (AniList ID 120120, 24 Episodes, BluRay 1080p Japanese Audio)
     const trS1Files = [
@@ -1019,11 +1058,11 @@ class OwnerVideoRepository {
       seasonNumber: 1,
       count: 1,
       baseUrlPattern:
-          'https://archive.org/download/a-silent-voice-2016-1080p/A%20Silent%20Voice%20%282016%29%20%5B1080p%5D.mp4',
+          'https://archive.org/download/koe-no-katachi-1080p/KoeNoKatachi_1080p.mp4',
       server3BaseUrlPattern:
-          'https://ia903201.us.archive.org/14/items/a-silent-voice-2016-1080p/A%20Silent%20Voice%20%282016%29%20%5B1080p%5D.mp4',
+          'https://archive.org/cors/koe-no-katachi-1080p/KoeNoKatachi_1080p.mp4',
       server4BaseUrlPattern:
-          'https://dn720005.ca.archive.org/0/items/a-silent-voice-2016-1080p/A%20Silent%20Voice%20%282016%29%20%5B1080p%5D.mp4',
+          'https://archive.org/download/a-silent-voice-subbed/AnimePahe_Koe_no_Katachi_-_01_BD_1036p_Kametsu.mp4',
       seriesTitle: 'Koe no Katachi',
     );
 

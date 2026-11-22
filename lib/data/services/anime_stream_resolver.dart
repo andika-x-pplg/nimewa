@@ -1211,11 +1211,6 @@ class AnimeStreamResolver {
     });
   }
 
-  // --- Tokyo Revengers Season 4 / Santen Sensou (Explicitly Unavailable) ---
-  static List<_AnimeStreamEntry> _buildTokyoRevengersS4() {
-    return const [];
-  }
-
   // --- Yosuga no Sora (12 Episodes BluRay Japanese audio) ---
   static List<_AnimeStreamEntry> _buildYosugaNoSora() {
     return List.generate(12, (index) {
@@ -1230,12 +1225,12 @@ class AnimeStreamResolver {
   // --- Solo Leveling Season 1 (12 Episodes, ~24m each, Japanese Audio) ---
   static List<_AnimeStreamEntry> _buildSoloLevelingSeason1() {
     return List.generate(12, (index) {
-      final epNum = index + 1;
-      final pad = epNum.toString().padLeft(2, '0');
+      final file = OwnerVideoRepository.soloLevelingFiles[index];
+      final encoded = Uri.encodeComponent(file);
       final url =
-          'https://archive.org/download/sololevelinggggg/sololeveling-t01e$pad.mp4';
+          'https://archive.org/download/solo-leveling-s01-jeovanne-souza/$encoded';
       final corsUrl =
-          'https://archive.org/cors/sololevelinggggg/sololeveling-t01e$pad.mp4';
+          'https://archive.org/cors/solo-leveling-s01-jeovanne-souza/$encoded';
       return _AnimeStreamEntry(
         server1Url: url,
         server3Url: corsUrl,
@@ -1495,14 +1490,17 @@ class AnimeStreamResolver {
 
   // --- A Silent Voice Movie (130 Minutes) ---
   static List<_AnimeStreamEntry> _buildSilentVoice() {
-    const url = 'https://archive.org/download/silent-voice/Silent%20voice.mp4';
+    const url =
+        'https://archive.org/download/koe-no-katachi-1080p/KoeNoKatachi_1080p.mp4';
     const s3Url =
-        'https://archive.org/download/a-silent-voice-2016-1080p/A%20Silent%20Voice%20%282016%29%20%5B1080p%5D.mp4';
+        'https://archive.org/cors/koe-no-katachi-1080p/KoeNoKatachi_1080p.mp4';
+    const s4Url =
+        'https://archive.org/download/a-silent-voice-subbed/AnimePahe_Koe_no_Katachi_-_01_BD_1036p_Kametsu.mp4';
     return [
       const _AnimeStreamEntry(
         server1Url: url,
         server3Url: s3Url,
-        server4Url: url,
+        server4Url: s4Url,
       )
     ];
   }

@@ -103,6 +103,53 @@ Halo dunia anime! Ini subtitle kustom pemilik.
       );
       expect(result, contains('Halo dunia anime'));
     });
+
+    test('Solo Leveling Season 1 has complete Indonesian subtitles for all 12 episodes', () {
+      // Check AniList ID 151807 and 46231
+      for (int ep = 1; ep <= 12; ep++) {
+        expect(
+          repo.hasSubtitleForVideo(aniListId: 151807, seasonNumber: 1, episodeNumber: ep),
+          isTrue,
+          reason: 'Solo Leveling Ep $ep must have Indonesian subtitle registered',
+        );
+
+        final srt = repo.getSrtContent(151807, 1, ep);
+        expect(srt, isNotNull);
+        expect(srt, contains('-->'));
+        expect(srt, contains('[Sub Indo] Solo Leveling'));
+
+        // Check intro title cue at 5s
+        final introSub = repo.getSubtitleForVideo(
+          aniListId: 151807,
+          seasonNumber: 1,
+          episodeNumber: ep,
+          position: const Duration(seconds: 5),
+        );
+        expect(introSub, contains('[Sub Indo] Solo Leveling'));
+
+        // Check dialogue cue at 22s
+        final dialogueSub = repo.getSubtitleForVideo(
+          aniListId: 151807,
+          seasonNumber: 1,
+          episodeNumber: ep,
+          position: const Duration(seconds: 22),
+        );
+        expect(dialogueSub, isNotEmpty);
+      }
+
+      // Ep 1 dialogue check
+      final ep1Sub = repo.getSubtitleForVideo(
+        aniListId: 151807,
+        seasonNumber: 1,
+        episodeNumber: 1,
+        position: const Duration(seconds: 22),
+      );
+      expect(ep1Sub, contains('Hunter terlemah di dunia'));
+
+      // Ep 12 dialogue check (Arise / Bangkitlah)
+      final srtEp12 = repo.getSrtContent(151807, 1, 12);
+      expect(srtEp12, contains('BANGKITLAH'));
+    });
   });
 }
 

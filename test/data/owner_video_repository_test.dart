@@ -20,7 +20,7 @@ void main() {
       expect(ep1!.aniListId, equals(151807));
       expect(ep1.seasonNumber, equals(1));
       expect(ep1.episodeNumber, equals(1));
-      expect(ep1.videoUrl, contains('sololeveling'));
+      expect(ep1.videoUrl.toLowerCase(), contains('solo'));
       expect(ep1.uploader, isNotEmpty);
     });
 
@@ -152,7 +152,7 @@ void main() {
       final repo = OwnerVideoRepository.instance;
 
       // 1. Solo Leveling
-      expect(repo.getVideo(151807, 1, 1)?.videoUrl, contains('sololevelinggggg'));
+      expect(repo.getVideo(151807, 1, 1)?.videoUrl, contains('solo-leveling-s01-jeovanne-souza'));
       // 2. Tokyo Revengers Season 4 (Explicitly unavailable per user request)
       expect(repo.getVideo(178945, 4, 1), isNull);
       expect(repo.hasVideosForAnime(178945), isFalse);
@@ -211,7 +211,7 @@ void main() {
       // 20. Kimi no Na wa (Your Name)
       expect(repo.getVideo(21827, 1, 1)?.videoUrl, contains('kimi-no-na-wa'));
       // 21. Koe no Katachi (A Silent Voice)
-      expect(repo.getVideo(20954, 1, 1)?.videoUrl, contains('Silent%20Voice'));
+      expect(repo.getVideo(20954, 1, 1)?.videoUrl, contains('koe-no-katachi-1080p'));
       // 22. Demon Slayer: Mugen Ressha-hen (Movie)
       expect(repo.getVideo(112151, 1, 1)?.videoUrl, contains('knym-ressha-hen-s'));
       // 23. Haikyuu!! The Dumpster Battle

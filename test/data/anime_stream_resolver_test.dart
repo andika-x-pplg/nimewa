@@ -228,7 +228,7 @@ void main() {
         server: 'Server 1 (Fast HD)',
         episodeNumber: 1,
       );
-      expect(ep1, contains('sololeveling-t01e01.mp4')); // Season 1 Episode 1
+      expect(ep1, contains('Solo.Leveling.S01E01')); // Season 1 Episode 1
       expect(ep1, isNot(contains('s-02-e-01'))); // NOT Season 2!
       expect(ep1, isNot(contains('t02')));
 
@@ -238,7 +238,7 @@ void main() {
         server: 'Server 1 (Fast HD)',
         episodeNumber: 10,
       );
-      expect(ep10, contains('sololeveling-t01e10.mp4')); // Season 1 Episode 10
+      expect(ep10, contains('Solo.Leveling.S01E10')); // Season 1 Episode 10
       expect(ep10, isNot(equals(ep1)));
     });
 
@@ -425,7 +425,7 @@ void main() {
         animeTitle: 'A Silent Voice',
         server: 'Server 1 (Fast HD)',
       );
-      expect(silentVoice.toLowerCase(), contains('silent%20voice'));
+      expect(silentVoice.toLowerCase(), contains('koe-no-katachi'));
     });
 
     test('resolves Steins;Gate, Dan Da Dan, and Re:Zero sequential episodes', () {
