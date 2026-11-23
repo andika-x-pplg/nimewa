@@ -358,7 +358,7 @@ void main() {
       expect(find.byType(AnimeWatchScreen), findsNothing);
     });
 
-    testWidgets('subtitle toggle button toggles subtitle state', (tester) async {
+    testWidgets('video player relies directly on native built-in video subtitles without custom overlay or SUB INDO button', (tester) async {
       tester.view.physicalSize = const Size(500, 1200);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
@@ -367,105 +367,12 @@ void main() {
       await tester.pumpWidget(createWatchScreen());
       await tester.pumpAndSettle();
 
-      // Subtitles are enabled by default and displayed on screen
-      expect(find.byKey(const Key('in_player_subtitle_box')), findsOneWidget);
-      expect(find.textContaining('[Sub Indo] Solo Leveling'), findsOneWidget);
-
-      final subBtn = find.byKey(const Key('btn_toggle_subtitles'));
-      expect(subBtn, findsOneWidget);
-      expect(find.text('SUB INDO'), findsOneWidget);
-
-      // Tap to disable subtitles
-      await tester.tap(subBtn);
-      await tester.pumpAndSettle();
+      // Custom in-player subtitle box and SUB INDO toggle button are removed
       expect(find.byKey(const Key('in_player_subtitle_box')), findsNothing);
-
-      // Tap again to re-enable subtitles
-      await tester.tap(subBtn);
-      await tester.pumpAndSettle();
-      expect(find.byKey(const Key('in_player_subtitle_box')), findsOneWidget);
-      expect(find.textContaining('[Sub Indo] Solo Leveling'), findsOneWidget);
-    });
-
-    testWidgets('loads subtitle strictly from generated owner .srt file and disappears during pause', (tester) async {
-      tester.view.physicalSize = const Size(500, 1200);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(tester.view.resetPhysicalSize);
-      addTearDown(tester.view.resetDevicePixelRatio);
-
-      await tester.pumpWidget(createWatchScreen());
-      await tester.pumpAndSettle();
-
-      // At position 00:00 (intro), owner .srt intro title cue is displayed
-      expect(find.byKey(const Key('in_player_subtitle_box')), findsOneWidget);
-      expect(find.textContaining('[Sub Indo] Solo Leveling Season 1 - Episode 1'), findsOneWidget);
-
-      // Forward 10s: position 00:10 (silent intro gap between 8s and 19.5s)
-      await tester.tap(find.byKey(const Key('video_forward_10')));
-      await tester.pumpAndSettle();
-      expect(find.byKey(const Key('in_player_subtitle_box')), findsNothing);
-
-      // Forward 10s more: position 00:20 (active dialogue from owner .srt file)
-      await tester.tap(find.byKey(const Key('video_forward_10')));
-      await tester.pumpAndSettle();
-      expect(find.byKey(const Key('in_player_subtitle_box')), findsOneWidget);
-      expect(find.textContaining('Hunter terlemah di dunia'), findsOneWidget);
-
-      // Forward 10s more: position 00:30 (next dialogue from owner .srt file)
-      await tester.tap(find.byKey(const Key('video_forward_10')));
-      await tester.pumpAndSettle();
-      expect(find.byKey(const Key('in_player_subtitle_box')), findsOneWidget);
-      expect(find.textContaining('Double Dungeon?!'), findsOneWidget);
-
-      // Verify that sync bar and AI live translator box are NOT present in the player UI
+      expect(find.byKey(const Key('btn_toggle_subtitles')), findsNothing);
+      expect(find.text('SUB INDO'), findsNothing);
       expect(find.byKey(const Key('subtitle_sync_bar')), findsNothing);
       expect(find.byKey(const Key('in_player_live_translator_box')), findsNothing);
-    });
-
-    testWidgets('does not load subtitle from internet for non-owner anime video', (tester) async {
-      tester.view.physicalSize = const Size(500, 1200);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(tester.view.resetPhysicalSize);
-      addTearDown(tester.view.resetDevicePixelRatio);
-
-      // Non-owner anime with random unregistered ID
-      final nonOwnerAnime = AnimeDetail(
-        id: '999999',
-        title: 'Random Unknown Anime',
-        japaneseTitle: '未知のアニメ',
-        rating: 6.0,
-        releaseYear: 2020,
-        genres: const ['Comedy'],
-        synopsis: 'Anime tanpa video pemilik resmi.',
-        posterUrl: 'https://images.unsplash.com/poster.jpg',
-        backdropUrl: 'https://images.unsplash.com/backdrop.jpg',
-        status: 'Finished',
-        studio: 'Random Studio',
-        totalEpisodes: 1,
-        episodes: [
-          const EpisodeItem(
-            id: 'random-ep-1',
-            episodeNumber: 1,
-            title: 'Episode 1',
-            releaseDate: '2020-01-01',
-            streamUrl: 'https://sample.com/random.mp4',
-          ),
-        ],
-      );
-
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: AppTheme.darkTheme,
-          home: AnimeWatchScreen(
-            anime: nonOwnerAnime,
-            initialEpisode: nonOwnerAnime.episodes.first,
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      // For non-owner anime, subtitle is never loaded from internet and remains empty
-      expect(find.byKey(const Key('in_player_subtitle_box')), findsNothing);
     });
   });
 }

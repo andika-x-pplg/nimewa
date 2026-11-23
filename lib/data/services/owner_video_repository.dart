@@ -24,20 +24,46 @@ class OwnerVideoRepository {
     'OPM-BD-12.mp4',
   ];
 
-  static const List<String> _opmS2Files = [
-    'O-S2-BD-01.mp4',
-    'O-S2-BD-02.mp4',
-    'O-S2-BD-03.mp4',
-    'O-S2-BD-04.mp4',
-    'O-S2-BD-05.mp4',
-    'O-S2-BD-06.mp4',
-    'O-S2-BD-07.mp4',
-    'O-S2-BD-08.mp4',
-    'O-S2-BD-09.mp4',
-    'O-S2-BD-10.mp4',
-    'O-S2-BD-11.mp4',
-    'O-S2-BD-12.mp4',
+  static const List<String> deathNoteFiles = [
+    'Death Note Episode 1 Rebirth.mp4',
+    'Death Note Episode 2 Confrontation.mp4',
+    'Death Note Episode 3 Dealings.mp4',
+    'Death Note Episode 4 Pursuit.mp4',
+    'Death Note Episode 5 Tactics.mp4',
+    'Death Note Episode 6 Unraveling.mp4',
+    'Death Note Episode 7 Overcast.mp4',
+    'Death Note Episode 8 Glare.mp4',
+    'Death Note Episode 9 Encounter.mp4',
+    'Death Note Episode 10 Doubt.mp4',
+    'Death Note Episode 11 Assault.mp4',
+    'Death Note Episode 12 Love.mp4',
+    'Death Note Episode 13 Confession.mp4',
+    'Death Note Episode 14 Friend.mp4',
+    'Death Note Episode 15 Wager.mp4',
+    'Death Note Episode 16 Decision.mp4',
+    'Death Note Episode 17 Execution.mp4',
+    'Death Note Episode 18 Ally.mp4',
+    'Death Note Episode 19 Matsuda.mp4',
+    'Death Note Episode 20 Makeshift.mp4',
+    'Death Note Episode 21 Performance.mp4',
+    'Death Note Episode 22 Guidance.mp4',
+    'Death Note Episode 23 Frenzy.mp4',
+    'Death Note Episode 24 Revival.mp4',
+    'Death Note Episode 25 Silence.mp4',
+    'Death Note Episode 26 Renewal.mp4',
+    'Death Note Episode 27 Abduction.mp4',
+    'Death Note Episode 28 Impatience.mp4',
+    'Death Note Episode 29 Father.mp4',
+    'Death Note Episode 30 Justice.mp4',
+    'Death Note Episode 31 Transfer.mp4',
+    'Death Note Episode 32 Selection.mp4',
+    'Death Note Episode 33 Scorn.mp4',
+    'Death Note Episode 34 Vigilance.mp4',
+    'Death Note Episode 35 Malice.mp4',
+    'Death Note Episode 36 1.28.mp4',
+    'Death Note Episode 37 New World.mp4',
   ];
+  static const List<String> _deathNoteFiles = deathNoteFiles;
 
   static const List<String> bleachS1Files = [
     'Bleach - 001 - A Shinigami Is Born!.mp4',
@@ -61,7 +87,6 @@ class OwnerVideoRepository {
     'Bleach - 019 - Ichigo Becomes a Hollow!.mp4',
     'Bleach - 020 - Ichimaru the Silver Shadow.mp4',
   ];
-  static const List<String> _bleachS1Files = bleachS1Files;
 
   static const List<String> rezeroS1Files = [
     'ReZero kara Hajimeru Isekai Seikatsu Episode 1B(mp4).mp4',
@@ -109,18 +134,18 @@ class OwnerVideoRepository {
   static const List<String> yosugaFiles = _yosugaFiles;
 
   static const List<String> _soloLevelingFiles = [
-    'Solo.Leveling.S01E01.Im.Used.to.It.1080p.CR.WEB-DL.MULTi.AAC2.0.H.264.MSubs-ToonsHub.mkv',
-    'Solo.Leveling.S01E02.If.I.Had.One.More.Chance.1080p.CR.WEB-DL.MULTi.AAC2.0.H.264.MSubs-ToonsHub.mkv',
-    'Solo.Leveling.S01E03.Its.Like.a.Game.1080p.CR.WEB-DL.MULTi.AAC2.0.H.264.MSubs-ToonsHub.mkv',
-    'Solo.Leveling.S01E04.Ive.Gotta.Get.Stronger.1080p.CR.WEB-DL.MULTi.AAC2.0.H.264.MSubs-ToonsHub.mkv',
-    'Solo.Leveling.S01E05.A.Pretty.Good.Deal.1080p.CR.WEB-DL.MULTi.AAC2.0.H.264.MSubs-ToonsHub.mkv',
-    'Solo.Leveling.S01E06.The.Real.Hunt.Begins.1080p.CR.WEB-DL.MULTi.AAC2.0.H.264.MSubs-ToonsHub.mkv',
-    'Solo.Leveling.S01E07.Lets.See.How.Far.I.Can.Go.1080p.CR.WEB-DL.MULTi.AAC2.0.H.264.MSubs-ToonsHub.mkv',
-    'Solo.Leveling.S01E08.This.Is.Frustrating.1080p.CR.WEB-DL.MULTi.AAC2.0.H.264.MSubs-ToonsHub.mkv',
-    'Solo.Leveling.S01E09.Youve.Been.Hiding.Your.Skills.1080p.CR.WEB-DL.MULTi.AAC2.0.H.264.MSubs-ToonsHub.mkv',
-    'Solo.Leveling.S01E10.What.Is.This.a.Picnic.1080p.CR.WEB-DL.MULTi.AAC2.0.H.264.MSubs-ToonsHub.mkv',
-    'Solo.Leveling.S01E11.A.Knight.Who.Defends.an.Empty.Throne.1080p.CR.WEB-DL.MULTi.AAC2.0.H.264.MSubs-ToonsHub.mkv',
-    'Solo.Leveling.S01E12.Arise.1080p.CR.WEB-DL.MULTi.AAC2.0.H.264.MSubs-ToonsHub.mkv',
+    'SL-BD-01_hardsub.mp4',
+    'SL-BD-02_hardsub.mp4',
+    'SL-BD-03_hardsub.mp4',
+    'SL-BD-04_hardsub.mp4',
+    'SL-BD-05_hardsub.mp4',
+    'SL-BD-06_hardsub.mp4',
+    'SL-BD-07_hardsub.mp4',
+    'SL-BD-08_hardsub.mp4',
+    'SL-BD-09_hardsub.mp4',
+    'SL-BD-10_hardsub.mp4',
+    'SL-BD-11_hardsub.mp4',
+    'SL-BD-12_hardsub.mp4',
   ];
   static const List<String> soloLevelingFiles = _soloLevelingFiles;
 
@@ -242,28 +267,11 @@ class OwnerVideoRepository {
             'https://archive.org/download/dan-da-dan-seasons-1-2/Dan%20Da%20Dan/dandadan_S01-E{EP}.mp4';
       }
     } else if (lowerTitle.contains('spy') && lowerTitle.contains('family')) {
-      for (int ep = 1; ep <= total; ep++) {
-        final epStr = ep.toString().padLeft(2, '0');
-        final tvq = ep >= 10 ? 'TVQ' : '';
-        final ident = ep >= 10 ? 'spy-family-$epStr-tvq-720p' : 'spy-family-$epStr-720p';
-        final url = 'https://archive.org/download/$ident/SpyFamily_$epStr$tvq-720p.mp4';
-        registerVideo(UploadedAnimeVideo(
-          aniListId: aniListId,
-          seasonNumber: seasonNumber,
-          episodeNumber: ep,
-          episodeTitle: total == 1
-              ? '$seriesTitle Full Movie Sub Indo'
-              : '$seriesTitle Episode $ep Sub Indo',
-          videoUrl: url,
-          server3Url: url.replaceAll('/download/', '/cors/'),
-          server4Url: url,
-          uploader: 'AppOwnerOfficial',
-          uploadedAt: now,
-        ));
-      }
+      // Spy x Family: Unavailable per atomicity (raw video without hardsubs)
       return;
     } else if (lowerTitle.contains('hunter') || lowerTitle.contains('hxh')) {
-      basePattern = 'https://archive.org/download/hxh11/{EP3}.ia.mp4';
+      // Hunter x Hunter (2011) is unavailable per user request (no authentic Japanese dub with hardsubs available in public repositories)
+      return;
     } else if (lowerTitle.contains('titan') || lowerTitle.contains('shingeki') || lowerTitle.contains('eren')) {
       for (int ep = 1; ep <= total; ep++) {
         final fileIndex = (ep - 1).clamp(0, _aotS1Titles.length - 1);
@@ -287,14 +295,18 @@ class OwnerVideoRepository {
     } else if (lowerTitle.contains('demon slayer') || lowerTitle.contains('kimetsu') || lowerTitle.contains('tanjiro')) {
       if (seasonNumber == 2 || lowerTitle.contains('season 2') || lowerTitle.contains('yuukaku') || lowerTitle.contains('entertainment district')) {
         for (int ep = 1; ep <= total; ep++) {
-          final url = 'https://archive.org/download/kimetsu_20240913/GATON%202.$ep.mp4';
+          final epStr = ep.toString().padLeft(2, '0');
+          final fileName = ep == 11
+              ? 'Otakudesu.io_KnY.Yh--11_End_720p.mp4'
+              : 'Otakudesu.io_KnY.Yh--${epStr}_720p.mp4';
+          final url = 'https://archive.org/download/otakudesu.io-kn-y.-yh-01-720p/$fileName';
           registerVideo(UploadedAnimeVideo(
             aniListId: aniListId,
             seasonNumber: seasonNumber,
             episodeNumber: ep,
             episodeTitle: '$seriesTitle Episode $ep Sub Indo',
             videoUrl: url,
-            server3Url: 'https://archive.org/cors/kimetsu_20240913/GATON%202.$ep.mp4',
+            server3Url: 'https://archive.org/cors/otakudesu.io-kn-y.-yh-01-720p/$fileName',
             server4Url: url,
             uploader: 'AppOwnerOfficial',
             uploadedAt: now,
@@ -306,7 +318,7 @@ class OwnerVideoRepository {
     } else if (lowerTitle.contains('jujutsu') || lowerTitle.contains('sukuna') || lowerTitle.contains('itadori')) {
       if (lowerTitle.contains('0') || lowerTitle.contains('movie') || lowerTitle.contains('film')) {
         basePattern =
-            'https://archive.org/download/jujutsu-kaisen-0-1080p/Jujutsu-Kaisen-0_1080p.mp4';
+            'https://archive.org/download/anime-pahe-jujutsu-kaisen-0-movie-01-bd-804p-vodes/AnimePahe_Jujutsu_Kaisen_0_Movie_-_01_BD_804p_Vodes.mp4';
       } else {
         basePattern =
             'https://archive.org/download/jjk-s01CBT/Jujutsu%20Kaisen%20%282020%29%20-%20S01E{EP}%20%281080p%20BluRay%20AV1%2010bit%20Opus%202.0%20KaNNa%29.mp4';
@@ -344,23 +356,7 @@ class OwnerVideoRepository {
       }
       return;
     } else if (lowerTitle.contains('bleach') || lowerTitle.contains('ichigo')) {
-      for (int ep = 1; ep <= total; ep++) {
-        final fileIndex = (ep - 1).clamp(0, _bleachS1Files.length - 1);
-        final file = _bleachS1Files[fileIndex];
-        final encoded = Uri.encodeComponent(file);
-        final url = 'https://archive.org/download/bleach-127-c-p/$encoded';
-        registerVideo(UploadedAnimeVideo(
-          aniListId: aniListId,
-          seasonNumber: seasonNumber,
-          episodeNumber: ep,
-          episodeTitle: '$seriesTitle Episode $ep Sub Indo',
-          videoUrl: url,
-          server3Url: 'https://archive.org/cors/bleach-127-c-p/$encoded',
-          server4Url: url,
-          uploader: 'AppOwnerOfficial',
-          uploadedAt: now,
-        ));
-      }
+      // Bleach Season 1 is unavailable per user request / no authentic Japanese dub with hardsubs available
       return;
     } else if (lowerTitle.contains('rezero') || lowerTitle.contains('re:zero') || lowerTitle.contains('subaru') || lowerTitle.contains('emilia')) {
       for (int ep = 1; ep <= total; ep++) {
@@ -437,14 +433,14 @@ class OwnerVideoRepository {
         final fileIndex = (ep - 1).clamp(0, _soloLevelingFiles.length - 1);
         final file = _soloLevelingFiles[fileIndex];
         final encoded = Uri.encodeComponent(file);
-        final url = 'https://archive.org/download/solo-leveling-s01-jeovanne-souza/$encoded';
+        final url = 'https://archive.org/download/sl-bd-s1/$encoded';
         registerVideo(UploadedAnimeVideo(
           aniListId: aniListId,
           seasonNumber: seasonNumber,
           episodeNumber: ep,
           episodeTitle: '$seriesTitle Episode $ep Sub Indo',
           videoUrl: url,
-          server3Url: 'https://archive.org/cors/solo-leveling-s01-jeovanne-souza/$encoded',
+          server3Url: 'https://archive.org/cors/sl-bd-s1/$encoded',
           server4Url: url,
           uploader: 'AppOwnerOfficial',
           uploadedAt: now,
@@ -452,11 +448,15 @@ class OwnerVideoRepository {
       }
       return;
     } else if (lowerTitle.contains('punch') || lowerTitle.contains('saitama')) {
+      final isS2 = seasonNumber == 2 || lowerTitle.contains('season 2') || lowerTitle.contains('2nd season');
+      if (isS2) {
+        // One-Punch Man Season 2 is explicitly unavailable per user request
+        return;
+      }
       for (int ep = 1; ep <= total; ep++) {
-        final isS2 = seasonNumber == 2 || lowerTitle.contains('season 2') || lowerTitle.contains('2nd season');
-        final files = isS2 ? _opmS2Files : _opmS1Files;
+        final files = _opmS1Files;
         final fileIndex = (ep - 1).clamp(0, files.length - 1);
-        final base = isS2 ? 'https://archive.org/download/opm-s2' : 'https://archive.org/download/opm-s1';
+        final base = 'https://archive.org/download/opm-s1';
         final fileName = files[fileIndex];
         final url = '$base/$fileName';
         registerVideo(UploadedAnimeVideo(
@@ -475,8 +475,24 @@ class OwnerVideoRepository {
       }
       return;
     } else if (lowerTitle.contains('death note') || lowerTitle.contains('light yagami')) {
-      basePattern =
-          'https://archive.org/download/death-note-complete-2006-2007/E{EP}%20-%20Rebirth.mp4';
+      for (int ep = 1; ep <= total; ep++) {
+        final fileIndex = (ep - 1).clamp(0, _deathNoteFiles.length - 1);
+        final file = _deathNoteFiles[fileIndex];
+        final encoded = Uri.encodeComponent(file);
+        final url = 'https://archive.org/download/death-note-relight-1/$encoded';
+        registerVideo(UploadedAnimeVideo(
+          aniListId: aniListId,
+          seasonNumber: seasonNumber,
+          episodeNumber: ep,
+          episodeTitle: '$seriesTitle Episode $ep Sub Indo',
+          videoUrl: url,
+          server3Url: 'https://archive.org/cors/death-note-relight-1/$encoded',
+          server4Url: url,
+          uploader: 'AppOwnerOfficial',
+          uploadedAt: now,
+        ));
+      }
+      return;
     } else {
       // Do not register arbitrary unrelated video (e.g. Dan Da Dan) for unknown anime!
       return;
@@ -552,9 +568,9 @@ class OwnerVideoRepository {
       final file = _soloLevelingFiles[ep - 1];
       final encoded = Uri.encodeComponent(file);
       final url =
-          'https://archive.org/download/solo-leveling-s01-jeovanne-souza/$encoded';
+          'https://archive.org/download/sl-bd-s1/$encoded';
       final corsUrl =
-          'https://archive.org/cors/solo-leveling-s01-jeovanne-souza/$encoded';
+          'https://archive.org/cors/sl-bd-s1/$encoded';
       registerVideo(UploadedAnimeVideo(
         aniListId: 151807,
         seasonNumber: 1,
@@ -719,16 +735,21 @@ class OwnerVideoRepository {
       ));
     }
 
-    // 8. Demon Slayer Season 2 - Entertainment District Arc (AniList ID 142329, 11 Episodes)
+    // 8. Demon Slayer Season 2 - Entertainment District Arc (AniList ID 142329, 11 Episodes, Japanese Audio + Sub Indo)
     for (int ep = 1; ep <= 11; ep++) {
-      final url = 'https://archive.org/download/kimetsu_20240913/GATON%202.$ep.mp4';
+      final epStr = ep.toString().padLeft(2, '0');
+      final fileName = ep == 11
+          ? 'Otakudesu.io_KnY.Yh--11_End_720p.mp4'
+          : 'Otakudesu.io_KnY.Yh--${epStr}_720p.mp4';
+      final url = 'https://archive.org/download/otakudesu.io-kn-y.-yh-01-720p/$fileName';
+      final s3Url = 'https://archive.org/cors/otakudesu.io-kn-y.-yh-01-720p/$fileName';
       registerVideo(UploadedAnimeVideo(
         aniListId: 142329,
         seasonNumber: 2,
         episodeNumber: ep,
         episodeTitle: 'Demon Slayer S2 Yuukaku-hen Episode $ep Sub Indo',
         videoUrl: url,
-        server3Url: 'https://archive.org/cors/kimetsu_20240913/GATON%202.$ep.mp4',
+        server3Url: s3Url,
         server4Url: url,
         uploader: 'AppOwnerOfficial',
         uploadedAt: now,
@@ -795,19 +816,24 @@ class OwnerVideoRepository {
       ));
     }
 
-    // 11. Death Note (AniList ID 1535)
-    registerEpisodes(
-      aniListId: 1535,
-      seasonNumber: 1,
-      count: 37,
-      baseUrlPattern:
-          'https://archive.org/download/death-note-complete-2006-2007/E{EP}%20-%20Rebirth.mp4',
-      server3BaseUrlPattern:
-          'https://dn720005.ca.archive.org/0/items/death-note-complete-2006-2007/E{EP}%20-%20Rebirth.mp4',
-      server4BaseUrlPattern:
-          'https://ia800505.us.archive.org/0/items/death-note-complete-2006-2007/E{EP}%20-%20Rebirth.mp4',
-      seriesTitle: 'Death Note',
-    );
+    // 11. Death Note (AniList ID 1535, 37 Episodes, Japanese Audio + English Hardsub)
+    for (int ep = 1; ep <= _deathNoteFiles.length; ep++) {
+      final file = _deathNoteFiles[ep - 1];
+      final encoded = Uri.encodeComponent(file);
+      final url = 'https://archive.org/download/death-note-relight-1/$encoded';
+      final s3Url = 'https://archive.org/cors/death-note-relight-1/$encoded';
+      registerVideo(UploadedAnimeVideo(
+        aniListId: 1535,
+        seasonNumber: 1,
+        episodeNumber: ep,
+        episodeTitle: 'Death Note Episode $ep Sub Indo',
+        videoUrl: url,
+        server3Url: s3Url,
+        server4Url: url,
+        uploader: 'AppOwnerOfficial',
+        uploadedAt: now,
+      ));
+    }
 
     // 12. Jujutsu Kaisen Season 1 (AniList ID 113415)
     registerEpisodes(
@@ -884,39 +910,9 @@ class OwnerVideoRepository {
       seriesTitle: 'Frieren',
     );
 
-    // 16. Spy x Family (AniList ID 140960)
-    for (int ep = 1; ep <= 12; ep++) {
-      final epStr = ep.toString().padLeft(2, '0');
-      final tvq = ep >= 10 ? 'TVQ' : '';
-      final ident = ep >= 10 ? 'spy-family-$epStr-tvq-720p' : 'spy-family-$epStr-720p';
-      final file = 'SpyFamily_$epStr$tvq-720p.mp4';
-      final url = 'https://archive.org/download/$ident/$file';
-      registerVideo(UploadedAnimeVideo(
-        aniListId: 140960,
-        seasonNumber: 1,
-        episodeNumber: ep,
-        episodeTitle: 'Spy x Family Episode $ep Sub Indo',
-        videoUrl: url,
-        server3Url: url.replaceAll('/download/', '/cors/'),
-        server4Url: url,
-        uploader: 'AppOwnerOfficial',
-        uploadedAt: now,
-      ));
-    }
+    // 16. Spy x Family (AniList ID 140960): Unavailable per atomicity (raw video without hardsubs)
 
-    // 17. Hunter x Hunter (AniList ID 11061)
-    registerEpisodes(
-      aniListId: 11061,
-      seasonNumber: 1,
-      count: 148,
-      baseUrlPattern:
-          'https://archive.org/download/hxh11/{EP3}.ia.mp4',
-      server3BaseUrlPattern:
-          'https://archive.org/cors/hxh11/{EP3}.ia.mp4',
-      server4BaseUrlPattern:
-          'https://archive.org/download/hxh11/{EP3}.ia.mp4',
-      seriesTitle: 'Hunter x Hunter',
-    );
+    // 17. Hunter x Hunter (AniList ID 11061): Explicitly unavailable per user request (no authentic Japanese dub with hardsubs available in public repositories)
 
     // 18. Fullmetal Alchemist: Brotherhood (AniList ID 5114)
     registerEpisodes(
@@ -969,23 +965,7 @@ class OwnerVideoRepository {
       seriesTitle: 'Naruto',
     );
 
-    // 21. Bleach (AniList ID 269, 20 Episodes Season 1)
-    for (int ep = 1; ep <= _bleachS1Files.length; ep++) {
-      final file = _bleachS1Files[ep - 1];
-      final encoded = Uri.encodeComponent(file);
-      final url = 'https://archive.org/download/bleach-127-c-p/$encoded';
-      registerVideo(UploadedAnimeVideo(
-        aniListId: 269,
-        seasonNumber: 1,
-        episodeNumber: ep,
-        episodeTitle: 'Bleach Episode $ep Sub Indo',
-        videoUrl: url,
-        server3Url: 'https://archive.org/cors/bleach-127-c-p/$encoded',
-        server4Url: url,
-        uploader: 'AppOwnerOfficial',
-        uploadedAt: now,
-      ));
-    }
+    // 21. Bleach (AniList ID 269): Explicitly unavailable per user request (no authentic Japanese dub with hardsubs available)
 
     // 21b. Re:Zero - Starting Life in Another World (AniList ID 21355, 25 Episodes Season 1)
     for (int ep = 1; ep <= _rezeroS1Files.length; ep++) {
@@ -1113,39 +1093,7 @@ class OwnerVideoRepository {
     }
 
     // 27. One Punch Man Season 2 (AniList ID 102194 & 97668)
-    final opmS2Titles = [
-      'Kembalinya Sang Pahlawan (Return of the Hero)',
-      'Monster Manusia (The Human Monster)',
-      'Perburuan Dimulai (The Hunt Begins)',
-      'Kelelawar Logam (The Metal Bat)',
-      'Turnamen Seni Bela Diri (The Martial Arts Tournament)',
-      'Pemberontakan Monster (The Monster Uprising)',
-      'Pahlawan Kelas S (The Class S Heroes)',
-      'Perlawanan Orang Kuat (The Resistance of the Strong)',
-      'Kekhawatiran Orang Kuat (The Troubles of the Strongest)',
-      'Pengepungan Keadilan (Justice Under Siege)',
-      'Kebanggaan Masing-Masing (The Variety of Pride)',
-      'Pembersihan Murid (The Cleaning of the Disciple)',
-    ];
-    for (final s2Id in [102194, 97668]) {
-      for (int i = 0; i < opmS2Titles.length; i++) {
-        final ep = i + 1;
-        final epStr = ep.toString().padLeft(2, '0');
-        final file = ep == 12 ? 'O-S2-BD-12.ia.mp4' : 'O-S2-BD-$epStr.mp4';
-        final url = 'https://archive.org/download/opm-s2/$file';
-        registerVideo(UploadedAnimeVideo(
-          aniListId: s2Id,
-          seasonNumber: 2,
-          episodeNumber: ep,
-          episodeTitle: 'Episode $ep - ${opmS2Titles[i]} Sub Indo',
-          videoUrl: url,
-          server3Url: url.replaceAll('/download/', '/cors/'),
-          server4Url: url,
-          uploader: 'AppOwnerOfficial',
-          uploadedAt: now,
-        ));
-      }
-    }
+    // Explicitly unavailable per user request
 
     // 28. Tokyo Ghoul Season 1 (AniList ID 20605, 12 Episodes, Japanese Audio)
     for (int ep = 1; ep <= 12; ep++) {
@@ -1169,10 +1117,10 @@ class OwnerVideoRepository {
       aniListId: 131573,
       seasonNumber: 1,
       episodeNumber: 1,
-      episodeTitle: 'Jujutsu Kaisen 0 Full Movie Sub Indo',
-      videoUrl: 'https://archive.org/download/jujutsu-kaisen-0-1080p/Jujutsu-Kaisen-0_1080p.mp4',
-      server3Url: 'https://archive.org/cors/jujutsu-kaisen-0-1080p/Jujutsu-Kaisen-0_1080p.mp4',
-      server4Url: 'https://archive.org/download/jujutsu-kaisen-0-1080p/Jujutsu-Kaisen-0_1080p.mp4',
+      episodeTitle: 'Jujutsu Kaisen 0 Full Movie Eng Sub (BD)',
+      videoUrl: 'https://archive.org/download/anime-pahe-jujutsu-kaisen-0-movie-01-bd-804p-vodes/AnimePahe_Jujutsu_Kaisen_0_Movie_-_01_BD_804p_Vodes.mp4',
+      server3Url: 'https://archive.org/cors/anime-pahe-jujutsu-kaisen-0-movie-01-bd-804p-vodes/AnimePahe_Jujutsu_Kaisen_0_Movie_-_01_BD_804p_Vodes.mp4',
+      server4Url: 'https://archive.org/download/anime-pahe-jujutsu-kaisen-0-movie-01-bd-804p-vodes/AnimePahe_Jujutsu_Kaisen_0_Movie_-_01_BD_804p_Vodes.mp4',
       uploader: 'AppOwnerOfficial',
       uploadedAt: now,
     ));

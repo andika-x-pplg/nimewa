@@ -5,7 +5,6 @@ import '../../core/theme/app_typography.dart';
 import '../../data/models/anime_detail.dart';
 import '../../data/models/episode_item.dart';
 import '../../data/services/anime_stream_resolver.dart';
-import '../../data/services/owner_subtitle_repository.dart';
 
 /// Screen for watching anime video streams with interactive video controls,
 /// server selection, episode navigation, and quick playback actions.
@@ -39,23 +38,10 @@ class _AnimeWatchScreenState extends State<AnimeWatchScreen> {
   bool _isControlsVisible = true;
   bool _isFullscreen = false;
   String? _serverErrorMessage;
-  bool _isSubtitleEnabled = true;
 
   VideoPlayerController? _videoController;
   bool _isVideoInitialized = false;
   bool _isVideoBuffering = false;
-
-  String get _currentSubtitleText {
-    if (!_isSubtitleEnabled) return '';
-    final aniListId = AnimeStreamResolver.detectAniListId(widget.anime.id, widget.anime.title);
-    final seasonNumber = AnimeStreamResolver.extractSeasonNumber(widget.anime.id, widget.anime.title);
-    return OwnerSubtitleRepository.instance.getSubtitleForVideo(
-      aniListId: aniListId,
-      seasonNumber: seasonNumber,
-      episodeNumber: _currentEpisode.episodeNumber,
-      position: _currentPosition,
-    );
-  }
 
   @override
   void initState() {
@@ -403,44 +389,6 @@ class _AnimeWatchScreenState extends State<AnimeWatchScreen> {
               ),
             ),
 
-          // In-player Subtitle Indonesia display (loaded strictly from generated owner .srt file)
-          if (_serverErrorMessage == null && _isSubtitleEnabled && _currentSubtitleText.isNotEmpty)
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: EdgeInsets.only(
-                  bottom: _isControlsVisible ? 84.0 : 24.0,
-                  left: 20.0,
-                  right: 20.0,
-                ),
-                child: Container(
-                  key: const Key('in_player_subtitle_box'),
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.78),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.15),
-                      width: 0.8,
-                    ),
-                  ),
-                  child: Text(
-                    _currentSubtitleText,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 0.2,
-                      shadows: [
-                        Shadow(offset: Offset(0, 1), blurRadius: 3, color: Colors.black),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-
           // Controls overlay
           if (_serverErrorMessage == null)
             AnimatedOpacity(
@@ -637,46 +585,6 @@ class _AnimeWatchScreenState extends State<AnimeWatchScreen> {
             ),
           ),
           const SizedBox(width: 8),
-          GestureDetector(
-            key: const Key('btn_toggle_subtitles'),
-            onTap: () {
-              setState(() {
-                _isSubtitleEnabled = !_isSubtitleEnabled;
-              });
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: _isSubtitleEnabled
-                    ? AppColors.accentBlue.withValues(alpha: 0.2)
-                    : AppColors.surfaceElevated.withValues(alpha: 0.8),
-                borderRadius: BorderRadius.circular(6),
-                border: Border.all(
-                  color: _isSubtitleEnabled ? AppColors.accentBlue : AppColors.border,
-                ),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.subtitles_rounded,
-                    size: 14,
-                    color: _isSubtitleEnabled ? AppColors.accentBlue : AppColors.textMuted,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    'SUB INDO',
-                    style: AppTypography.labelSmall.copyWith(
-                      color: _isSubtitleEnabled ? AppColors.accentBlue : AppColors.textMuted,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 10,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(width: 6),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
             decoration: BoxDecoration(

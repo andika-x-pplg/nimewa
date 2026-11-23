@@ -11,7 +11,7 @@ void main() {
       OwnerVideoRepository.instance.resetToDefaults();
     });
 
-    test('One Punch Man Season 1 and Season 2 are mapped in OwnerVideoRepository', () {
+    test('One Punch Man Season 1 is mapped in OwnerVideoRepository and Season 2 is unavailable', () {
       final repo = OwnerVideoRepository.instance;
 
       // Season 1 (AniList ID 21087)
@@ -29,16 +29,12 @@ void main() {
       expect(s1Videos[0].videoUrl, contains('OPM-BD-01'));
       expect(s1Videos[11].videoUrl, contains('OPM-BD-12'));
 
-      // Season 2 (AniList ID 102194)
-      expect(repo.hasVideosForAnime(102194, seasonNumber: 2), isTrue);
-      final s2Videos = repo.getVideosForAnime(102194, seasonNumber: 2);
-      expect(s2Videos.length, equals(12));
-      expect(s2Videos[0].episodeTitle, contains('Kembalinya Sang Pahlawan'));
-      expect(s2Videos[0].videoUrl, contains('opm-s2'));
-      expect(s2Videos[0].videoUrl, contains('O-S2-BD-01'));
+      // Season 2 (AniList ID 102194) is explicitly unavailable per user request
+      expect(repo.hasVideosForAnime(102194, seasonNumber: 2), isFalse);
+      expect(repo.getVideo(102194, 2, 1), isNull);
     });
 
-    test('AnimeStreamResolver resolves One Punch Man episodes accurately without season bleeding', () {
+    test('AnimeStreamResolver resolves One Punch Man episodes accurately without season bleeding and marks S2 unavailable', () {
       // Season 1 Episode 1
       final s1Ep1 = AnimeStreamResolver.resolveStreamUrl(
         animeId: '21087',
@@ -60,16 +56,14 @@ void main() {
       expect(s1Ep12, contains('OPM-BD-12'));
       expect(s1Ep12, isNot(equals(s1Ep1)));
 
-      // Season 2 Episode 1 (ID 102194)
+      // Season 2 Episode 1 (ID 102194) - unavailable
       final s2Ep1 = AnimeStreamResolver.resolveStreamUrl(
         animeId: '102194',
         animeTitle: 'One Punch Man Season 2',
         server: 'Server 1 (Fast HD)',
         episodeNumber: 1,
       );
-      expect(s2Ep1, contains('opm-s2'));
-      expect(s2Ep1, contains('O-S2-BD-01'));
-      expect(s2Ep1, isNot(equals(s1Ep1)));
+      expect(s2Ep1, isEmpty);
 
       // Anime key detection
       expect(AnimeStreamResolver.detectAnimeKey('21087', 'One Punch Man'), equals('one-punch-man'));

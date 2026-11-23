@@ -20,7 +20,7 @@ void main() {
       expect(ep1!.aniListId, equals(151807));
       expect(ep1.seasonNumber, equals(1));
       expect(ep1.episodeNumber, equals(1));
-      expect(ep1.videoUrl.toLowerCase(), contains('solo'));
+      expect(ep1.videoUrl.toLowerCase(), contains('sl-bd-01_hardsub'));
       expect(ep1.uploader, isNotEmpty);
     });
 
@@ -104,7 +104,7 @@ void main() {
       expect(latestLog.reason, contains('reaksi'));
     });
 
-    test('One Punch Man S1 and S2 resolve to Japanese audio with Sub Indo/Eng Sub without German dub', () {
+    test('One Punch Man S1 resolves to Japanese audio with Sub Indo/Eng Sub without German dub and S2 is unavailable', () {
       final repo = OwnerVideoRepository.instance;
       // S1 Ep 1
       final opmS1Ep1 = repo.getVideo(21087, 1, 1);
@@ -118,12 +118,10 @@ void main() {
       expect(opmS1Ep12, isNotNull);
       expect(opmS1Ep12!.videoUrl, contains('opm-s1/OPM-BD-12.mp4'));
 
-      // S2 Ep 1
+      // S2 is explicitly unavailable per user request
       final opmS2Ep1 = repo.getVideo(102194, 2, 1);
-      expect(opmS2Ep1, isNotNull);
-      expect(opmS2Ep1!.videoUrl, contains('opm-s2/O-S2-BD-01.mp4'));
-      expect(opmS2Ep1.videoUrl, isNot(contains('R%C3%BCckkehr')));
-      expect(opmS2Ep1.videoUrl, isNot(contains('Gemischt')));
+      expect(opmS2Ep1, isNull);
+      expect(repo.hasVideosForAnime(102194, seasonNumber: 2), isFalse);
     });
 
     test('Demon Slayer, Tokyo Revengers S3, and FMAB resolve to authentic Japanese audio streams', () {
@@ -152,39 +150,41 @@ void main() {
       final repo = OwnerVideoRepository.instance;
 
       // 1. Solo Leveling
-      expect(repo.getVideo(151807, 1, 1)?.videoUrl, contains('solo-leveling-s01-jeovanne-souza'));
+      expect(repo.getVideo(151807, 1, 1)?.videoUrl, contains('sl-bd-s1'));
       // 2. Tokyo Revengers Season 4 (Explicitly unavailable per user request)
       expect(repo.getVideo(178945, 4, 1), isNull);
       expect(repo.hasVideosForAnime(178945), isFalse);
       // 3. Demon Slayer Season 2 (11 distinct episodes)
       final ds2Ep1 = repo.getVideo(142329, 2, 1);
       final ds2Ep11 = repo.getVideo(142329, 2, 11);
-      expect(ds2Ep1?.videoUrl, contains('kimetsu_20240913/GATON%202.1.mp4'));
-      expect(ds2Ep11?.videoUrl, contains('kimetsu_20240913/GATON%202.11.mp4'));
+      expect(ds2Ep1?.videoUrl, contains('otakudesu.io-kn-y.-yh-01-720p/Otakudesu.io_KnY.Yh--01_720p.mp4'));
+      expect(ds2Ep11?.videoUrl, contains('otakudesu.io-kn-y.-yh-01-720p/Otakudesu.io_KnY.Yh--11_End_720p.mp4'));
       expect(ds2Ep1?.videoUrl, isNot(equals(ds2Ep11?.videoUrl)));
-      // 4. One-Punch Man Season 2
-      expect(repo.getVideo(102194, 2, 1)?.videoUrl, contains('opm-s2/O-S2-BD-01.mp4'));
+      // 4. One-Punch Man Season 2 (Explicitly unavailable per user request)
+      expect(repo.getVideo(102194, 2, 1), isNull);
+      expect(repo.hasVideosForAnime(102194), isFalse);
       // 5. Attack on Titan Season 1
       expect(repo.getVideo(16498, 1, 1)?.videoUrl, contains('aot-s-1'));
       // 6. Jujutsu Kaisen Season 1
       expect(repo.getVideo(113415, 1, 1)?.videoUrl, contains('jjk-s01CBT'));
       // 7. Tokyo Ghoul Season 1
       expect(repo.getVideo(20605, 1, 1)?.videoUrl, contains('tokyo-ghoul-s01-sm'));
-      // 8. Spy x Family Season 1
-      expect(repo.getVideo(140960, 1, 1)?.videoUrl, contains('spy-family-01-720p'));
+      // 8. Spy x Family Season 1 (Unavailable per atomicity / no authentic hardsub in public repositories)
+      expect(repo.getVideo(140960, 1, 1), isNull);
+      expect(repo.hasVideosForAnime(140960), isFalse);
       // 9. Fullmetal Alchemist: Brotherhood
       expect(repo.getVideo(5114, 1, 1)?.videoUrl, contains('ma-fullmetal-alchemist-2009'));
-      // 10. Hunter x Hunter (2011)
-      expect(repo.getVideo(11061, 1, 1)?.videoUrl, contains('hxh11'));
-      // 11. Bleach Season 1 (20 episodes from bleach-127-c-p)
-      final bleach1 = repo.getVideo(269, 1, 1);
-      final bleach20 = repo.getVideo(269, 1, 20);
-      expect(bleach1?.videoUrl, contains('bleach-127-c-p/Bleach%20-%20001'));
-      expect(bleach20?.videoUrl, contains('bleach-127-c-p/Bleach%20-%20020'));
+      // 10. Hunter x Hunter (2011) (Unavailable per user request / no authentic Japanese dub with hardsubs available)
+      expect(repo.getVideo(11061, 1, 1), isNull);
+      expect(repo.hasVideosForAnime(11061), isFalse);
+      // 11. Bleach Season 1 (Unavailable per user request / no authentic Japanese dub with hardsubs available)
+      expect(repo.getVideo(269, 1, 1), isNull);
+      expect(repo.hasVideosForAnime(269), isFalse);
       // 12. Sousou no Frieren
       expect(repo.getVideo(154587, 1, 1)?.videoUrl, contains('Sousou_no_Frieren'));
       // 13. Death Note
-      expect(repo.getVideo(1535, 1, 1)?.videoUrl, contains('death-note-complete-2006-2007'));
+      expect(repo.getVideo(1535, 1, 1)?.videoUrl, contains('death-note-relight-1/Death%20Note%20Episode%201%20Rebirth.mp4'));
+      expect(repo.getVideo(1535, 1, 37)?.videoUrl, contains('death-note-relight-1/Death%20Note%20Episode%2037%20New%20World.mp4'));
       // 14. Dan Da Dan Season 1 & 2
       expect(repo.getVideo(166240, 1, 1)?.videoUrl, contains('dandadan_S01-E01.mp4'));
       expect(repo.getVideo(178526, 2, 1)?.videoUrl, contains('dandadan_S02-E01.mp4'));
@@ -207,7 +207,7 @@ void main() {
       // 18. Yosuga no Sora
       expect(repo.getVideo(8861, 1, 1)?.videoUrl, contains('ag_yosuga-no-sora'));
       // 19. Jujutsu Kaisen 0 Movie
-      expect(repo.getVideo(131573, 1, 1)?.videoUrl, contains('jujutsu-kaisen-0-1080p'));
+      expect(repo.getVideo(131573, 1, 1)?.videoUrl, contains('anime-pahe-jujutsu-kaisen-0-movie-01-bd-804p-vodes'));
       // 20. Kimi no Na wa (Your Name)
       expect(repo.getVideo(21827, 1, 1)?.videoUrl, contains('kimi-no-na-wa'));
       // 21. Koe no Katachi (A Silent Voice)

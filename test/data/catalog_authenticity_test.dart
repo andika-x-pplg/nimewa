@@ -44,6 +44,8 @@ void main() {
 
     test('inauthentic anime and fake season fallbacks are strictly rejected by hasCompleteEpisodes', () {
       final fakeAnime = [
+        ('hunter-x-hunter', 'Hunter x Hunter (2011)'),
+        ('bleach', 'Bleach'),
         ('unreleased-season-s4', 'Unreleased Season 4'),
         ('blue-lock', 'Blue Lock'),
         ('oshi-no-ko', 'Oshi no Ko'),
@@ -55,6 +57,7 @@ void main() {
         ('jujutsu-kaisen-s2', 'Jujutsu Kaisen Season 2'),
         ('jujutsu-kaisen-s3', 'Jujutsu Kaisen Season 3'),
         ('frieren-s2', 'Sousou no Frieren Season 2'),
+        ('spy-x-family', 'Spy x Family'),
         ('spy-x-family-s2', 'Spy x Family Season 2'),
         ('my-hero-academia-s2', 'Boku no Hero Academia Season 2'),
         ('rezero-s2', 'Re:Zero Season 2'),

@@ -99,7 +99,7 @@ void main() {
         server: 'Server 1 (Fast HD)',
         episodeNumber: 1,
       );
-      expect(ep1, contains('E01'));
+      expect(ep1, contains('Death%20Note%20Episode%201%20Rebirth'));
 
       final ep2 = AnimeStreamResolver.resolveStreamUrl(
         animeId: '1376',
@@ -107,7 +107,7 @@ void main() {
         server: 'Server 1 (Fast HD)',
         episodeNumber: 2,
       );
-      expect(ep2, contains('E02'));
+      expect(ep2, contains('Death%20Note%20Episode%202%20Confrontation'));
       expect(ep2, isNot(equals(ep1)));
 
       final ep10 = AnimeStreamResolver.resolveStreamUrl(
@@ -116,7 +116,7 @@ void main() {
         server: 'Server 1 (Fast HD)',
         episodeNumber: 10,
       );
-      expect(ep10, contains('E10'));
+      expect(ep10, contains('Death%20Note%20Episode%2010%20Doubt'));
       expect(ep10, isNot(equals(ep2)));
     });
 
@@ -148,35 +148,15 @@ void main() {
       expect(ep10, isNot(contains('153'))); // Not Episode 153!
     });
 
-    test('resolves Jujutsu Kaisen to authentic Season 1 streams for Ep 1, 2, and 10', () {
+    test('resolves Jujutsu Kaisen to unavailable per atomicity (lacks hardsub/audio integrity)', () {
       final ep1 = AnimeStreamResolver.resolveStreamUrl(
         animeId: '43806',
         animeTitle: 'Jujutsu Kaisen',
         server: 'Server 1 (Fast HD)',
         episodeNumber: 1,
       );
-      expect(ep1, anyOf(contains('Jujutsu'), contains('Jujustu')));
-      expect(ep1, contains('.mp4'));
-      expect(ep1, contains('S01E01'));
-
-      final ep2 = AnimeStreamResolver.resolveStreamUrl(
-        animeId: '43806',
-        animeTitle: 'Jujutsu Kaisen',
-        server: 'Server 1 (Fast HD)',
-        episodeNumber: 2,
-      );
-      expect(ep2, anyOf(contains('Jujutsu'), contains('Jujustu')));
-      expect(ep2, contains('S01E02'));
-
-      final ep10 = AnimeStreamResolver.resolveStreamUrl(
-        animeId: '43806',
-        animeTitle: 'Jujutsu Kaisen',
-        server: 'Server 1 (Fast HD)',
-        episodeNumber: 10,
-      );
-      expect(ep10, anyOf(contains('Jujutsu'), contains('Jujustu')));
-      expect(ep10, contains('S01E10'));
-      expect(ep10, isNot(equals(ep1)));
+      expect(ep1, isEmpty);
+      expect(AnimeStreamResolver.hasCompleteEpisodes('43806', 'Jujutsu Kaisen'), isFalse);
     });
 
     test('resolves Tokyo Ghoul Season 1 to 12 authentic episodes without falling back to movie', () {
@@ -228,7 +208,7 @@ void main() {
         server: 'Server 1 (Fast HD)',
         episodeNumber: 1,
       );
-      expect(ep1, contains('Solo.Leveling.S01E01')); // Season 1 Episode 1
+      expect(ep1, contains('SL-BD-01_hardsub')); // Season 1 Episode 1
       expect(ep1, isNot(contains('s-02-e-01'))); // NOT Season 2!
       expect(ep1, isNot(contains('t02')));
 
@@ -238,7 +218,7 @@ void main() {
         server: 'Server 1 (Fast HD)',
         episodeNumber: 10,
       );
-      expect(ep10, contains('Solo.Leveling.S01E10')); // Season 1 Episode 10
+      expect(ep10, contains('SL-BD-10_hardsub')); // Season 1 Episode 10
       expect(ep10, isNot(equals(ep1)));
     });
 
@@ -294,47 +274,25 @@ void main() {
       expect(mha, contains('001'));
     });
 
-    test('resolves Spy x Family Season 1 episodes accurately in MP4 format', () {
+    test('resolves Spy x Family Season 1 to unavailable per atomicity', () {
       final ep1 = AnimeStreamResolver.resolveStreamUrl(
         animeId: '41992',
         animeTitle: 'Spy x Family',
         server: 'Server 1 (Fast HD)',
         episodeNumber: 1,
       );
-      expect(ep1, contains('SpyFamily_01-720p.mp4'));
-      expect(ep1, contains('.mp4'));
-      expect(ep1, isNot(contains('Gemischt')));
-
-      final ep12 = AnimeStreamResolver.resolveStreamUrl(
-        animeId: '41992',
-        animeTitle: 'Spy x Family',
-        server: 'Server 1 (Fast HD)',
-        episodeNumber: 12,
-      );
-      expect(ep12, contains('SpyFamily_12-720p.mp4'));
-      expect(ep12, contains('.mp4'));
-      expect(ep12, isNot(equals(ep1)));
+      expect(ep1, isEmpty);
+      expect(AnimeStreamResolver.hasCompleteEpisodes('41992', 'Spy x Family'), isFalse);
     });
 
-    test('resolves Bleach, Hunter x Hunter, and Fullmetal Alchemist to authentic 23-24m MP4 streams', () {
+    test('resolves Bleach, Hunter x Hunter, and Fullmetal Alchemist to unavailable per atomicity', () {
       final bleach1 = AnimeStreamResolver.resolveStreamUrl(
         animeId: 'bleach',
         animeTitle: 'Bleach',
         server: 'Server 1 (Fast HD)',
         episodeNumber: 1,
       );
-      expect(bleach1, contains('.mp4'));
-      expect(bleach1, contains('Bleach%20-%20001'));
-      expect(bleach1, isNot(contains('Claro Video')));
-
-      final bleach2 = AnimeStreamResolver.resolveStreamUrl(
-        animeId: 'bleach',
-        animeTitle: 'Bleach',
-        server: 'Server 1 (Fast HD)',
-        episodeNumber: 2,
-      );
-      expect(bleach2, contains('Bleach%20-%20002'));
-      expect(bleach2, isNot(equals(bleach1)));
+      expect(bleach1, isEmpty);
 
       final hxh1 = AnimeStreamResolver.resolveStreamUrl(
         animeId: 'hunter-x-hunter',
@@ -342,17 +300,8 @@ void main() {
         server: 'Server 1 (Fast HD)',
         episodeNumber: 1,
       );
-      expect(hxh1, contains('hxh11'));
-      expect(hxh1, contains('001.ia.mp4'));
-
-      final hxh2 = AnimeStreamResolver.resolveStreamUrl(
-        animeId: 'hunter-x-hunter',
-        animeTitle: 'Hunter x Hunter',
-        server: 'Server 1 (Fast HD)',
-        episodeNumber: 2,
-      );
-      expect(hxh2, contains('002.ia.mp4'));
-      expect(hxh2, isNot(equals(hxh1)));
+      expect(hxh1, isEmpty);
+      expect(AnimeStreamResolver.hasCompleteEpisodes('hunter-x-hunter', 'Hunter x Hunter'), isFalse);
 
       final fmab1 = AnimeStreamResolver.resolveStreamUrl(
         animeId: 'fullmetal-alchemist',
@@ -360,18 +309,8 @@ void main() {
         server: 'Server 1 (Fast HD)',
         episodeNumber: 1,
       );
-      expect(fmab1, contains('ma-fullmetal-alchemist-2009-bdrip-1920x1080-av1-opus'));
-      expect(fmab1, isNot(contains('1st Dubbing')));
-      expect(fmab1, isNot(contains('Claro Video')));
-
-      final fmab2 = AnimeStreamResolver.resolveStreamUrl(
-        animeId: 'fullmetal-alchemist',
-        animeTitle: 'Fullmetal Alchemist: Brotherhood',
-        server: 'Server 1 (Fast HD)',
-        episodeNumber: 2,
-      );
-      expect(fmab2, contains('ma-fullmetal-alchemist-2009-bdrip-1920x1080-av1-opus'));
-      expect(fmab2, isNot(equals(fmab1)));
+      expect(fmab1, isEmpty);
+      expect(AnimeStreamResolver.hasCompleteEpisodes('fullmetal-alchemist', 'Fullmetal Alchemist: Brotherhood'), isFalse);
     });
 
     test('resolves full-length anime movies with dedicated authentic feature streams', () {
@@ -428,7 +367,7 @@ void main() {
       expect(silentVoice.toLowerCase(), contains('koe-no-katachi'));
     });
 
-    test('resolves Steins;Gate, Dan Da Dan, and Re:Zero sequential episodes', () {
+    test('resolves Steins;Gate and Re:Zero sequential episodes', () {
       final sg1 = AnimeStreamResolver.resolveStreamUrl(
         animeId: 'steins-gate',
         animeTitle: 'Steins;Gate',
@@ -452,7 +391,8 @@ void main() {
         server: 'Server 1 (Fast HD)',
         episodeNumber: 1,
       );
-      expect(ddd1, contains('dandadan_S01-E01.mp4'));
+      expect(ddd1, isEmpty);
+      expect(AnimeStreamResolver.hasCompleteEpisodes('dandadan', 'Dan Da Dan'), isFalse);
 
       final rz1 = AnimeStreamResolver.resolveStreamUrl(
         animeId: 'rezero',
@@ -475,7 +415,7 @@ void main() {
       expect(fallback, isEmpty);
     });
 
-    test('season-specific routing: DandaDan S1 stays S1, S2 routes to S2', () {
+    test('DanDaDan S1 and S2 are unavailable per atomicity due to lacking hardsubs', () {
       // S1 — id=dandadan, title=Dandadan
       final dddS1 = AnimeStreamResolver.resolveStreamUrl(
         animeId: 'dandadan',
@@ -483,8 +423,8 @@ void main() {
         server: 'Server 1 (Fast HD)',
         episodeNumber: 1,
       );
-      expect(dddS1, contains('S01-E01'));
-      expect(dddS1, isNot(contains('S02')));
+      expect(dddS1, isEmpty);
+      expect(AnimeStreamResolver.hasCompleteEpisodes('dandadan', 'Dan Da Dan'), isFalse);
 
       // S2 — title contains Season 2
       final dddS2 = AnimeStreamResolver.resolveStreamUrl(
@@ -493,7 +433,7 @@ void main() {
         server: 'Server 1 (Fast HD)',
         episodeNumber: 1,
       );
-      expect(dddS2, contains('S02-E01'));
+      expect(dddS2, isEmpty);
 
       // S2 — id contains -s2
       final dddS2byId = AnimeStreamResolver.resolveStreamUrl(
@@ -502,7 +442,8 @@ void main() {
         server: 'Server 1 (Fast HD)',
         episodeNumber: 1,
       );
-      expect(dddS2byId, contains('S02-E01'));
+      expect(dddS2byId, isEmpty);
+      expect(AnimeStreamResolver.hasCompleteEpisodes('dandadan-s2', 'Dan Da Dan Season 2'), isFalse);
     });
 
     test('season-specific routing: JJK S3 by id routes to jujutsu-kaisen-s3 and returns empty per atomicity', () {
@@ -591,7 +532,7 @@ void main() {
       // Verify each season has its distinct stream URL
       expect(s1, contains('knys1'));
       expect(s1, contains('KNYS1-E1'));
-      expect(s2, contains('kimetsu_20240913'));
+      expect(s2, contains('otakudesu.io-kn-y.-yh-01-720p'));
       expect(s3, contains('knyhgh1243ekrngtfkmrgtihj'));
       expect(s4, contains('knyhgh1243ekrngtfkmrgtihj-hd-1'));
     });
@@ -633,7 +574,7 @@ void main() {
         server: 'Server 1 (Fast HD)',
         episodeNumber: 1,
       );
-      expect(knyS2, contains('kimetsu_20240913'));
+      expect(knyS2, contains('otakudesu.io-kn-y.-yh-01-720p'));
 
       expect(
         AnimeStreamResolver.hasCompleteEpisodes('tokyo-revengers-s2', 'Tokyo Revengers Season 2'),
@@ -718,7 +659,7 @@ void main() {
       expect(logs.any((l) => l.isAccepted == true), isTrue);
     });
 
-    test('resolves One Punch Man S1 and S2 to authentic Japanese audio Sub Indo / Eng Sub streams', () {
+    test('resolves One Punch Man S1 to authentic Japanese audio Sub Indo and marks S2 as unavailable', () {
       final opmS1 = AnimeStreamResolver.resolveStreamUrl(
         animeId: 'one-punch-man',
         animeTitle: 'One Punch Man',
@@ -728,14 +669,22 @@ void main() {
       expect(opmS1, contains('opm-s1/OPM-BD-01.mp4'));
       expect(opmS1, isNot(contains('Gemischt')));
 
+      // One Punch Man Season 2 is explicitly unavailable per user request
+      expect(
+        AnimeStreamResolver.hasCompleteEpisodes('one-punch-man-s2', 'One Punch Man Season 2'),
+        isFalse,
+      );
+      expect(
+        AnimeStreamResolver.hasCompleteEpisodes('102194', 'One Punch Man 2nd Season'),
+        isFalse,
+      );
       final opmS2 = AnimeStreamResolver.resolveStreamUrl(
         animeId: 'one-punch-man-s2',
         animeTitle: 'One Punch Man Season 2',
         server: 'Server 1 (Fast HD)',
         episodeNumber: 1,
       );
-      expect(opmS2, contains('opm-s2/O-S2-BD-01.mp4'));
-      expect(opmS2, isNot(contains('Gemischt')));
+      expect(opmS2, isEmpty);
     });
   });
 

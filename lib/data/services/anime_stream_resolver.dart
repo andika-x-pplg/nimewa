@@ -63,7 +63,6 @@ class AnimeStreamResolver {
     'demon-slayer-movie',
     'attack-on-titan',
     'death-note',
-    'jujutsu-kaisen',
     'jujutsu-kaisen-0',
     'tokyo-revengers',
     'tokyo-revengers-s2',
@@ -72,26 +71,18 @@ class AnimeStreamResolver {
     'chainsaw-man-movie',
     'naruto',
     'one-piece',
-    'spy-x-family',
-    'hunter-x-hunter',
-    'fullmetal-alchemist',
-    'bleach',
     'solo-leveling',
     'my-hero-academia',
     'steins-gate',
-    'dandadan',
-    'dandadan-s2',
     'rezero',
     'shigatsu-wa-kimi',
     'your-name',
     'haikyuu-movie',
     'gintama-movie',
     'silent-voice',
-    'tokyo-ghoul',
     'tokyo-ghoul-movie',
     'frieren',
     'one-punch-man',
-    'one-punch-man-s2',
     'yosuga-no-sora',
   };
 
@@ -102,6 +93,15 @@ class AnimeStreamResolver {
     'season-3-fallback',
     'season-4-fallback',
     'tokyo-revengers-s4',
+    'one-punch-man-s2',
+    'bleach',
+    'hunter-x-hunter',
+    'jujutsu-kaisen',
+    'tokyo-ghoul',
+    'fullmetal-alchemist',
+    'dandadan',
+    'dandadan-s2',
+    'spy-x-family',
   };
 
   /// Returns true if and only if the anime or season has a complete, authentic set
@@ -946,12 +946,16 @@ class AnimeStreamResolver {
     });
   }
 
-  // --- Demon Slayer Season 2 (11 Episodes, Entertainment District Arc) ---
+  // --- Demon Slayer Season 2 (11 Episodes, Entertainment District Arc, Japanese Audio + Sub Indo) ---
   static List<_AnimeStreamEntry> _buildKnySeason2() {
     return List.generate(11, (index) {
       final epNum = index + 1;
-      final url = 'https://archive.org/download/kimetsu_20240913/GATON%202.$epNum.mp4';
-      final s3Url = 'https://archive.org/cors/kimetsu_20240913/GATON%202.$epNum.mp4';
+      final epStr = epNum.toString().padLeft(2, '0');
+      final fileName = epNum == 11
+          ? 'Otakudesu.io_KnY.Yh--11_End_720p.mp4'
+          : 'Otakudesu.io_KnY.Yh--${epStr}_720p.mp4';
+      final url = 'https://archive.org/download/otakudesu.io-kn-y.-yh-01-720p/$fileName';
+      final s3Url = 'https://archive.org/cors/otakudesu.io-kn-y.-yh-01-720p/$fileName';
       return _AnimeStreamEntry(
         server1Url: url,
         server3Url: s3Url,
@@ -1045,9 +1049,9 @@ class AnimeStreamResolver {
   // --- Jujutsu Kaisen 0 Movie (104 Minutes) ---
   static List<_AnimeStreamEntry> _buildJjk0() {
     const url =
-        'https://archive.org/download/jujutsu-kaisen-0-1080p/Jujutsu-Kaisen-0_1080p.mp4';
+        'https://archive.org/download/anime-pahe-jujutsu-kaisen-0-movie-01-bd-804p-vodes/AnimePahe_Jujutsu_Kaisen_0_Movie_-_01_BD_804p_Vodes.mp4';
     const s3Url =
-        'https://archive.org/cors/jujutsu-kaisen-0-1080p/Jujutsu-Kaisen-0_1080p.mp4';
+        'https://archive.org/cors/anime-pahe-jujutsu-kaisen-0-movie-01-bd-804p-vodes/AnimePahe_Jujutsu_Kaisen_0_Movie_-_01_BD_804p_Vodes.mp4';
     return [
       const _AnimeStreamEntry(
         server1Url: url,
@@ -1057,53 +1061,13 @@ class AnimeStreamResolver {
     ];
   }
 
-  // --- Death Note Season 1 (37 Episodes, ~23m each) ---
-  static const List<String> _deathNoteTitles = [
-    'E01 - Rebirth',
-    'E02 - Confrontation',
-    'E03 - Dealings',
-    'E04 - Pursuit',
-    'E05 - Tactics',
-    'E06 - Unraveling',
-    'E07 - Overcast',
-    'E08 - Glare',
-    'E09 - Encounter',
-    'E10 - Doubt',
-    'E11 - Assault',
-    'E12 - Love',
-    'E13 - Confession',
-    'E14 - Friend',
-    'E15 - Wager',
-    'E16 - Decision',
-    'E17 - Execution',
-    'E18 - Ally',
-    'E19 - Matsuda',
-    'E20 - Makeshift',
-    'E21 - Performance',
-    'E22 - Guidance',
-    'E23 - Frenzy',
-    'E24 - Revival',
-    'E25 - Silence',
-    'E26 - Renewal',
-    'E27 - Abduction',
-    'E28 - Impatience',
-    'E29 - Father',
-    'E30 - Justice',
-    'E31 - Transfer',
-    'E32 - Selection',
-    'E33 - Scorn',
-    'E34 - Vigilance',
-    'E35 - Malice',
-    'E36 - 1.28',
-    'E37 - New World',
-  ];
-
+  // --- Death Note Season 1 (37 Episodes, ~23m each, Japanese Audio + English Hardsub) ---
   static List<_AnimeStreamEntry> _buildDeathNoteSeason1() {
-    return _deathNoteTitles.map((t) {
-      final encoded = Uri.encodeComponent('$t.mp4');
-      final url =
-          'https://archive.org/download/death-note-complete-2006-2007/$encoded';
-      return _AnimeStreamEntry(server1Url: url, server3Url: url);
+    return OwnerVideoRepository.deathNoteFiles.map((f) {
+      final encoded = Uri.encodeComponent(f);
+      final url = 'https://archive.org/download/death-note-relight-1/$encoded';
+      final s3Url = 'https://archive.org/cors/death-note-relight-1/$encoded';
+      return _AnimeStreamEntry(server1Url: url, server3Url: s3Url, server4Url: url);
     }).toList();
   }
 
@@ -1228,9 +1192,9 @@ class AnimeStreamResolver {
       final file = OwnerVideoRepository.soloLevelingFiles[index];
       final encoded = Uri.encodeComponent(file);
       final url =
-          'https://archive.org/download/solo-leveling-s01-jeovanne-souza/$encoded';
+          'https://archive.org/download/sl-bd-s1/$encoded';
       final corsUrl =
-          'https://archive.org/cors/solo-leveling-s01-jeovanne-souza/$encoded';
+          'https://archive.org/cors/sl-bd-s1/$encoded';
       return _AnimeStreamEntry(
         server1Url: url,
         server3Url: corsUrl,
@@ -1319,17 +1283,18 @@ class AnimeStreamResolver {
     });
   }
 
-  // --- Spy x Family Season 1 (12 Episodes, Japanese Audio + Sub Indo / Eng Sub) ---
+  // --- Spy x Family Season 1 (25 Episodes, Japanese Audio + Sub Indo Hardsub BD) ---
   static List<_AnimeStreamEntry> _buildSpyFamilySeason1() {
-    return List.generate(12, (index) {
+    return List.generate(25, (index) {
       final epNum = index + 1;
       final epStr = epNum.toString().padLeft(2, '0');
-      final ident =
-          epNum >= 10 ? 'spy-family-$epStr-tvq-720p' : 'spy-family-$epStr-720p';
+      final fileName = epNum == 25
+          ? '%5BKusonime%5D%20Mata2%20x%20Keluarga%20PT1%20BD%20720p%2F%5BKusonime%5D%20Spy%20x%20Family%20BD%20-%2025%20END.mp4'
+          : '%5BKusonime%5D%20Mata2%20x%20Keluarga%20PT1%20BD%20720p%2F%5BKusonime%5D%20Spy%20x%20Family%20BD%20-%20$epStr.mp4';
       final url =
-          'https://archive.org/download/$ident/SpyFamily_$epStr-720p.mp4';
+          'https://archive.org/download/kusonime-spy-x-family-bd-04/$fileName';
       final s3Url =
-          'https://archive.org/cors/$ident/SpyFamily_$epStr-720p.mp4';
+          'https://archive.org/cors/kusonime-spy-x-family-bd-04/$fileName';
       return _AnimeStreamEntry(
         server1Url: url,
         server3Url: s3Url,
@@ -1353,30 +1318,14 @@ class AnimeStreamResolver {
     });
   }
 
-  // --- Bleach Season 1 (20 Episodes, Japanese Audio + Sub Indo / Eng Sub) ---
+  // --- Bleach Season 1 (Unavailable per user request / no authentic Japanese dub with hardsubs available) ---
   static List<_AnimeStreamEntry> _buildBleach() {
-    return List.generate(20, (index) {
-      final file = OwnerVideoRepository.bleachS1Files[index];
-      final encoded = Uri.encodeComponent(file);
-      final url = 'https://archive.org/download/bleach-127-c-p/$encoded';
-      final s3Url = 'https://archive.org/cors/bleach-127-c-p/$encoded';
-      return _AnimeStreamEntry(
-        server1Url: url,
-        server3Url: s3Url,
-        server4Url: url,
-      );
-    });
+    return const [];
   }
 
-  // --- Hunter x Hunter 2011 (148 Episodes, ~23.4m each, hxh11 collection) ---
+  // --- Hunter x Hunter 2011 (Unavailable per user request / no authentic Japanese dub with hardsubs available) ---
   static List<_AnimeStreamEntry> _buildHxh() {
-    return List.generate(148, (index) {
-      final epNum = index + 1;
-      final pad3 = epNum.toString().padLeft(3, '0');
-      final s1 = 'https://archive.org/download/hxh11/$pad3.ia.mp4';
-      final s3 = 'https://archive.org/cors/hxh11/$pad3.ia.mp4';
-      return _AnimeStreamEntry(server1Url: s1, server3Url: s3, server4Url: s1);
-    });
+    return const [];
   }
 
   // --- Fullmetal Alchemist: Brotherhood (64 Episodes, Japanese Audio BDRip AV1 OPUS) ---
@@ -1539,21 +1488,6 @@ class AnimeStreamResolver {
     });
   }
 
-  // --- One Punch Man Season 2 (12 Episodes, Japanese Audio + Sub Indo / Eng Sub) ---
-  static List<_AnimeStreamEntry> _buildOnePunchManS2() {
-    return List.generate(12, (index) {
-      final epNum = (index + 1).toString().padLeft(2, '0');
-      final fileSuffix = epNum == '12' ? 'O-S2-BD-12.ia.mp4' : 'O-S2-BD-$epNum.mp4';
-      final url = 'https://archive.org/download/opm-s2/$fileSuffix';
-      final s3Url = 'https://archive.org/cors/opm-s2/$fileSuffix';
-      return _AnimeStreamEntry(
-        server1Url: url,
-        server3Url: s3Url,
-        server4Url: url,
-      );
-    });
-  }
-
   static final Map<String, List<_AnimeStreamEntry>> _animeEpisodeMap = {
     // Core Season 1 / Single-Season Anime
     'demon-slayer': _buildKnySeason1(),
@@ -1594,7 +1528,6 @@ class AnimeStreamResolver {
     'dandadan-s2': _buildDandadanS2(),
     'tokyo-revengers-s2': _buildTokyoRevengersS2(),
     'tokyo-revengers-s3': _buildTokyoRevengersS3(),
-    'one-punch-man-s2': _buildOnePunchManS2(),
   };
 }
 
