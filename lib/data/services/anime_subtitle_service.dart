@@ -415,7 +415,11 @@ class AnimeSubtitleService {
       case 'fullmetal-alchemist':
         return 'Fullmetal Alchemist: Brotherhood';
       case 'demon-slayer-movie':
-        return 'Kimetsu no Yaiba: Infinity Castle / Mugen Train';
+        return 'Demon Slayer: Kimetsu no Yaiba - The Movie: Mugen Train';
+      case 'demon-slayer-infinity-castle':
+        return 'Demon Slayer: Kimetsu no Yaiba - The Movie: Infinity Castle';
+      case 'demon-slayer-mugen-tv':
+        return 'Demon Slayer: Kimetsu no Yaiba Mugen Ressha-hen (TV)';
       case 'chainsaw-man-movie':
         return 'Chainsaw Man: Reze Arc';
       case 'jujutsu-kaisen-0':

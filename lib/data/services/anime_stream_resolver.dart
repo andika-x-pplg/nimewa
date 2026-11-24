@@ -22,6 +22,8 @@ class AnimeStreamResolver {
     '142329': 'demon-slayer-s2',
     '145139': 'demon-slayer-s3',
     '112151': 'demon-slayer-movie',
+    '129874': 'demon-slayer-mugen-tv',
+    '178788': 'demon-slayer-infinity-castle',
     '166240': 'dandadan',
     '178526': 'dandadan-s2',
     '16498': 'attack-on-titan',
@@ -60,7 +62,7 @@ class AnimeStreamResolver {
     'demon-slayer-s2',
     'demon-slayer-s3',
     'demon-slayer-s4',
-    'demon-slayer-movie',
+    'demon-slayer-mugen-tv',
     'attack-on-titan',
     'death-note',
     'jujutsu-kaisen-0',
@@ -70,10 +72,8 @@ class AnimeStreamResolver {
     'chainsaw-man',
     'chainsaw-man-movie',
     'naruto',
-    'one-piece',
     'solo-leveling',
     'my-hero-academia',
-    'steins-gate',
     'rezero',
     'shigatsu-wa-kimi',
     'your-name',
@@ -83,7 +83,6 @@ class AnimeStreamResolver {
     'tokyo-ghoul-movie',
     'frieren',
     'one-punch-man',
-    'yosuga-no-sora',
   };
 
   /// Set of anime keys known to be incomplete or lacking authentic episode files.
@@ -94,6 +93,8 @@ class AnimeStreamResolver {
     'season-4-fallback',
     'tokyo-revengers-s4',
     'one-punch-man-s2',
+    'demon-slayer-movie',
+    'demon-slayer-infinity-castle',
     'bleach',
     'hunter-x-hunter',
     'jujutsu-kaisen',
@@ -102,6 +103,9 @@ class AnimeStreamResolver {
     'dandadan',
     'dandadan-s2',
     'spy-x-family',
+    'steins-gate',
+    'one-piece',
+    'yosuga-no-sora',
   };
 
   /// Returns true if and only if the anime or season has a complete, authentic set
@@ -337,7 +341,8 @@ class AnimeStreamResolver {
     }
 
     // 2. Specific franchise arcs that represent seasons
-    if (combined.contains('infinity castle') ||
+    if (combined.contains('hashira training') ||
+        combined.contains('hashira geiko') ||
         combined.contains('final season') ||
         combined.contains('season final') ||
         combined.contains('santen sensou') ||
@@ -477,9 +482,25 @@ class AnimeStreamResolver {
       return 'chainsaw-man-movie';
     }
 
-    // Kimetsu no Yaiba: Infinity Castle / Mugen Train Movie
-    if ((combined.contains('demon slayer') || combined.contains('kimetsu') || id == 'kimetsu-no-yaiba-infinity') &&
-        (combined.contains('infinity') || combined.contains('mugen') || combined.contains('movie') || combined.contains('film'))) {
+    // Kimetsu no Yaiba: Infinity Castle Movie (Upcoming / Unreleased)
+    if (id == 'kimetsu-no-yaiba-infinity' ||
+        id == '178788' ||
+        id == 'demon-slayer-infinity-castle' ||
+        ((combined.contains('demon slayer') || combined.contains('kimetsu')) &&
+            (combined.contains('infinity castle') || combined.contains('mugenjou')))) {
+      return 'demon-slayer-infinity-castle';
+    }
+
+    // Kimetsu no Yaiba: Mugen Train Movie or TV Arc
+    if (id == 'demon-slayer-movie' ||
+        id == '112151' ||
+        id == '129874' ||
+        id == 'demon-slayer-mugen-tv' ||
+        ((combined.contains('demon slayer') || combined.contains('kimetsu')) &&
+            (combined.contains('mugen train') || combined.contains('mugen ressha')))) {
+      if (id == '129874' || id == 'demon-slayer-mugen-tv' || combined.contains(' tv') || combined.contains('arc')) {
+        return 'demon-slayer-mugen-tv';
+      }
       return 'demon-slayer-movie';
     }
 
@@ -995,19 +1016,34 @@ class AnimeStreamResolver {
     });
   }
 
-  // --- Demon Slayer Movie / Mugen Train (Feature Film, Japanese Audio) ---
-  static List<_AnimeStreamEntry> _buildKnyMovie() {
-    const url =
-        'https://archive.org/download/knym-ressha-hen-s/knym%20Ressha-hen%20s.mp4';
-    const s3Url =
-        'https://archive.org/cors/knym-ressha-hen-s/knym%20Ressha-hen%20s.mp4';
-    return const [
-      _AnimeStreamEntry(
+  // --- Demon Slayer: Mugen Ressha-hen TV Arc (7 Episodes, Japanese Audio + Sub Indo 720p) ---
+  static List<_AnimeStreamEntry> _buildKnyMugenTv() {
+    const files = [
+      'Otakudesu.io_KnY.MRh--01_720p.mp4',
+      'Otakudesu.io_KnY.MRh--02_720p.mp4',
+      'Otakudesu.io_KnY.MRh--03_720p.mp4',
+      'Otakudesu.io_KnY.MRh--04_720p.mp4',
+      'Otakudesu.io_KnY.MRh--05_720p.mp4',
+      'Otakudesu.io_KnY.MRh--06_720p.mp4',
+      'Otakudesu.io_KnY.MRh--07_End_720p.mp4',
+    ];
+    return files.map((f) {
+      final encoded = Uri.encodeComponent(f);
+      final url =
+          'https://archive.org/download/otakudesu.io-kn-y.-mrh-03-720p_202608/$encoded';
+      final s3Url =
+          'https://archive.org/cors/otakudesu.io-kn-y.-mrh-03-720p_202608/$encoded';
+      return _AnimeStreamEntry(
         server1Url: url,
         server3Url: s3Url,
         server4Url: url,
-      )
-    ];
+      );
+    }).toList();
+  }
+
+  // --- Demon Slayer Movie / Mugen Train (Feature Film - Unavailable per atomicity) ---
+  static List<_AnimeStreamEntry> _buildKnyMovie() {
+    return const [];
   }
 
   // --- Attack on Titan Season 1 (25 Episodes, Japanese Audio + Eng Sub 1080p BluRay) ---
@@ -1175,15 +1211,9 @@ class AnimeStreamResolver {
     });
   }
 
-  // --- Yosuga no Sora (12 Episodes BluRay Japanese audio) ---
+  // --- Yosuga no Sora (Unavailable per atomicity / raw video without hardsubs) ---
   static List<_AnimeStreamEntry> _buildYosugaNoSora() {
-    return List.generate(12, (index) {
-      final fileName = OwnerVideoRepository.yosugaFiles[index];
-      final encoded = Uri.encodeComponent(fileName);
-      final s1 = 'https://archive.org/download/ag_yosuga-no-sora/$encoded';
-      final s3 = 'https://archive.org/cors/ag_yosuga-no-sora/$encoded';
-      return _AnimeStreamEntry(server1Url: s1, server3Url: s3, server4Url: s1);
-    });
+    return const [];
   }
 
   // --- Solo Leveling Season 1 (12 Episodes, ~24m each, Japanese Audio) ---
@@ -1264,23 +1294,9 @@ class AnimeStreamResolver {
     });
   }
 
-  // --- One Piece Season 1 (East Blue Saga, 25 Episodes, ~24m each) ---
+  // --- One Piece Season 1 (Unavailable per atomicity / incomplete 4Kids English dub) ---
   static List<_AnimeStreamEntry> _buildOnePieceSeason1() {
-    return List.generate(25, (index) {
-      final epNum = index + 1;
-      if (epNum == 1) {
-        const url =
-            'https://archive.org/download/one-piece-episode-1/One%20Piece%20Episode%201.mp4';
-        return const _AnimeStreamEntry(server1Url: url, server3Url: url);
-      }
-      final fileName = epNum == 2
-          ? '%20One%20Piece%20episode%202.mp4'
-          : (epNum >= 13 && epNum <= 25 && epNum != 14 && epNum != 15 && epNum != 16 && epNum != 17
-              ? 'one%20piece%20episode%20$epNum.mp4'
-              : 'One%20Piece%20episode%20$epNum.mp4');
-      final url = 'https://archive.org/download/one-piece-episode-9/$fileName';
-      return _AnimeStreamEntry(server1Url: url, server3Url: url);
-    });
+    return const [];
   }
 
   // --- Spy x Family Season 1 (25 Episodes, Japanese Audio + Sub Indo Hardsub BD) ---
@@ -1408,11 +1424,17 @@ class AnimeStreamResolver {
     });
   }
 
-  // --- Your Name / Kimi no Na wa Movie (106 Minutes, Japanese Audio) ---
+  // --- Your Name / Kimi no Na wa Movie (106 Minutes, Japanese Audio + Hardsub) ---
   static List<_AnimeStreamEntry> _buildYourName() {
     const url =
-        'https://archive.org/download/kimi-no-na-wa_202507/Kimi%20no%20na%20wa.mp4';
-    return [const _AnimeStreamEntry(server1Url: url, server3Url: url)];
+        'https://archive.org/download/your-name-2/YOUR_NAME_%E3%82%BF%E3%82%A4%E3%83%88%E3%83%AB2%EF%BC%88%E3%83%A1%E3%82%A4%E3%83%B3%EF%BC%89.ia.mp4';
+    return [
+      const _AnimeStreamEntry(
+        server1Url: url,
+        server3Url: url,
+        server4Url: url,
+      )
+    ];
   }
 
   // --- Haikyuu Dumpster Battle Movie (81 Minutes) ---
@@ -1492,6 +1514,7 @@ class AnimeStreamResolver {
     // Core Season 1 / Single-Season Anime
     'demon-slayer': _buildKnySeason1(),
     'demon-slayer-movie': _buildKnyMovie(),
+    'demon-slayer-mugen-tv': _buildKnyMugenTv(),
     'attack-on-titan': _buildAotSeason1(),
     'jujutsu-kaisen': _buildJjkSeason1(),
     'jujutsu-kaisen-0': _buildJjk0(),

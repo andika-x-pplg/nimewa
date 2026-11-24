@@ -596,18 +596,9 @@ class AnimeStreamService {
       status: 'Tamat',
       studio: 'feel.',
       totalEpisodes: 12,
-      episodes: [
-        EpisodeItem(
-          id: '8861-eps-1',
-          episodeNumber: 1,
-          title: 'Episode 1 - Kenangan Masa Kecil Sub Indo',
-          releaseDate: '2010-10-04',
-          streamUrl:
-              'https://archive.org/download/yosuga-no-sora-0368ab60e9b77640d9c12f7f299b73232ba809e35d79a65b21b916ac4609ea085/Yosuga.no.Sora.S01E01.1080p.BluRay.10-Bit.FLAC2.0.x265-YURASUKA.mp4',
-        ),
-      ],
+      episodes: [],
       aniListId: 8861,
-      hasVideoAvailable: true,
+      hasVideoAvailable: false,
     ),
     'unreleased-anime': const AnimeDetail(
       id: '999998',

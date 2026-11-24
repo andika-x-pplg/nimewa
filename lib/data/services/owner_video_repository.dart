@@ -259,13 +259,8 @@ class OwnerVideoRepository {
             'https://archive.org/download/hi-10-chainsaw-man-s-1-1080p/%5BHi10%5D_Chainsaw_Man_S1_%5B1080p%5D%2F(Hi10)_Chainsaw_Man_S1_-_01_(1080p)_(GJM)_(62A0D357).mp4';
       }
     } else if (lowerTitle.contains('dandadan') || lowerTitle.contains('okarun')) {
-      if (seasonNumber == 2 || lowerTitle.contains('season 2')) {
-        basePattern =
-            'https://archive.org/download/dan-da-dan-seasons-1-2/Dan%20Da%20Dan/dandadan_S02-E{EP}.mp4';
-      } else {
-        basePattern =
-            'https://archive.org/download/dan-da-dan-seasons-1-2/Dan%20Da%20Dan/dandadan_S01-E{EP}.mp4';
-      }
+      // Dandadan S1 and S2: Unavailable per atomicity (English dub without hardsub)
+      return;
     } else if (lowerTitle.contains('spy') && lowerTitle.contains('family')) {
       // Spy x Family: Unavailable per atomicity (raw video without hardsubs)
       return;
@@ -381,31 +376,18 @@ class OwnerVideoRepository {
       basePattern =
           'https://archive.org/download/ma-fullmetal-alchemist-2009-bdrip-1920x1080-av1-opus/%5BMA%5D%20FULLMETAL%20ALCHEMIST%20%282009%29%20%5BBDRip%201920x1080%20AV1%20OPUS%5D%2F%5BMA%5D%20FULLMETAL%20ALCHEMIST%20%282009%29%20{EP}%20%5BBDRip%201920x1080%20AV1%20OPUS%5D.mkv';
     } else if (lowerTitle.contains('steins') || lowerTitle.contains('okabe')) {
-      basePattern =
-          'https://archive.org/download/anime-time-steins-gate/%5BAnime%20Time%5D%20Steins%3BGate%20-%20{EP}.mp4';
+      // Steins;Gate: Unavailable per atomicity (English dub without hardsub)
+      return;
     } else if (lowerTitle.contains('april') || lowerTitle.contains('shigatsu') || lowerTitle.contains('kaori')) {
       basePattern = 'https://archive.org/download/AY-YourLieInApril/{EP}.mp4';
     } else if (lowerTitle.contains('silent voice') || lowerTitle.contains('koe no katachi') || lowerTitle.contains('shouko')) {
       basePattern =
           'https://archive.org/download/koe-no-katachi-1080p/KoeNoKatachi_1080p.mp4';
-    } else if (lowerTitle.contains('yosuga') || lowerTitle.contains('kasugano') || lowerTitle.contains('sora')) {
-      for (int ep = 1; ep <= total; ep++) {
-        final fileIndex = (ep - 1).clamp(0, _yosugaFiles.length - 1);
-        final file = _yosugaFiles[fileIndex];
-        final encoded = Uri.encodeComponent(file);
-        final url = 'https://archive.org/download/ag_yosuga-no-sora/$encoded';
-        registerVideo(UploadedAnimeVideo(
-          aniListId: aniListId,
-          seasonNumber: seasonNumber,
-          episodeNumber: ep,
-          episodeTitle: '$seriesTitle Episode $ep Sub Indo',
-          videoUrl: url,
-          server3Url: 'https://archive.org/cors/ag_yosuga-no-sora/$encoded',
-          server4Url: url,
-          uploader: 'AppOwnerOfficial',
-          uploadedAt: now,
-        ));
-      }
+    } else if (lowerTitle.contains('yosuga') || lowerTitle.contains('kasugano')) {
+      // Yosuga no Sora: Unavailable per atomicity (raw video without hardsubs)
+      return;
+    } else if (lowerTitle.contains('one piece') || lowerTitle.contains('luffy')) {
+      // One Piece: Unavailable per atomicity (incomplete 4Kids English dub)
       return;
     } else if (lowerTitle.contains('tokyo revengers') || lowerTitle.contains('takemichi') || lowerTitle.contains('mikey')) {
       if (seasonNumber >= 4 || lowerTitle.contains('season 4') || lowerTitle.contains('santen')) {
@@ -424,7 +406,7 @@ class OwnerVideoRepository {
       }
     } else if (lowerTitle.contains('your name') || lowerTitle.contains('kimi no na wa')) {
       basePattern =
-          'https://archive.org/download/kimi-no-na-wa_202507/Kimi%20no%20na%20wa.mp4';
+          'https://archive.org/download/your-name-2/YOUR_NAME_%E3%82%BF%E3%82%A4%E3%83%88%E3%83%AB2%EF%BC%88%E3%83%A1%E3%82%A4%E3%83%B3%EF%BC%89.ia.mp4';
     } else if (lowerTitle.contains('frieren') || lowerTitle.contains('himmel') || lowerTitle.contains('fern')) {
       basePattern =
           'https://archive.org/download/anime-pahe-sousou-no-frieren-{EP}-bd-1080p-sev/AnimePahe_Sousou_no_Frieren_-_{EP}_BD_1080p_SEV.mp4';
@@ -699,24 +681,7 @@ class OwnerVideoRepository {
 
     // 5. Tokyo Revengers Season 4 - Santen Sensou-hen: Explicitly NOT available per user request
 
-    // 6. Yosuga no Sora (AniList ID 8861, 12 Episodes BluRay H.264 Japanese audio)
-    for (int ep = 1; ep <= _yosugaFiles.length; ep++) {
-      final file = _yosugaFiles[ep - 1];
-      final encoded = Uri.encodeComponent(file);
-      final url = 'https://archive.org/download/ag_yosuga-no-sora/$encoded';
-      final s3Url = 'https://archive.org/cors/ag_yosuga-no-sora/$encoded';
-      registerVideo(UploadedAnimeVideo(
-        aniListId: 8861,
-        seasonNumber: 1,
-        episodeNumber: ep,
-        episodeTitle: 'Yosuga no Sora Episode $ep Sub Indo',
-        videoUrl: url,
-        server3Url: s3Url,
-        server4Url: url,
-        uploader: 'AppOwnerOfficial',
-        uploadedAt: now,
-      ));
-    }
+    // 6. Yosuga no Sora (AniList ID 8861): Unavailable per atomicity (raw video without hardsubs)
 
     // 7. Demon Slayer Season 1 (AniList ID 101922, 26 Episodes, Japanese Audio)
     for (int ep = 1; ep <= 26; ep++) {
@@ -882,19 +847,7 @@ class OwnerVideoRepository {
       ));
     }
 
-    // 14. Dandadan (AniList ID 166240)
-    registerEpisodes(
-      aniListId: 166240,
-      seasonNumber: 1,
-      count: 12,
-      baseUrlPattern:
-          'https://archive.org/download/dan-da-dan-seasons-1-2/Dan%20Da%20Dan/dandadan_S01-E{EP}.mp4',
-      server3BaseUrlPattern:
-          'https://ia600904.us.archive.org/11/items/dan-da-dan-seasons-1-2/Dan%20Da%20Dan/dandadan_S01-E{EP}.mp4',
-      server4BaseUrlPattern:
-          'https://dn720005.ca.archive.org/0/items/dan-da-dan-seasons-1-2/Dan%20Da%20Dan/dandadan_S01-E{EP}.mp4',
-      seriesTitle: 'Dandadan',
-    );
+    // 14. Dandadan (AniList ID 166240): Unavailable per atomicity (English dub without hardsub)
 
     // 15. Frieren: Beyond Journey\'s End (AniList ID 154587)
     registerEpisodes(
@@ -928,28 +881,7 @@ class OwnerVideoRepository {
       seriesTitle: 'Fullmetal Alchemist: Brotherhood',
     );
 
-    // 19. One Piece (AniList ID 21, Season 1 East Blue)
-    for (int ep = 1; ep <= 25; ep++) {
-      String url;
-      if (ep == 1) {
-        url = 'https://archive.org/download/one-piece-episode-1/One%20Piece%20Episode%201.mp4';
-      } else if (ep == 2) {
-        url = 'https://archive.org/download/one-piece-episode-9/%20One%20Piece%20episode%202.mp4';
-      } else {
-        url = 'https://archive.org/download/one-piece-episode-9/One%20Piece%20episode%20$ep.mp4';
-      }
-      registerVideo(UploadedAnimeVideo(
-        aniListId: 21,
-        seasonNumber: 1,
-        episodeNumber: ep,
-        episodeTitle: 'One Piece Episode $ep Sub Indo',
-        videoUrl: url,
-        server3Url: url.replaceAll('/download/', '/cors/'),
-        server4Url: url,
-        uploader: 'AppOwnerOfficial',
-        uploadedAt: now,
-      ));
-    }
+    // 19. One Piece (AniList ID 21): Unavailable per atomicity (incomplete 4Kids English dub)
 
     // 20. Naruto (AniList ID 20)
     registerEpisodes(
@@ -985,38 +917,9 @@ class OwnerVideoRepository {
       ));
     }
 
-    // 21c. Dan Da Dan Season 2 (AniList ID 178526 and Season 2 under 166240, 12 Episodes)
-    for (final dddId in [166240, 178526]) {
-      for (int ep = 1; ep <= 12; ep++) {
-        final epStr = ep.toString().padLeft(2, '0');
-        final url = 'https://archive.org/download/dan-da-dan-seasons-1-2/Dan%20Da%20Dan/dandadan_S02-E$epStr.mp4';
-        registerVideo(UploadedAnimeVideo(
-          aniListId: dddId,
-          seasonNumber: 2,
-          episodeNumber: ep,
-          episodeTitle: 'Dan Da Dan S2 Episode $ep Sub Indo',
-          videoUrl: url,
-          server3Url: url.replaceAll('/download/', '/cors/'),
-          server4Url: url,
-          uploader: 'AppOwnerOfficial',
-          uploadedAt: now,
-        ));
-      }
-    }
+    // 21c. Dan Da Dan Season 2 (AniList ID 178526): Unavailable per atomicity (unreleased/English dubbed without hardsubs)
 
-    // 22. Steins;Gate (AniList ID 9253)
-    registerEpisodes(
-      aniListId: 9253,
-      seasonNumber: 1,
-      count: 24,
-      baseUrlPattern:
-          'https://archive.org/download/anime-time-steins-gate/%5BAnime%20Time%5D%20Steins%3BGate%20-%20{EP}.mp4',
-      server3BaseUrlPattern:
-          'https://dn720005.ca.archive.org/0/items/anime-time-steins-gate/%5BAnime%20Time%5D%20Steins%3BGate%20-%20{EP}.mp4',
-      server4BaseUrlPattern:
-          'https://ia800505.us.archive.org/0/items/anime-time-steins-gate/%5BAnime%20Time%5D%20Steins%3BGate%20-%20{EP}.mp4',
-      seriesTitle: 'Steins;Gate',
-    );
+    // 22. Steins;Gate (AniList ID 9253): Unavailable per atomicity (archive MP4s are English dubbed without hardsubs)
 
     // 23. Kimi no Na wa (AniList ID 21827)
     registerEpisodes(
@@ -1024,11 +927,11 @@ class OwnerVideoRepository {
       seasonNumber: 1,
       count: 1,
       baseUrlPattern:
-          'https://archive.org/download/kimi-no-na-wa_202507/Kimi%20no%20na%20wa.mp4',
+          'https://archive.org/download/your-name-2/YOUR_NAME_%E3%82%BF%E3%82%A4%E3%83%88%E3%83%AB2%EF%BC%88%E3%83%A1%E3%82%A4%E3%83%B3%EF%BC%89.ia.mp4',
       server3BaseUrlPattern:
-          'https://archive.org/cors/kimi-no-na-wa_202507/Kimi%20no%20na%20wa.mp4',
+          'https://archive.org/download/your-name-2/YOUR_NAME_%E3%82%BF%E3%82%A4%E3%83%88%E3%83%AB2%EF%BC%88%E3%83%A1%E3%82%A4%E3%83%B3%EF%BC%89.ia.mp4',
       server4BaseUrlPattern:
-          'https://archive.org/download/kimi-no-na-wa_202507/Kimi%20no%20na%20wa.mp4',
+          'https://archive.org/download/your-name-2/YOUR_NAME_%E3%82%BF%E3%82%A4%E3%83%88%E3%83%AB2%EF%BC%88%E3%83%A1%E3%82%A4%E3%83%B3%EF%BC%89.ia.mp4',
       seriesTitle: 'Kimi no Na wa',
     );
 
@@ -1125,18 +1028,37 @@ class OwnerVideoRepository {
       uploadedAt: now,
     ));
 
-    // 30. Demon Slayer: Mugen Ressha-hen Movie (AniList ID 112151)
-    registerVideo(UploadedAnimeVideo(
-      aniListId: 112151,
-      seasonNumber: 1,
-      episodeNumber: 1,
-      episodeTitle: 'Demon Slayer: Mugen Ressha-hen Movie Sub Indo',
-      videoUrl: 'https://archive.org/download/knym-ressha-hen-s/knym%20Ressha-hen%20s.mp4',
-      server3Url: 'https://archive.org/cors/knym-ressha-hen-s/knym%20Ressha-hen%20s.mp4',
-      server4Url: 'https://archive.org/download/knym-ressha-hen-s/knym%20Ressha-hen%20s.mp4',
-      uploader: 'AppOwnerOfficial',
-      uploadedAt: now,
-    ));
+    // 30. Demon Slayer: Mugen Ressha-hen TV Arc (AniList ID 129874, 7 Episodes, 720p Sub Indo)
+    const mrhFiles = [
+      'Otakudesu.io_KnY.MRh--01_720p.mp4',
+      'Otakudesu.io_KnY.MRh--02_720p.mp4',
+      'Otakudesu.io_KnY.MRh--03_720p.mp4',
+      'Otakudesu.io_KnY.MRh--04_720p.mp4',
+      'Otakudesu.io_KnY.MRh--05_720p.mp4',
+      'Otakudesu.io_KnY.MRh--06_720p.mp4',
+      'Otakudesu.io_KnY.MRh--07_End_720p.mp4',
+    ];
+    for (int i = 0; i < mrhFiles.length; i++) {
+      final ep = i + 1;
+      final encoded = Uri.encodeComponent(mrhFiles[i]);
+      final url =
+          'https://archive.org/download/otakudesu.io-kn-y.-mrh-03-720p_202608/$encoded';
+      final s3Url =
+          'https://archive.org/cors/otakudesu.io-kn-y.-mrh-03-720p_202608/$encoded';
+      registerVideo(UploadedAnimeVideo(
+        aniListId: 129874,
+        seasonNumber: 1,
+        episodeNumber: ep,
+        episodeTitle: 'Mugen Ressha-hen Episode $ep Sub Indo',
+        videoUrl: url,
+        server3Url: s3Url,
+        server4Url: url,
+        uploader: 'AppOwnerOfficial',
+        uploadedAt: now,
+      ));
+    }
+    // Note: Demon Slayer: Mugen Ressha-hen Movie (AniList ID 112151) is unavailable per Atomicity
+    // (no authentic Japanese audio + Indo/Eng hardsub progressive MP4 feature film available)
 
     // 31. Haikyuu!! The Dumpster Battle Movie (AniList ID 152865)
     registerVideo(UploadedAnimeVideo(

@@ -327,8 +327,8 @@ void main() {
         animeTitle: 'Kimi no Na wa. (Your Name)',
         server: 'Server 1 (Fast HD)',
       );
-      expect(yourName, contains('Kimi%20no%20na%20wa'));
-      expect(yourName, contains('.mp4'));
+      expect(yourName, contains('your-name-2'));
+      expect(yourName, contains('.ia.mp4'));
 
       final csmMovie = AnimeStreamResolver.resolveStreamUrl(
         animeId: 'chainsaw-man-movie',
@@ -337,13 +337,30 @@ void main() {
       );
       expect(csmMovie, contains('csmrezearc.mp4'));
 
-      final knyMovie = AnimeStreamResolver.resolveStreamUrl(
+      // Kimetsu no Yaiba: Infinity Castle is unreleased / blacklisted per atomicity
+      final knyInfinity = AnimeStreamResolver.resolveStreamUrl(
         animeId: 'kimetsu-no-yaiba-infinity',
         animeTitle: 'Kimetsu no Yaiba: Infinity Castle',
         server: 'Server 1 (Fast HD)',
       );
-      expect(knyMovie, contains('knym-ressha-hen-s'));
-      expect(knyMovie, isNot(contains('Gemischt')));
+      expect(knyInfinity, isEmpty);
+
+      // Demon Slayer: Mugen Train Movie is unavailable per atomicity (Arabic subs & no genuine movie hardsub)
+      final knyMovie = AnimeStreamResolver.resolveStreamUrl(
+        animeId: 'demon-slayer-movie',
+        animeTitle: 'Demon Slayer: Mugen Train Movie',
+        server: 'Server 1 (Fast HD)',
+      );
+      expect(knyMovie, isEmpty);
+
+      // Demon Slayer: Mugen Ressha-hen (TV Arc) has all 7 genuine episodes in 720p Sub Indo
+      final knyMugenTv = AnimeStreamResolver.resolveStreamUrl(
+        animeId: '129874',
+        animeTitle: 'Kimetsu no Yaiba: Mugen Ressha-hen (TV)',
+        server: 'Server 1 (Fast HD)',
+        episodeNumber: 1,
+      );
+      expect(knyMugenTv, contains('Otakudesu.io_KnY.MRh--01_720p.mp4'));
 
       final haikyuuMovie = AnimeStreamResolver.resolveStreamUrl(
         animeId: 'haikyuu-movie',
@@ -367,23 +384,15 @@ void main() {
       expect(silentVoice.toLowerCase(), contains('koe-no-katachi'));
     });
 
-    test('resolves Steins;Gate and Re:Zero sequential episodes', () {
+    test('resolves Steins;Gate to unavailable per atomicity', () {
       final sg1 = AnimeStreamResolver.resolveStreamUrl(
         animeId: 'steins-gate',
         animeTitle: 'Steins;Gate',
         server: 'Server 1 (Fast HD)',
         episodeNumber: 1,
       );
-      expect(sg1, contains('Steins%3BGate%20-%2001.mp4'));
-
-      final sg2 = AnimeStreamResolver.resolveStreamUrl(
-        animeId: 'steins-gate',
-        animeTitle: 'Steins;Gate',
-        server: 'Server 1 (Fast HD)',
-        episodeNumber: 2,
-      );
-      expect(sg2, contains('Steins%3BGate%20-%2002.mp4'));
-      expect(sg2, isNot(equals(sg1)));
+      expect(sg1, isEmpty);
+      expect(AnimeStreamResolver.hasCompleteEpisodes('steins-gate', 'Steins;Gate'), isFalse);
 
       final ddd1 = AnimeStreamResolver.resolveStreamUrl(
         animeId: 'dandadan',
@@ -394,6 +403,26 @@ void main() {
       expect(ddd1, isEmpty);
       expect(AnimeStreamResolver.hasCompleteEpisodes('dandadan', 'Dan Da Dan'), isFalse);
 
+      final op1 = AnimeStreamResolver.resolveStreamUrl(
+        animeId: '21',
+        animeTitle: 'One Piece',
+        server: 'Server 1 (Fast HD)',
+        episodeNumber: 1,
+      );
+      expect(op1, isEmpty);
+      expect(AnimeStreamResolver.hasCompleteEpisodes('21', 'One Piece'), isFalse);
+
+      final yns1 = AnimeStreamResolver.resolveStreamUrl(
+        animeId: '8861',
+        animeTitle: 'Yosuga no Sora',
+        server: 'Server 1 (Fast HD)',
+        episodeNumber: 1,
+      );
+      expect(yns1, isEmpty);
+      expect(AnimeStreamResolver.hasCompleteEpisodes('8861', 'Yosuga no Sora'), isFalse);
+    });
+
+    test('resolves Re:Zero sequential episodes', () {
       final rz1 = AnimeStreamResolver.resolveStreamUrl(
         animeId: 'rezero',
         animeTitle: 'Re:Zero',

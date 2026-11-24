@@ -185,35 +185,44 @@ void main() {
       // 13. Death Note
       expect(repo.getVideo(1535, 1, 1)?.videoUrl, contains('death-note-relight-1/Death%20Note%20Episode%201%20Rebirth.mp4'));
       expect(repo.getVideo(1535, 1, 37)?.videoUrl, contains('death-note-relight-1/Death%20Note%20Episode%2037%20New%20World.mp4'));
-      // 14. Dan Da Dan Season 1 & 2
-      expect(repo.getVideo(166240, 1, 1)?.videoUrl, contains('dandadan_S01-E01.mp4'));
-      expect(repo.getVideo(178526, 2, 1)?.videoUrl, contains('dandadan_S02-E01.mp4'));
-      // 15. One Piece Season 1
-      final op1 = repo.getVideo(21, 1, 1);
-      expect(op1?.videoUrl, contains('one-piece-episode-1'));
+      // 14. Dan Da Dan Season 1 & 2 (Unavailable per atomicity / English dub without hardsubs)
+      expect(repo.getVideo(166240, 1, 1), isNull);
+      expect(repo.getVideo(178526, 2, 1), isNull);
+      expect(repo.hasVideosForAnime(166240), isFalse);
+      expect(repo.hasVideosForAnime(178526, seasonNumber: 2), isFalse);
+      // 15. One Piece Season 1 (Unavailable per atomicity / incomplete 4Kids English dub)
+      expect(repo.getVideo(21, 1, 1), isNull);
+      expect(repo.hasVideosForAnime(21), isFalse);
       final resolvedOp = AnimeStreamResolver.resolveStreamUrl(
         animeId: '21',
         animeTitle: 'One Piece',
         server: 'Server 1 (Fast HD)',
         episodeNumber: 1,
       );
-      expect(resolvedOp, contains('one-piece-episode-1'));
-      // 16. Steins;Gate
-      expect(repo.getVideo(9253, 1, 1)?.videoUrl, contains('anime-time-steins-gate'));
+      expect(resolvedOp, isEmpty);
+      // 16. Steins;Gate (Unavailable per atomicity / English dub without hardsubs)
+      expect(repo.getVideo(9253, 1, 1), isNull);
+      expect(repo.hasVideosForAnime(9253), isFalse);
       // 17. Re:Zero Season 1 (authentic Japanese audio)
       final rz1 = repo.getVideo(21355, 1, 1);
       expect(rz1?.videoUrl, contains('rezerokarahajimeruisekaiseikatsu_202001'));
       expect(rz1?.videoUrl, isNot(contains('english-dub')));
-      // 18. Yosuga no Sora
-      expect(repo.getVideo(8861, 1, 1)?.videoUrl, contains('ag_yosuga-no-sora'));
+      // 18. Yosuga no Sora (Unavailable per atomicity / raw video without hardsubs)
+      expect(repo.getVideo(8861, 1, 1), isNull);
+      expect(repo.hasVideosForAnime(8861), isFalse);
       // 19. Jujutsu Kaisen 0 Movie
       expect(repo.getVideo(131573, 1, 1)?.videoUrl, contains('anime-pahe-jujutsu-kaisen-0-movie-01-bd-804p-vodes'));
       // 20. Kimi no Na wa (Your Name)
-      expect(repo.getVideo(21827, 1, 1)?.videoUrl, contains('kimi-no-na-wa'));
+      expect(repo.getVideo(21827, 1, 1)?.videoUrl, contains('your-name-2'));
       // 21. Koe no Katachi (A Silent Voice)
       expect(repo.getVideo(20954, 1, 1)?.videoUrl, contains('koe-no-katachi-1080p'));
-      // 22. Demon Slayer: Mugen Ressha-hen (Movie)
-      expect(repo.getVideo(112151, 1, 1)?.videoUrl, contains('knym-ressha-hen-s'));
+      // 22. Demon Slayer: Mugen Ressha-hen (Movie) (Unavailable per atomicity)
+      expect(repo.getVideo(112151, 1, 1), isNull);
+      expect(repo.hasVideosForAnime(112151), isFalse);
+      // 22b. Demon Slayer: Mugen Ressha-hen (TV Arc, AniList ID 129874)
+      expect(repo.getVideo(129874, 1, 1)?.videoUrl, contains('Otakudesu.io_KnY.MRh--01_720p.mp4'));
+      expect(repo.getVideo(129874, 1, 7)?.videoUrl, contains('Otakudesu.io_KnY.MRh--07_End_720p.mp4'));
+      expect(repo.hasVideosForAnime(129874), isTrue);
       // 23. Haikyuu!! The Dumpster Battle
       expect(repo.getVideo(152865, 1, 1)?.videoUrl, contains('haikyu-the-dumpster-battle-2024'));
       // 24. Chainsaw Man: Reze Arc Movie
