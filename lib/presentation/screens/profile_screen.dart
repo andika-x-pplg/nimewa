@@ -239,30 +239,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.borderSubtle),
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 64,
-            height: 64,
-            decoration: const BoxDecoration(
-              color: AppColors.accentBlue,
-              shape: BoxShape.circle,
-            ),
-            alignment: Alignment.center,
-            child: Text(
-              _profileRepo.initial,
-              style: AppTypography.headlineMedium.copyWith(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
+          Row(
+            children: [
+              Container(
+                width: 60,
+                height: 60,
+                decoration: const BoxDecoration(
+                  color: AppColors.accentBlue,
+                  shape: BoxShape.circle,
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  _profileRepo.initial,
+                  style: AppTypography.headlineMedium.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
-            ),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
+              const SizedBox(width: 14),
+              Expanded(
+                child: Text(
                   _profileRepo.username,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -271,31 +271,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 6),
-                AnimatedRankBadge(
-                  tier: _profileRepo.currentRank,
-                  currentLevel: _profileRepo.level,
-                  compact: true,
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 8),
-          SizedBox(
-            height: 44,
-            child: OutlinedButton.icon(
-              key: const Key('profile_edit_name_button'),
-              onPressed: _showEditNameDialog,
-              icon: const Icon(Icons.edit_rounded, size: 16),
-              label: const Text('Edit Nama'),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: AppColors.accentBlue,
-                side: const BorderSide(color: AppColors.accentBlue),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+              ),
+              const SizedBox(width: 8),
+              SizedBox(
+                height: 44,
+                child: OutlinedButton.icon(
+                  key: const Key('profile_edit_name_button'),
+                  onPressed: _showEditNameDialog,
+                  icon: const Icon(Icons.edit_rounded, size: 16),
+                  label: const Text('Edit Nama'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.accentBlue,
+                    side: const BorderSide(color: AppColors.accentBlue),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
                 ),
               ),
-            ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          AnimatedRankBadge(
+            tier: _profileRepo.currentRank,
+            currentLevel: _profileRepo.level,
           ),
         ],
       ),
