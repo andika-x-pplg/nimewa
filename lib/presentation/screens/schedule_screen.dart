@@ -24,8 +24,10 @@ class ScheduleScreen extends StatefulWidget {
   State<ScheduleScreen> createState() => _ScheduleScreenState();
 }
 
-class _ScheduleScreenState extends State<ScheduleScreen> {
+class _ScheduleScreenState extends State<ScheduleScreen>
+    with WidgetsBindingObserver {
   static const double largeScreenMinWidth = 600.0;
+  static const double _wideComfortPaddingMinWidth = 720.0;
   static const double _maxContentWidth = 960.0;
 
   late final ScheduleService _scheduleService;
@@ -38,10 +40,13 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   bool _onlyReminders = false;
   final Set<String> _remindedKeys = <String>{};
   int _loadRequestId = 0;
+  String? _loadingWeekKey;
+  String? _pendingRolloverWeekKey;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _scheduleService = widget.scheduleService ?? ScheduleService();
     _nowProvider = widget.nowProvider ?? DateTime.now;
     final initialNow = _currentNow();
@@ -55,11 +60,82 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     if (widget.nowProvider != oldWidget.nowProvider) {
       _nowProvider = widget.nowProvider ?? DateTime.now;
     }
+    _checkAndHandleWeekRollover(deferToPostFrame: true);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _checkAndHandleWeekRollover();
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   DateTime _currentNow() => _nowProvider().toLocal();
 
   DateTime _dateOnly(DateTime dt) => DateTime(dt.year, dt.month, dt.day);
+
+  String _weekKeyFor(DateTime dt) =>
+      ScheduleDateHelper.dateKey(ScheduleDateHelper.weekStartSunday(dt));
+
+  void _checkAndHandleWeekRollover({bool deferToPostFrame = false}) {
+    final now = _currentNow();
+    final currentWeekKey = _weekKeyFor(now);
+    final result = _scheduleResult;
+
+    if (result == null) {
+      if (!deferToPostFrame && !_isLoading) {
+        _selectedDate = _dateOnly(now);
+        _loadSchedule();
+      }
+      return;
+    }
+
+    final loadedWeekKey = _weekKeyFor(result.weekStart);
+    if (currentWeekKey == loadedWeekKey) {
+      if (!_isLoading) {
+        _pendingRolloverWeekKey = null;
+      }
+      return;
+    }
+
+    if (_isLoading && _loadingWeekKey == currentWeekKey) {
+      return;
+    }
+
+    if (deferToPostFrame) {
+      if (_pendingRolloverWeekKey == currentWeekKey) {
+        return;
+      }
+      _pendingRolloverWeekKey = currentWeekKey;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        final latestNow = _currentNow();
+        final latestWeekKey = _weekKeyFor(latestNow);
+        final latestResult = _scheduleResult;
+        if (latestResult != null &&
+            _weekKeyFor(latestResult.weekStart) == latestWeekKey) {
+          _pendingRolloverWeekKey = null;
+          return;
+        }
+        if (_isLoading && _loadingWeekKey == latestWeekKey) {
+          return;
+        }
+        _selectedDate = _dateOnly(latestNow);
+        _loadSchedule();
+      });
+      return;
+    }
+
+    _pendingRolloverWeekKey = currentWeekKey;
+    _selectedDate = _dateOnly(now);
+    _loadSchedule();
+  }
 
   String _entryReminderKey(ScheduleEntry entry) =>
       '${entry.scheduleId}:${entry.mediaId}';
@@ -95,7 +171,10 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     bool forceRefresh = false,
     bool updateStateBeforeFetch = true,
   }) async {
+    final fetchNow = _currentNow();
+    final requestWeekKey = _weekKeyFor(fetchNow);
     final requestId = ++_loadRequestId;
+    _loadingWeekKey = requestWeekKey;
     if (updateStateBeforeFetch && mounted) {
       setState(() {
         _isLoading = true;
@@ -107,25 +186,31 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 
     try {
       final result = await _scheduleService.fetchWeeklySchedule(
-        now: _currentNow(),
+        now: fetchNow,
         forceRefresh: forceRefresh,
       );
       if (!mounted || requestId != _loadRequestId) return;
       setState(() {
         _scheduleResult = result;
         _isLoading = false;
+        _loadingWeekKey = null;
         _errorMessage = null;
+        if (_weekKeyFor(result.weekStart) == _weekKeyFor(_currentNow())) {
+          _pendingRolloverWeekKey = null;
+        }
       });
     } catch (_) {
       if (!mounted || requestId != _loadRequestId) return;
       if (_scheduleResult == null) {
         setState(() {
           _isLoading = false;
+          _loadingWeekKey = null;
           _errorMessage = 'Gagal memuat jadwal tayang anime.';
         });
       } else {
         setState(() {
           _isLoading = false;
+          _loadingWeekKey = null;
         });
         _showSnackBar('Gagal memperbarui jadwal. Periksa koneksi internet Anda.');
       }
@@ -172,6 +257,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   @override
   Widget build(BuildContext context) {
     final now = _currentNow();
+    _checkAndHandleWeekRollover(deferToPostFrame: true);
     final today = _dateOnly(now);
     final weekDays = ScheduleDateHelper.weekDays(now);
     final selectedDate = _resolveSelectedDate(weekDays, today);
@@ -186,10 +272,10 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             final maxWidth = constraints.maxWidth;
             final isWide = maxWidth > largeScreenMinWidth;
             final contentPadding = isWide
-                ? 24.0
+                ? (maxWidth > _wideComfortPaddingMinWidth ? 24.0 : 16.0)
                 : (maxWidth < 352.0 ? 12.0 : 16.0);
             final weekBarPadding = isWide
-                ? 24.0
+                ? contentPadding
                 : ((maxWidth - 320.0) / 2.0).clamp(0.0, 16.0);
 
             return Center(
@@ -470,23 +556,49 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           ),
           const SizedBox(width: 8),
           TextButton(
-            onPressed: () => _loadSchedule(forceRefresh: true),
+            onPressed:
+                _isLoading ? null : () => _loadSchedule(forceRefresh: true),
             style: TextButton.styleFrom(
               minimumSize: const Size(44, 44),
               padding: const EdgeInsets.symmetric(horizontal: 12),
               backgroundColor: AppColors.accentBlue,
+              disabledBackgroundColor:
+                  AppColors.accentBlue.withValues(alpha: 0.5),
               foregroundColor: AppColors.textPrimary,
+              disabledForegroundColor: AppColors.textPrimary,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
-            child: Text(
-              'Segarkan',
-              style: AppTypography.labelMedium.copyWith(
-                color: AppColors.textPrimary,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+            child: _isLoading
+                ? Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const SizedBox(
+                        width: 14,
+                        height: 14,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Memuat...',
+                        style: AppTypography.labelMedium.copyWith(
+                          color: AppColors.textPrimary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  )
+                : Text(
+                    'Segarkan',
+                    style: AppTypography.labelMedium.copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
           ),
         ],
       ),
@@ -575,6 +687,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             entry: entries[index],
             now: now,
             isLastInColumn: index == entries.length - 1,
+            showTimelineRail: true,
           ),
           childCount: entries.length,
         ),
@@ -610,6 +723,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                       entry: leftEntry,
                       now: now,
                       isLastInColumn: true,
+                      showTimelineRail: false,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -619,6 +733,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                             entry: rightEntry,
                             now: now,
                             isLastInColumn: true,
+                            showTimelineRail: false,
                           )
                         : const SizedBox.shrink(),
                   ),
@@ -636,13 +751,14 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     required ScheduleEntry entry,
     required DateTime now,
     required bool isLastInColumn,
+    required bool showTimelineRail,
   }) {
     return ScheduleTimelineCard(
       entry: entry,
       now: now,
       isReminded: _isReminded(entry),
       isLastInColumn: isLastInColumn,
-      showTimelineRail: true,
+      showTimelineRail: showTimelineRail,
       onTap: () => widget.onAnimeTap?.call(entry.toAnimeItem()),
       onReminderToggle: () => _toggleReminder(entry),
     );

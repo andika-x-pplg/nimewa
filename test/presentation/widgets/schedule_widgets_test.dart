@@ -391,5 +391,38 @@ void main() {
         expect(find.text('Rilis 19:30 · Dalam 12j 30m'), findsOneWidget);
       },
     );
+
+    testWidgets(
+      'displays clock time alongside delay status when showTimelineRail is false',
+      (tester) async {
+        final entry = buildEntry(
+          airingAt: DateTime(2026, 11, 28, 17, 0),
+          isHiatusOrDelayed: true,
+          nextAiringAt: DateTime(2026, 12, 5, 17, 0),
+        );
+
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: AppTheme.darkTheme,
+            home: Scaffold(
+              body: ScheduleTimelineCard(
+                entry: entry,
+                now: today,
+                isReminded: false,
+                isLastInColumn: true,
+                showTimelineRail: false,
+                onTap: () {},
+              ),
+            ),
+          ),
+        );
+
+        expect(find.text('17:00'), findsNothing);
+        expect(
+          find.text('17:00 · Libur minggu ini · Tayang lagi 5 Des'),
+          findsOneWidget,
+        );
+      },
+    );
   });
 }

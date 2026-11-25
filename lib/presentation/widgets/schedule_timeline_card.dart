@@ -28,7 +28,12 @@ class ScheduleTimelineCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final status = entry.statusAt(now);
-    final statusText = entry.formatStatusText(now);
+    final rawStatusText = entry.formatStatusText(now);
+    final statusText = (!showTimelineRail &&
+            status == ScheduleReleaseStatus.delayedOrHiatus &&
+            !rawStatusText.contains(entry.formattedTime()))
+        ? '${entry.formattedTime()} · $rawStatusText'
+        : rawStatusText;
 
     if (!showTimelineRail) {
       return Padding(

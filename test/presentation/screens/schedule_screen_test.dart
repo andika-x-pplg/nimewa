@@ -150,7 +150,13 @@ void main() {
       theme: AppTheme.darkTheme,
       home: MediaQuery(
         data: MediaQueryData(size: surfaceSize),
-        child: Scaffold(body: child),
+        child: Align(
+          alignment: Alignment.topLeft,
+          child: SizedBox(
+            width: surfaceSize.width,
+            child: Scaffold(body: child),
+          ),
+        ),
       ),
     );
   }
@@ -596,6 +602,285 @@ void main() {
         await tester.tap(find.text('Sousou no Frieren'));
         await tester.pumpAndSettle();
         expect(find.byType(AnimeDetailScreen), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      '601x800 2-column grid hides timeline rail, tightens padding to 16px, preserves delayed time, and gives adequate text width without overflow',
+      (tester) async {
+        tester.view.physicalSize = const Size(601, 800);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() {
+          tester.view.resetPhysicalSize();
+          tester.view.resetDevicePixelRatio();
+        });
+
+        final service = _FakeScheduleService(
+          ({now, forceRefresh = false}) async => WeeklyScheduleResult(
+            weekStart: DateTime(2026, 11, 22),
+            weekEnd: DateTime(2026, 11, 28, 23, 59, 59),
+            entriesByDateKey: {
+              '2026-11-25': [
+                makeEntry(
+                  scheduleId: 1,
+                  mediaId: 101,
+                  title: 'Sousou no Frieren',
+                  episodeNumber: 8,
+                  airingAt: DateTime(2026, 11, 25, 6, 28),
+                  hasVideoAvailable: true,
+                ),
+                makeEntry(
+                  scheduleId: 2,
+                  mediaId: 102,
+                  title: 'Shangri-La Frontier',
+                  episodeNumber: 12,
+                  airingAt: DateTime(2026, 11, 25, 17, 0),
+                  isHiatusOrDelayed: true,
+                  nextAiringAt: DateTime(2026, 12, 2, 17, 0),
+                ),
+              ],
+            },
+          ),
+        );
+
+        await tester.pumpWidget(
+          wrapScreen(
+            ScheduleScreen(
+              scheduleService: service,
+              nowProvider: () => fixedNow,
+            ),
+            surfaceSize: const Size(601, 800),
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
+
+        final cards = find.byType(ScheduleTimelineCard);
+        expect(cards, findsNWidgets(2));
+
+        // 2-column horizontal arrangement with 16px side padding
+        final firstTopLeft = tester.getTopLeft(cards.at(0));
+        final secondTopLeft = tester.getTopLeft(cards.at(1));
+        expect(firstTopLeft.dx, equals(16.0));
+        expect(secondTopLeft.dx, greaterThan(firstTopLeft.dx));
+        expect(secondTopLeft.dy, equals(firstTopLeft.dy));
+
+        // Both cards hide timeline rail
+        for (var i = 0; i < 2; i++) {
+          final cardWidget = tester.widget<ScheduleTimelineCard>(cards.at(i));
+          expect(cardWidget.showTimelineRail, isFalse);
+        }
+
+        // Delayed card preserves clock time alongside delay status
+        expect(find.text('17:00'), findsNothing);
+        expect(
+          find.text('17:00 · Libur minggu ini · Tayang lagi 2 Des'),
+          findsOneWidget,
+        );
+
+        // Text column has adequate width (>= 110px, not cramped ~58px)
+        final titleTextWidth =
+            tester.getSize(find.text('Sousou no Frieren')).width;
+        expect(titleTextWidth, greaterThanOrEqualTo(110.0));
+      },
+    );
+
+    testWidgets(
+      'refetches new week when nowProvider advances across Sunday midnight while ScheduleScreen remains mounted',
+      (tester) async {
+        var currentNow = DateTime(2026, 11, 25, 23, 58);
+        Completer<WeeklyScheduleResult>? rolloverCompleter;
+        final service = _FakeScheduleService(({now, forceRefresh = false}) {
+          final target = now ?? currentNow;
+          final weekStart = ScheduleDateHelper.weekStartSunday(target);
+          if (ScheduleDateHelper.dateKey(weekStart) == '2026-11-29') {
+            rolloverCompleter = Completer<WeeklyScheduleResult>();
+            return rolloverCompleter!.future;
+          }
+          return Future.value(buildSampleWeekResult(now: target));
+        });
+
+        late StateSetter setHostState;
+        await tester.pumpWidget(
+          StatefulBuilder(
+            builder: (context, setState) {
+              setHostState = setState;
+              return wrapScreen(
+                ScheduleScreen(
+                  scheduleService: service,
+                  nowProvider: () => currentNow,
+                ),
+              );
+            },
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(service.callCount, 1);
+        expect(find.text('Sousou no Frieren'), findsOneWidget);
+        expect(find.text('22'), findsOneWidget);
+
+        // Advance past Sunday midnight while mounted
+        setHostState(() {
+          currentNow = DateTime(2026, 11, 29, 0, 5);
+        });
+        await tester.pump();
+        await tester.pump();
+
+        expect(service.callCount, 2);
+
+        // Extra rebuild while rollover is in flight must not trigger duplicate load
+        setHostState(() {});
+        await tester.pump();
+        expect(service.callCount, 2);
+
+        rolloverCompleter!.complete(
+          WeeklyScheduleResult(
+            weekStart: DateTime(2026, 11, 29),
+            weekEnd: DateTime(2026, 12, 5, 23, 59, 59),
+            entriesByDateKey: {
+              '2026-11-29': [
+                makeEntry(
+                  scheduleId: 99,
+                  mediaId: 2001,
+                  title: 'Shangri-La Frontier',
+                  episodeNumber: 12,
+                  airingAt: DateTime(2026, 11, 29, 17, 0),
+                ),
+              ],
+            },
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(service.callCount, 2);
+        expect(find.text('29'), findsOneWidget);
+        expect(find.text('5'), findsOneWidget);
+        expect(find.text('22'), findsNothing);
+        expect(find.text('Shangri-La Frontier'), findsOneWidget);
+        expect(find.text('Tidak ada jadwal tayang pada hari ini.'), findsNothing);
+      },
+    );
+
+    testWidgets(
+      'refetches new week on AppLifecycleState.resumed when week rolled over in background',
+      (tester) async {
+        var currentNow = DateTime(2026, 11, 25, 23, 58);
+        final service = _FakeScheduleService(({now, forceRefresh = false}) async {
+          final target = now ?? currentNow;
+          final weekStart = ScheduleDateHelper.weekStartSunday(target);
+          if (ScheduleDateHelper.dateKey(weekStart) == '2026-11-29') {
+            return WeeklyScheduleResult(
+              weekStart: weekStart,
+              weekEnd: DateTime(2026, 12, 5, 23, 59, 59),
+              entriesByDateKey: {
+                '2026-11-29': [
+                  makeEntry(
+                    scheduleId: 99,
+                    mediaId: 2001,
+                    title: 'Shangri-La Frontier',
+                    episodeNumber: 12,
+                    airingAt: DateTime(2026, 11, 29, 17, 0),
+                  ),
+                ],
+              },
+            );
+          }
+          return buildSampleWeekResult(now: target);
+        });
+
+        await tester.pumpWidget(
+          wrapScreen(
+            ScheduleScreen(
+              scheduleService: service,
+              nowProvider: () => currentNow,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(service.callCount, 1);
+        expect(find.text('Sousou no Frieren'), findsOneWidget);
+
+        currentNow = DateTime(2026, 11, 29, 8, 0);
+        tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+        await tester.pumpAndSettle();
+
+        expect(service.callCount, 2);
+        expect(find.text('29'), findsOneWidget);
+        expect(find.text('5'), findsOneWidget);
+        expect(find.text('22'), findsNothing);
+        expect(find.text('Shangri-La Frontier'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'disables Segarkan button and shows Memuat... loading feedback while stale-cache refresh is in flight',
+      (tester) async {
+        Completer<WeeklyScheduleResult>? refreshCompleter;
+        var fetchNum = 0;
+        final service = _FakeScheduleService(({now, forceRefresh = false}) {
+          fetchNum++;
+          if (fetchNum == 1) {
+            return Future.value(buildSampleWeekResult(isStaleCache: true));
+          }
+          refreshCompleter = Completer<WeeklyScheduleResult>();
+          return refreshCompleter!.future;
+        });
+
+        await tester.pumpWidget(
+          wrapScreen(
+            ScheduleScreen(
+              scheduleService: service,
+              nowProvider: () => fixedNow,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('Segarkan'), findsOneWidget);
+        expect(find.text('Memuat...'), findsNothing);
+        expect(service.callCount, 1);
+
+        // Tap Segarkan to start refresh
+        await tester.tap(find.text('Segarkan'));
+        await tester.pump();
+
+        expect(service.callCount, 2);
+        expect(service.lastForceRefresh, isTrue);
+        expect(find.text('Segarkan'), findsNothing);
+        expect(find.text('Memuat...'), findsOneWidget);
+
+        final loadingButton = find.ancestor(
+          of: find.text('Memuat...'),
+          matching: find.byType(TextButton),
+        );
+        expect(loadingButton, findsOneWidget);
+        expect(tester.widget<TextButton>(loadingButton).onPressed, isNull);
+
+        final indicatorFinder = find.descendant(
+          of: loadingButton,
+          matching: find.byType(CircularProgressIndicator),
+        );
+        expect(indicatorFinder, findsOneWidget);
+        final indicatorSize = tester.getSize(indicatorFinder);
+        expect(indicatorSize.width, 14);
+        expect(indicatorSize.height, 14);
+
+        // Repeated tap while loading must be ignored
+        await tester.tap(loadingButton, warnIfMissed: false);
+        await tester.pump();
+        expect(service.callCount, 2);
+
+        // Complete refresh with fresh non-stale data
+        refreshCompleter!.complete(buildSampleWeekResult(isStaleCache: false));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Memuat...'), findsNothing);
+        expect(
+          find.text('Mode offline. Menampilkan jadwal tersimpan.'),
+          findsNothing,
+        );
       },
     );
   });
