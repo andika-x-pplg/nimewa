@@ -7,6 +7,7 @@ import '../../data/models/anime_external_link.dart';
 import '../../data/models/anime_item.dart';
 import '../../data/models/episode_item.dart';
 import '../../data/services/anime_stream_service.dart';
+import '../../data/services/my_list_repository.dart';
 import '../widgets/anime_image_placeholder.dart';
 import 'anime_watch_screen.dart';
 
@@ -16,6 +17,7 @@ class AnimeDetailScreen extends StatefulWidget {
   final AnimeItem? previewItem;
   final void Function(EpisodeItem episode)? onEpisodeTap;
   final AnimeStreamService? service;
+  final MyListRepository? myListRepository;
 
   const AnimeDetailScreen({
     super.key,
@@ -23,6 +25,7 @@ class AnimeDetailScreen extends StatefulWidget {
     this.previewItem,
     this.onEpisodeTap,
     this.service,
+    this.myListRepository,
   });
 
   @override
@@ -31,14 +34,92 @@ class AnimeDetailScreen extends StatefulWidget {
 
 class _AnimeDetailScreenState extends State<AnimeDetailScreen> {
   late final AnimeStreamService _service;
+  late final MyListRepository _myListRepo;
   late Future<AnimeDetail> _detailFuture;
-  bool _isBookmarked = false;
 
   @override
   void initState() {
     super.initState();
     _service = widget.service ?? const AnimeStreamService();
+    _myListRepo = widget.myListRepository ?? MyListRepository.instance;
+    _myListRepo.addListener(_onMyListChanged);
+    if (!_myListRepo.isInitialized && !_myListRepo.isLoading) {
+      _myListRepo.init();
+    }
     _detailFuture = _service.getAnimeDetail(widget.animeId);
+  }
+
+  @override
+  void dispose() {
+    _myListRepo.removeListener(_onMyListChanged);
+    super.dispose();
+  }
+
+  void _onMyListChanged() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  bool _isSaved(AnimeDetail? detail) {
+    final aniListId = detail?.aniListId ?? widget.previewItem?.aniListId ?? 0;
+    final title = detail?.title ?? widget.previewItem?.title;
+    return _myListRepo.contains(
+      widget.animeId,
+      aniListId: aniListId,
+      title: title ?? '',
+    );
+  }
+
+  Future<void> _toggleSave(AnimeDetail? detail) async {
+    final aniListId = detail?.aniListId ?? widget.previewItem?.aniListId ?? 0;
+    final title = detail?.title ?? widget.previewItem?.title ?? 'Anime';
+    final existing = _myListRepo.findEntry(
+      widget.animeId,
+      aniListId: aniListId,
+      title: title,
+    );
+
+    if (existing != null) {
+      final removed = await _myListRepo.removeEntry(existing.canonicalKey);
+      if (!mounted || removed == null) return;
+      final messenger = ScaffoldMessenger.maybeOf(context);
+      messenger?.clearSnackBars();
+      messenger?.showSnackBar(
+        SnackBar(
+          content: Text('${removed.title} dihapus dari My List'),
+          backgroundColor: AppColors.surfaceElevated,
+          behavior: SnackBarBehavior.floating,
+          action: SnackBarAction(
+            label: 'Urungkan',
+            textColor: AppColors.accentBlue,
+            onPressed: () {
+              _myListRepo.restoreEntry(removed);
+            },
+          ),
+        ),
+      );
+      return;
+    }
+
+    if (detail != null) {
+      await _myListRepo.toggleSaveFromDetail(detail);
+    } else if (widget.previewItem != null) {
+      await _myListRepo.toggleSaveAnime(widget.previewItem!);
+    } else {
+      return;
+    }
+
+    if (!mounted) return;
+    final messenger = ScaffoldMessenger.maybeOf(context);
+    messenger?.clearSnackBars();
+    messenger?.showSnackBar(
+      SnackBar(
+        content: Text('$title disimpan ke My List'),
+        backgroundColor: AppColors.surfaceElevated,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 
   @override
@@ -129,15 +210,13 @@ class _AnimeDetailScreenState extends State<AnimeDetailScreen> {
             backgroundColor: Colors.black.withValues(alpha: 0.6),
             child: IconButton(
               icon: Icon(
-                _isBookmarked ? Icons.bookmark_rounded : Icons.bookmark_outline_rounded,
-                color: _isBookmarked ? AppColors.accentBlue : Colors.white,
+                _isSaved(detail)
+                    ? Icons.bookmark_rounded
+                    : Icons.bookmark_outline_rounded,
+                color: _isSaved(detail) ? AppColors.accentBlue : Colors.white,
                 size: 20,
               ),
-              onPressed: () {
-                setState(() {
-                  _isBookmarked = !_isBookmarked;
-                });
-              },
+              onPressed: () => _toggleSave(detail),
             ),
           ),
         ),
@@ -346,6 +425,7 @@ class _AnimeDetailScreenState extends State<AnimeDetailScreen> {
         builder: (_) => AnimeWatchScreen(
           anime: detail,
           initialEpisode: episode,
+          myListRepository: _myListRepo,
         ),
       ),
     );
@@ -405,11 +485,7 @@ class _AnimeDetailScreenState extends State<AnimeDetailScreen> {
 
             // Bookmark button
             InkWell(
-              onTap: () {
-                setState(() {
-                  _isBookmarked = !_isBookmarked;
-                });
-              },
+              onTap: () => _toggleSave(detail),
               borderRadius: BorderRadius.circular(10),
               child: Container(
                 height: 46,
@@ -417,20 +493,30 @@ class _AnimeDetailScreenState extends State<AnimeDetailScreen> {
                 decoration: BoxDecoration(
                   color: AppColors.surfaceElevated,
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: AppColors.borderSubtle),
+                  border: Border.all(
+                    color: _isSaved(detail)
+                        ? AppColors.accentBlue
+                        : AppColors.borderSubtle,
+                  ),
                 ),
                 child: Row(
                   children: [
                     Icon(
-                      _isBookmarked ? Icons.bookmark_rounded : Icons.bookmark_outline_rounded,
-                      color: _isBookmarked ? AppColors.accentBlue : AppColors.textPrimary,
+                      _isSaved(detail)
+                          ? Icons.bookmark_rounded
+                          : Icons.bookmark_outline_rounded,
+                      color: _isSaved(detail)
+                          ? AppColors.accentBlue
+                          : AppColors.textPrimary,
                       size: 20,
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      _isBookmarked ? 'Tersimpan' : 'Daftar Tonton',
+                      _isSaved(detail) ? 'Tersimpan' : 'Simpan Anime',
                       style: AppTypography.labelMedium.copyWith(
-                        color: _isBookmarked ? AppColors.accentBlue : AppColors.textPrimary,
+                        color: _isSaved(detail)
+                            ? AppColors.accentBlue
+                            : AppColors.textPrimary,
                         fontWeight: FontWeight.w600,
                       ),
                     ),

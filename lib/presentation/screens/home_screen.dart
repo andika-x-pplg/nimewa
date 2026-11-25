@@ -2,15 +2,19 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../data/models/anime_item.dart';
+import '../../data/models/my_list_entry.dart';
 import '../../data/services/anime_api_client.dart';
 import '../../data/services/anime_stream_service.dart';
+import '../../data/services/my_list_repository.dart';
 import '../../data/services/schedule_service.dart';
+import '../widgets/continue_watching_strip.dart';
 import '../widgets/custom_bottom_nav.dart';
 import '../widgets/empty_continue_watching.dart';
 import '../widgets/home_header.dart';
 import '../widgets/spotlight_carousel.dart';
 import 'anime_detail_screen.dart';
 import 'explore_screen.dart';
+import 'my_list_screen.dart';
 import 'schedule_screen.dart';
 
 /// Main Shell Screen for Nimeva.
@@ -19,11 +23,13 @@ import 'schedule_screen.dart';
 class HomeScreen extends StatefulWidget {
   final AnimeStreamService? streamService;
   final ScheduleService? scheduleService;
+  final MyListRepository? myListRepository;
 
   const HomeScreen({
     super.key,
     this.streamService,
     this.scheduleService,
+    this.myListRepository,
   });
 
   @override
@@ -34,6 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   late final AnimeStreamService _streamService;
   late final ScheduleService _scheduleService;
+  late final MyListRepository _myListRepo;
   List<AnimeItem> _spotlightItems = AnimeApiClient.cachedTrendingAnime;
   bool _isLoadingSpotlight = false;
   String? _spotlightError;
@@ -43,7 +50,24 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _streamService = widget.streamService ?? const AnimeStreamService();
     _scheduleService = widget.scheduleService ?? ScheduleService();
+    _myListRepo = widget.myListRepository ?? MyListRepository.instance;
+    _myListRepo.addListener(_onMyListChanged);
+    if (!_myListRepo.isInitialized && !_myListRepo.isLoading) {
+      _myListRepo.init();
+    }
     _loadSpotlight();
+  }
+
+  @override
+  void dispose() {
+    _myListRepo.removeListener(_onMyListChanged);
+    super.dispose();
+  }
+
+  void _onMyListChanged() {
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   Future<void> _loadSpotlight() async {
@@ -76,9 +100,51 @@ class _HomeScreenState extends State<HomeScreen> {
         builder: (_) => AnimeDetailScreen(
           animeId: anime.id,
           previewItem: anime,
+          service: _streamService,
+          myListRepository: _myListRepo,
         ),
       ),
     );
+  }
+
+  Future<void> _handleToggleSpotlightSave(AnimeItem item) async {
+    final existing = _myListRepo.findEntry(
+      item.id,
+      aniListId: item.aniListId,
+      title: item.title,
+    );
+    if (existing != null) {
+      final removed = await _myListRepo.removeEntry(existing.canonicalKey);
+      if (!mounted || removed == null) return;
+      final messenger = ScaffoldMessenger.maybeOf(context);
+      messenger?.clearSnackBars();
+      messenger?.showSnackBar(
+        SnackBar(
+          content: Text('${removed.title} dihapus dari My List'),
+          backgroundColor: AppColors.surfaceElevated,
+          behavior: SnackBarBehavior.floating,
+          action: SnackBarAction(
+            label: 'Urungkan',
+            textColor: AppColors.accentBlue,
+            onPressed: () {
+              _myListRepo.restoreEntry(removed);
+            },
+          ),
+        ),
+      );
+    } else {
+      await _myListRepo.toggleSaveAnime(item);
+      if (!mounted) return;
+      final messenger = ScaffoldMessenger.maybeOf(context);
+      messenger?.clearSnackBars();
+      messenger?.showSnackBar(
+        SnackBar(
+          content: Text('${item.title} ditambahkan ke My List'),
+          backgroundColor: AppColors.surfaceElevated,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
   }
 
   Widget _buildSpotlightSection() {
@@ -139,10 +205,18 @@ class _HomeScreenState extends State<HomeScreen> {
       sectionBadge: 'HOT SPOTLIGHT',
       sectionTitle: 'ANIME POPULER',
       onWatchNow: _openAnimeDetail,
+      onAddList: _handleToggleSpotlightSave,
+      isSaved: (item) => _myListRepo.contains(
+        item.id,
+        aniListId: item.aniListId,
+        title: item.title,
+      ),
     );
   }
 
   Widget _buildHomeTab() {
+    final watchingEntries = _myListRepo.entriesByStatus(MyListStatus.watching);
+
     return SafeArea(
       bottom: false,
       child: SingleChildScrollView(
@@ -154,13 +228,25 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 8),
             _buildSpotlightSection(),
             const SizedBox(height: 20),
-            EmptyContinueWatching(
-              onExploreTap: () {
-                setState(() {
-                  _currentIndex = 1;
-                });
-              },
-            ),
+            if (watchingEntries.isNotEmpty)
+              ContinueWatchingStrip(
+                entries: watchingEntries,
+                onSeeAllTap: () {
+                  setState(() {
+                    _currentIndex = 3;
+                  });
+                },
+                onEntryTap: (entry) => _openAnimeDetail(entry.toAnimeItem()),
+                onPlayTap: (entry) => _openAnimeDetail(entry.toAnimeItem()),
+              )
+            else
+              EmptyContinueWatching(
+                onExploreTap: () {
+                  setState(() {
+                    _currentIndex = 1;
+                  });
+                },
+              ),
             const SizedBox(height: 24),
           ],
         ),
@@ -218,7 +304,15 @@ class _HomeScreenState extends State<HomeScreen> {
           onAnimeTap: _openAnimeDetail,
         );
       case 3:
-        return _buildPlaceholderTab('Daftar Tonton Saya', Icons.bookmark_rounded);
+        return MyListScreen(
+          repository: _myListRepo,
+          streamService: _streamService,
+          onExploreTap: () {
+            setState(() {
+              _currentIndex = 1;
+            });
+          },
+        );
       case 4:
         return _buildPlaceholderTab('Profil Pengguna', Icons.person_rounded);
       case 0:

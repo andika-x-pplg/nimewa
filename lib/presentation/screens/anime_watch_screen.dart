@@ -5,17 +5,20 @@ import '../../core/theme/app_typography.dart';
 import '../../data/models/anime_detail.dart';
 import '../../data/models/episode_item.dart';
 import '../../data/services/anime_stream_resolver.dart';
+import '../../data/services/my_list_repository.dart';
 
 /// Screen for watching anime video streams with interactive video controls,
 /// server selection, episode navigation, and quick playback actions.
 class AnimeWatchScreen extends StatefulWidget {
   final AnimeDetail anime;
   final EpisodeItem initialEpisode;
+  final MyListRepository? myListRepository;
 
   const AnimeWatchScreen({
     super.key,
     required this.anime,
     required this.initialEpisode,
+    this.myListRepository,
   });
 
   @override
@@ -43,12 +46,29 @@ class _AnimeWatchScreenState extends State<AnimeWatchScreen> {
   bool _isVideoInitialized = false;
   bool _isVideoBuffering = false;
 
+  MyListRepository get _myListRepo =>
+      widget.myListRepository ?? MyListRepository.instance;
+
   @override
   void initState() {
     super.initState();
     _currentEpisode = widget.initialEpisode;
     _selectedServer = availableServers.first;
     _initializePlayer();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _recordWatchProgress(_currentEpisode);
+      }
+    });
+  }
+
+  void _recordWatchProgress(EpisodeItem episode) {
+    if (!widget.anime.hasVideoAvailable) return;
+    _myListRepo.recordWatchProgress(
+      detail: widget.anime,
+      episodeNumber: episode.episodeNumber,
+      episodeTitle: episode.title,
+    );
   }
 
   @override
@@ -218,6 +238,7 @@ class _AnimeWatchScreenState extends State<AnimeWatchScreen> {
       _isPlaying = true;
     });
     _initializePlayer();
+    _recordWatchProgress(episode);
   }
 
   void _goToPreviousEpisode() {

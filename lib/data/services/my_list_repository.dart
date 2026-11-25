@@ -124,12 +124,11 @@ class MyListRepository extends ChangeNotifier {
 
     _isLoading = true;
     _loadError = null;
-    notifyListeners();
 
     try {
       final file = _resolveDefaultStorageFile();
-      if (await file.exists()) {
-        final raw = await file.readAsString();
+      if (file.existsSync()) {
+        final raw = file.readAsStringSync();
         if (raw.trim().isNotEmpty) {
           final decoded = jsonDecode(raw);
           if (decoded is List) {

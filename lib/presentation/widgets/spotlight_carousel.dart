@@ -13,6 +13,7 @@ class SpotlightCarousel extends StatefulWidget {
     required this.items,
     this.onWatchNow,
     this.onAddList,
+    this.isSaved,
     this.sectionBadge = 'HOT SPOTLIGHT',
     this.sectionTitle = 'ANIME POPULER',
   });
@@ -20,6 +21,7 @@ class SpotlightCarousel extends StatefulWidget {
   final List<AnimeItem> items;
   final void Function(AnimeItem item)? onWatchNow;
   final void Function(AnimeItem item)? onAddList;
+  final bool Function(AnimeItem item)? isSaved;
   final String sectionBadge;
   final String sectionTitle;
 
@@ -376,34 +378,45 @@ class _SpotlightCarouselState extends State<SpotlightCarousel> {
         ),
         const SizedBox(width: 10),
 
-        // Secondary Button: "+" Add to Watchlist
-        Semantics(
-          button: true,
-          label: 'Tambah ke Daftar Tonton',
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: () => widget.onAddList?.call(item),
-              borderRadius: BorderRadius.circular(10),
-              child: Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceElevated,
+        // Secondary Button: "+" Save to My List
+        Builder(
+          builder: (context) {
+            final saved = widget.isSaved?.call(item) ?? false;
+            return Semantics(
+              button: true,
+              label: saved ? 'Hapus dari My List' : 'Simpan ke My List',
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () => widget.onAddList?.call(item),
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: AppColors.borderSubtle,
-                    width: 1.0,
+                  child: Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: saved
+                          ? AppColors.accentBlue.withValues(alpha: 0.16)
+                          : AppColors.surfaceElevated,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: saved
+                            ? AppColors.accentBlue
+                            : AppColors.borderSubtle,
+                        width: 1.0,
+                      ),
+                    ),
+                    child: Icon(
+                      saved ? Icons.check_rounded : Icons.add_rounded,
+                      color: saved
+                          ? AppColors.accentBlue
+                          : AppColors.textPrimary,
+                      size: 24,
+                    ),
                   ),
                 ),
-                child: const Icon(
-                  Icons.add_rounded,
-                  color: AppColors.textPrimary,
-                  size: 24,
-                ),
               ),
-            ),
-          ),
+            );
+          },
         ),
       ],
     );
