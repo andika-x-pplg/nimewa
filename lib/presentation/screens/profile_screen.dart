@@ -398,12 +398,113 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  Future<void> _showHistoryActionsSheet(WatchHistoryEntry entry) async {
+    final isInMyList = _myListRepo.contains(
+      entry.animeId,
+      aniListId: entry.aniListId,
+      title: entry.title,
+    );
+
+    await showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: AppColors.surfaceElevated,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
+        side: BorderSide(color: AppColors.borderSubtle),
+      ),
+      builder: (sheetCtx) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  leading: Icon(
+                    isInMyList
+                        ? Icons.bookmark_remove_rounded
+                        : Icons.bookmark_add_rounded,
+                    color: AppColors.accentBlue,
+                  ),
+                  title: Text(
+                    isInMyList ? 'Buang dari My List' : 'Simpan ke My List',
+                    style: AppTypography.titleSmall.copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  onTap: () async {
+                    Navigator.of(sheetCtx).pop();
+                    if (isInMyList) {
+                      final removed =
+                          await _myListRepo.removeEntry(entry.canonicalKey);
+                      if (!mounted || removed == null) return;
+                      final messenger = ScaffoldMessenger.maybeOf(context);
+                      messenger?.clearSnackBars();
+                      messenger?.showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            '${removed.title} dibuang dari My List',
+                          ),
+                          action: SnackBarAction(
+                            label: 'Urungkan',
+                            onPressed: () => _myListRepo.restoreEntry(removed),
+                          ),
+                        ),
+                      );
+                    } else {
+                      await _myListRepo.toggleSaveAnime(entry.toAnimeItem());
+                      if (!mounted) return;
+                      final messenger = ScaffoldMessenger.maybeOf(context);
+                      messenger?.clearSnackBars();
+                      messenger?.showSnackBar(
+                        SnackBar(
+                          content: Text('${entry.title} disimpan ke My List'),
+                        ),
+                      );
+                    }
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(
+                    Icons.delete_outline_rounded,
+                    color: Color(0xFFFF5A5F),
+                  ),
+                  title: Text(
+                    'Hapus dari Histori',
+                    style: AppTypography.titleSmall.copyWith(
+                      color: const Color(0xFFFF5A5F),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  onTap: () async {
+                    Navigator.of(sheetCtx).pop();
+                    await _profileRepo.removeHistoryEntry(entry.canonicalKey);
+                    if (!mounted) return;
+                    final messenger = ScaffoldMessenger.maybeOf(context);
+                    messenger?.clearSnackBars();
+                    messenger?.showSnackBar(
+                      SnackBar(
+                        content: Text('${entry.title} dihapus dari histori'),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   Widget _buildHistoryCard(WatchHistoryEntry entry) {
     return Material(
       color: AppColors.surfaceCard,
       borderRadius: BorderRadius.circular(14),
       child: InkWell(
         onTap: () => _resumeHistoryEntry(entry),
+        onLongPress: () => _showHistoryActionsSheet(entry),
         borderRadius: BorderRadius.circular(14),
         child: Container(
           padding: const EdgeInsets.all(12),

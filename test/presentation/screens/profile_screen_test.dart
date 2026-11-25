@@ -109,6 +109,59 @@ void main() {
       expect(watchWidget.initialEpisode.episodeNumber, equals(2));
       expect(watchWidget.initialPosition, equals(const Duration(seconds: 125)));
     });
+
+    testWidgets('long-pressing history card shows Simpan ke My List, Buang dari My List, and Hapus dari Histori', (tester) async {
+      final profileRepo = UserProfileRepository(disablePersistence: true);
+      final myListRepo = MyListRepository(disablePersistence: true);
+      await profileRepo.init();
+      await myListRepo.init();
+
+      final detail = makeDetail();
+      await profileRepo.recordWatchHistory(
+        detail: detail,
+        episodeNumber: 1,
+        episodeTitle: 'Episode 1',
+        positionSeconds: 45,
+        durationSeconds: 1440,
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: ProfileScreen(
+            profileRepository: profileRepo,
+            myListRepository: myListRepo,
+            streamService: _FakeStreamService(detail),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Long-press -> Simpan ke My List
+      await tester.longPress(find.text('Frieren'));
+      await tester.pumpAndSettle();
+      expect(find.text('Simpan ke My List'), findsOneWidget);
+      expect(find.text('Hapus dari Histori'), findsOneWidget);
+
+      await tester.tap(find.text('Simpan ke My List'));
+      await tester.pumpAndSettle();
+      expect(myListRepo.contains('154587', aniListId: 154587, title: 'Frieren'), isTrue);
+
+      // Long-press again -> Buang dari My List
+      await tester.longPress(find.text('Frieren'));
+      await tester.pumpAndSettle();
+      expect(find.text('Buang dari My List'), findsOneWidget);
+
+      await tester.tap(find.text('Buang dari My List'));
+      await tester.pumpAndSettle();
+      expect(myListRepo.contains('154587', aniListId: 154587, title: 'Frieren'), isFalse);
+
+      // Long-press again -> Hapus dari Histori
+      await tester.longPress(find.text('Frieren'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Hapus dari Histori'));
+      await tester.pumpAndSettle();
+      expect(profileRepo.watchHistory, isEmpty);
+    });
   });
 }
 
