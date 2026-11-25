@@ -128,6 +128,7 @@ class _MyListScreenState extends State<MyListScreen> {
           animeId: entry.animeId,
           previewItem: entry.toAnimeItem(),
           service: _service,
+          myListRepository: _repo,
         ),
       ),
     );
@@ -160,6 +161,7 @@ class _MyListScreenState extends State<MyListScreen> {
           builder: (_) => AnimeWatchScreen(
             anime: detail,
             initialEpisode: targetEpisode,
+            myListRepository: _repo,
           ),
         ),
       );
@@ -345,15 +347,16 @@ class _MyListScreenState extends State<MyListScreen> {
                   });
                 },
                 backgroundColor: AppColors.surfaceCard,
-                selectedColor: AppColors.accentBlue.withValues(alpha: 0.2),
+                selectedColor: AppColors.accentBlue,
                 side: BorderSide(
                   color:
                       isSelected ? AppColors.accentBlue : AppColors.borderSubtle,
                 ),
                 labelStyle: AppTypography.labelLarge.copyWith(
                   color: isSelected
-                      ? AppColors.accentBlue
+                      ? Colors.white
                       : AppColors.textSecondary,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                 ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
@@ -555,6 +558,7 @@ class _EditEpisodeDialog extends StatefulWidget {
 
 class _EditEpisodeDialogState extends State<_EditEpisodeDialog> {
   late final TextEditingController _controller;
+  String? _errorText;
 
   @override
   void initState() {
@@ -568,6 +572,30 @@ class _EditEpisodeDialogState extends State<_EditEpisodeDialog> {
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  void _stepEpisode(int delta) {
+    final current =
+        int.tryParse(_controller.text.trim()) ?? widget.entry.watchedEpisode;
+    var next = current + delta;
+    if (next < 0) next = 0;
+    final maxEp = widget.entry.totalEpisodes;
+    if (maxEp > 0 && next > maxEp) next = maxEp;
+    setState(() {
+      _errorText = null;
+      _controller.text = '$next';
+    });
+  }
+
+  void _submit() {
+    final parsed = int.tryParse(_controller.text.trim());
+    if (parsed == null || parsed < 0) {
+      setState(() => _errorText = 'Masukkan angka episode yang valid.');
+      return;
+    }
+    final maxEp = widget.entry.totalEpisodes;
+    final clamped = (maxEp > 0 && parsed > maxEp) ? maxEp : parsed;
+    Navigator.of(context).pop(clamped);
   }
 
   @override
@@ -597,25 +625,67 @@ class _EditEpisodeDialogState extends State<_EditEpisodeDialog> {
             ),
           ),
           const SizedBox(height: 12),
-          TextField(
-            controller: _controller,
-            keyboardType: TextInputType.number,
-            autofocus: true,
-            style: AppTypography.bodyLarge.copyWith(
-              color: AppColors.textPrimary,
-            ),
-            decoration: InputDecoration(
-              labelText: 'Episode ditonton',
-              labelStyle: AppTypography.bodyMedium.copyWith(
-                color: AppColors.textSecondary,
+          Row(
+            children: [
+              SizedBox(
+                width: 44,
+                height: 44,
+                child: IconButton(
+                  onPressed: () => _stepEpisode(-1),
+                  tooltip: 'Kurangi episode',
+                  style: IconButton.styleFrom(
+                    backgroundColor: AppColors.surfaceCard,
+                    foregroundColor: AppColors.textPrimary,
+                  ),
+                  icon: const Icon(Icons.remove_rounded),
+                ),
               ),
-              filled: true,
-              fillColor: AppColors.surfaceCard,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(color: AppColors.borderSubtle),
+              const SizedBox(width: 8),
+              Expanded(
+                child: TextField(
+                  controller: _controller,
+                  keyboardType: TextInputType.number,
+                  autofocus: true,
+                  textAlign: TextAlign.center,
+                  style: AppTypography.bodyLarge.copyWith(
+                    color: AppColors.textPrimary,
+                  ),
+                  onChanged: (_) {
+                    if (_errorText != null) {
+                      setState(() => _errorText = null);
+                    }
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Episode',
+                    errorText: _errorText,
+                    labelStyle: AppTypography.bodyMedium.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                    filled: true,
+                    fillColor: AppColors.surfaceCard,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide:
+                          const BorderSide(color: AppColors.borderSubtle),
+                    ),
+                  ),
+                ),
               ),
-            ),
+              const SizedBox(width: 8),
+              SizedBox(
+                width: 44,
+                height: 44,
+                child: IconButton(
+                  onPressed: () => _stepEpisode(1),
+                  tooltip: 'Tambah episode',
+                  style: IconButton.styleFrom(
+                    backgroundColor: AppColors.surfaceCard,
+                    foregroundColor: AppColors.textPrimary,
+                  ),
+                  icon: const Icon(Icons.add_rounded),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -625,10 +695,7 @@ class _EditEpisodeDialogState extends State<_EditEpisodeDialog> {
           child: const Text('Batal'),
         ),
         ElevatedButton(
-          onPressed: () {
-            final parsed = int.tryParse(_controller.text.trim());
-            Navigator.of(context).pop(parsed);
-          },
+          onPressed: _submit,
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.accentBlue,
             foregroundColor: Colors.white,

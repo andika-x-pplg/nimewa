@@ -682,6 +682,8 @@ class _AnimeDetailScreenState extends State<AnimeDetailScreen> {
                     MaterialPageRoute(
                       builder: (_) => AnimeDetailScreen(
                         animeId: rel.id.toString(),
+                        service: _service,
+                        myListRepository: _myListRepo,
                       ),
                     ),
                   );

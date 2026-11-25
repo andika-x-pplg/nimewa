@@ -224,5 +224,29 @@ void main() {
       expect(reloaded.watchedEpisode, equals(7));
       expect(reloaded.status, equals(MyListStatus.watching));
     });
+
+    test('does not collide on season-*-fallback keys and clamps updateEpisodeProgress to totalEpisodes', () async {
+      final keyA = MyListRepository.canonicalKeyFor(
+        '200001',
+        aniListId: 200001,
+        title: 'Unlisted Anime Alpha Season 2',
+      );
+      final keyB = MyListRepository.canonicalKeyFor(
+        '200002',
+        aniListId: 200002,
+        title: 'Unlisted Anime Beta Season 2',
+      );
+      expect(keyA, isNot(equals(keyB)));
+      expect(keyA, equals('anilist-200001'));
+      expect(keyB, equals('anilist-200002'));
+
+      final repo = MyListRepository(disablePersistence: true, clock: () => currentClock);
+      await repo.toggleSaveAnime(makePlayableItem(id: 'demon-slayer', aniListId: 101922), totalEpisodes: 12);
+      await repo.updateEpisodeProgress('demon-slayer', 15);
+      final entry = repo.findEntry('demon-slayer')!;
+      expect(entry.watchedEpisode, equals(12));
+      expect(entry.status, equals(MyListStatus.completed));
+    });
   });
 }
+

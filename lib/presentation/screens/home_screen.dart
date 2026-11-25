@@ -13,6 +13,7 @@ import '../widgets/empty_continue_watching.dart';
 import '../widgets/home_header.dart';
 import '../widgets/spotlight_carousel.dart';
 import 'anime_detail_screen.dart';
+import 'anime_watch_screen.dart';
 import 'explore_screen.dart';
 import 'my_list_screen.dart';
 import 'schedule_screen.dart';
@@ -105,6 +106,39 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _openWatchFromEntry(MyListEntry entry) async {
+    if (!entry.hasVideoAvailable) {
+      _openAnimeDetail(entry.toAnimeItem());
+      return;
+    }
+    try {
+      final detail = await _streamService.getAnimeDetail(entry.animeId);
+      if (!mounted) return;
+      if (detail.episodes.isEmpty) {
+        _openAnimeDetail(entry.toAnimeItem());
+        return;
+      }
+      final targetEpNum = entry.watchedEpisode > 0 ? entry.watchedEpisode : 1;
+      final targetEpisode = detail.episodes.firstWhere(
+        (ep) => ep.episodeNumber == targetEpNum,
+        orElse: () => detail.episodes.first,
+      );
+      await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => AnimeWatchScreen(
+            anime: detail,
+            initialEpisode: targetEpisode,
+            myListRepository: _myListRepo,
+          ),
+        ),
+      );
+    } catch (_) {
+      if (mounted) {
+        _openAnimeDetail(entry.toAnimeItem());
+      }
+    }
   }
 
   Future<void> _handleToggleSpotlightSave(AnimeItem item) async {
@@ -237,7 +271,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   });
                 },
                 onEntryTap: (entry) => _openAnimeDetail(entry.toAnimeItem()),
-                onPlayTap: (entry) => _openAnimeDetail(entry.toAnimeItem()),
+                onPlayTap: _openWatchFromEntry,
               )
             else
               EmptyContinueWatching(

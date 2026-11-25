@@ -38,6 +38,7 @@ class MyListRepository extends ChangeNotifier {
   bool _initialized = false;
   bool _isLoading = false;
   String? _loadError;
+  Future<void> _persistChain = Future<void>.value();
 
   bool get isInitialized => _initialized;
   bool get isLoading => _isLoading;
@@ -61,6 +62,9 @@ class MyListRepository extends ChangeNotifier {
   int countByStatus(MyListStatus status) =>
       _entries.values.where((e) => e.status == status).length;
 
+  static bool _isConcreteKey(String key) =>
+      key.isNotEmpty && key != 'unknown' && !key.endsWith('-fallback');
+
   /// Computes a canonical storage key unifying mock slugs and AniList IDs.
   static String canonicalKeyFor(
     String animeId, {
@@ -70,12 +74,12 @@ class MyListRepository extends ChangeNotifier {
     final cleanId = animeId.trim();
     final primaryId = aniListId > 0 ? aniListId.toString() : cleanId;
     final detected = AnimeStreamResolver.detectAnimeKey(primaryId, title);
-    if (detected != 'unknown' && detected.isNotEmpty) {
+    if (_isConcreteKey(detected)) {
       return detected;
     }
     if (cleanId.isNotEmpty && cleanId != primaryId) {
       final secondaryDetected = AnimeStreamResolver.detectAnimeKey(cleanId, title);
-      if (secondaryDetected != 'unknown' && secondaryDetected.isNotEmpty) {
+      if (_isConcreteKey(secondaryDetected)) {
         return secondaryDetected;
       }
     }
@@ -107,7 +111,7 @@ class MyListRepository extends ChangeNotifier {
       }
     }
     final home = Platform.environment['HOME'] ?? Platform.environment['USERPROFILE'];
-    if (home != null && home.isNotEmpty) {
+    if (home != null && home.isNotEmpty && home != '/') {
       return File('$home/.nimeva/nimeva_my_list.json');
     }
     return File('${Directory.systemTemp.path}/nimeva_my_list.json');
@@ -153,18 +157,21 @@ class MyListRepository extends ChangeNotifier {
     }
   }
 
-  Future<void> _persist() async {
-    if (_disablePersistence) return;
-    try {
-      final file = _resolveDefaultStorageFile();
-      if (!await file.parent.exists()) {
-        await file.parent.create(recursive: true);
+  Future<void> _persist() {
+    if (_disablePersistence) return Future<void>.value();
+    _persistChain = _persistChain.then((_) async {
+      try {
+        final file = _resolveDefaultStorageFile();
+        if (!file.parent.existsSync()) {
+          file.parent.createSync(recursive: true);
+        }
+        final payload = jsonEncode(allEntries.map((e) => e.toJson()).toList());
+        await file.writeAsString(payload);
+      } catch (_) {
+        // Non-fatal in sandboxed / restricted environments; in-memory state stays intact.
       }
-      final payload = jsonEncode(allEntries.map((e) => e.toJson()).toList());
-      await file.writeAsString(payload);
-    } catch (_) {
-      // Non-fatal in sandboxed / restricted environments; in-memory state stays intact.
-    }
+    });
+    return _persistChain;
   }
 
   MyListEntry? _findByAnyKey(
@@ -411,25 +418,27 @@ class MyListRepository extends ChangeNotifier {
     if (existing == null) return;
 
     final safeEpisode = episodeNumber < 0 ? 0 : episodeNumber;
-    final effectiveTotal = existing.totalEpisodes > 0
-        ? max(existing.totalEpisodes, safeEpisode)
-        : 0;
+    final clampedEpisode = existing.totalEpisodes > 0
+        ? min(safeEpisode, existing.totalEpisodes)
+        : safeEpisode;
 
     final MyListStatus nextStatus;
-    if (safeEpisode == 0) {
+    if (clampedEpisode == 0) {
       nextStatus = MyListStatus.saved;
-    } else if (effectiveTotal > 0 && safeEpisode >= effectiveTotal) {
+    } else if (existing.totalEpisodes > 0 &&
+        clampedEpisode >= existing.totalEpisodes) {
       nextStatus = MyListStatus.completed;
     } else {
       nextStatus = MyListStatus.watching;
     }
 
     _entries[existing.canonicalKey] = existing.copyWith(
-      watchedEpisode: safeEpisode,
+      watchedEpisode: clampedEpisode,
       totalEpisodes: existing.totalEpisodes > 0 ? existing.totalEpisodes : 0,
       status: nextStatus,
-      currentEpisodeTitle: safeEpisode > 0 ? 'Episode $safeEpisode' : null,
-      clearCurrentEpisodeTitle: safeEpisode == 0,
+      currentEpisodeTitle:
+          clampedEpisode > 0 ? 'Episode $clampedEpisode' : null,
+      clearCurrentEpisodeTitle: clampedEpisode == 0,
       updatedAt: _clock(),
     );
     notifyListeners();
