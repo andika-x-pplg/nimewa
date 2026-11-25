@@ -4,22 +4,26 @@ import '../../core/theme/app_typography.dart';
 import '../../data/models/anime_item.dart';
 import '../../data/services/anime_api_client.dart';
 import '../../data/services/anime_stream_service.dart';
+import '../../data/services/schedule_service.dart';
 import '../widgets/custom_bottom_nav.dart';
 import '../widgets/empty_continue_watching.dart';
 import '../widgets/home_header.dart';
 import '../widgets/spotlight_carousel.dart';
 import 'anime_detail_screen.dart';
 import 'explore_screen.dart';
+import 'schedule_screen.dart';
 
 /// Main Shell Screen for Nimeva.
 /// Supports switching between Home, Explore, and other tabs via CustomBottomNavBar,
 /// and navigating to AnimeDetailScreen when any anime is selected.
 class HomeScreen extends StatefulWidget {
   final AnimeStreamService? streamService;
+  final ScheduleService? scheduleService;
 
   const HomeScreen({
     super.key,
     this.streamService,
+    this.scheduleService,
   });
 
   @override
@@ -29,6 +33,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   late final AnimeStreamService _streamService;
+  late final ScheduleService _scheduleService;
   List<AnimeItem> _spotlightItems = AnimeApiClient.cachedTrendingAnime;
   bool _isLoadingSpotlight = false;
   String? _spotlightError;
@@ -37,6 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _streamService = widget.streamService ?? const AnimeStreamService();
+    _scheduleService = widget.scheduleService ?? ScheduleService();
     _loadSpotlight();
   }
 
@@ -207,7 +213,10 @@ class _HomeScreenState extends State<HomeScreen> {
           onAnimeTap: _openAnimeDetail,
         );
       case 2:
-        return _buildPlaceholderTab('Jadwal Tayang Anime', Icons.calendar_month_rounded);
+        return ScheduleScreen(
+          scheduleService: _scheduleService,
+          onAnimeTap: _openAnimeDetail,
+        );
       case 3:
         return _buildPlaceholderTab('Daftar Tonton Saya', Icons.bookmark_rounded);
       case 4:
