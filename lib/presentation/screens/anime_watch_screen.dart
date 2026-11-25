@@ -6,6 +6,7 @@ import '../../data/models/anime_detail.dart';
 import '../../data/models/episode_item.dart';
 import '../../data/services/anime_stream_resolver.dart';
 import '../../data/services/my_list_repository.dart';
+import '../../data/services/user_profile_repository.dart';
 
 /// Screen for watching anime video streams with interactive video controls,
 /// server selection, episode navigation, and quick playback actions.
@@ -13,12 +14,16 @@ class AnimeWatchScreen extends StatefulWidget {
   final AnimeDetail anime;
   final EpisodeItem initialEpisode;
   final MyListRepository? myListRepository;
+  final UserProfileRepository? profileRepository;
+  final Duration? initialPosition;
 
   const AnimeWatchScreen({
     super.key,
     required this.anime,
     required this.initialEpisode,
     this.myListRepository,
+    this.profileRepository,
+    this.initialPosition,
   });
 
   @override
@@ -48,11 +53,14 @@ class _AnimeWatchScreenState extends State<AnimeWatchScreen> {
 
   MyListRepository get _myListRepo =>
       widget.myListRepository ?? MyListRepository.instance;
+  UserProfileRepository get _profileRepo =>
+      widget.profileRepository ?? UserProfileRepository.instance;
 
   @override
   void initState() {
     super.initState();
     _currentEpisode = widget.initialEpisode;
+    _currentPosition = widget.initialPosition ?? Duration.zero;
     _selectedServer = availableServers.first;
     _initializePlayer();
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -69,10 +77,27 @@ class _AnimeWatchScreenState extends State<AnimeWatchScreen> {
       episodeNumber: episode.episodeNumber,
       episodeTitle: episode.title,
     );
+    _saveWatchHistory(episode: episode);
+  }
+
+  void _saveWatchHistory({EpisodeItem? episode}) {
+    if (!widget.anime.hasVideoAvailable) return;
+    final ep = episode ?? _currentEpisode;
+    final dur = (_videoController != null && _videoController!.value.isInitialized)
+        ? _videoController!.value.duration.inSeconds
+        : _totalDuration.inSeconds;
+    _profileRepo.recordWatchHistory(
+      detail: widget.anime,
+      episodeNumber: ep.episodeNumber,
+      episodeTitle: ep.title,
+      positionSeconds: _currentPosition.inSeconds,
+      durationSeconds: dur,
+    );
   }
 
   @override
   void dispose() {
+    _saveWatchHistory();
     _videoController?.removeListener(_videoListener);
     _videoController?.dispose();
     super.dispose();
@@ -232,6 +257,7 @@ class _AnimeWatchScreenState extends State<AnimeWatchScreen> {
       widget.anime.episodes.isNotEmpty && _currentEpisodeIndex < widget.anime.episodes.length - 1;
 
   void _selectEpisode(EpisodeItem episode) {
+    _saveWatchHistory();
     setState(() {
       _currentEpisode = episode;
       _currentPosition = Duration.zero;

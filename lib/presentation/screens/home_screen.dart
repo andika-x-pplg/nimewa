@@ -7,6 +7,7 @@ import '../../data/services/anime_api_client.dart';
 import '../../data/services/anime_stream_service.dart';
 import '../../data/services/my_list_repository.dart';
 import '../../data/services/schedule_service.dart';
+import '../../data/services/user_profile_repository.dart';
 import '../widgets/continue_watching_strip.dart';
 import '../widgets/custom_bottom_nav.dart';
 import '../widgets/empty_continue_watching.dart';
@@ -16,6 +17,7 @@ import 'anime_detail_screen.dart';
 import 'anime_watch_screen.dart';
 import 'explore_screen.dart';
 import 'my_list_screen.dart';
+import 'profile_screen.dart';
 import 'schedule_screen.dart';
 
 /// Main Shell Screen for Nimeva.
@@ -42,6 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
   late final AnimeStreamService _streamService;
   late final ScheduleService _scheduleService;
   late final MyListRepository _myListRepo;
+  late final UserProfileRepository _profileRepo;
   List<AnimeItem> _spotlightItems = AnimeApiClient.cachedTrendingAnime;
   bool _isLoadingSpotlight = false;
   String? _spotlightError;
@@ -52,9 +55,14 @@ class _HomeScreenState extends State<HomeScreen> {
     _streamService = widget.streamService ?? const AnimeStreamService();
     _scheduleService = widget.scheduleService ?? ScheduleService();
     _myListRepo = widget.myListRepository ?? MyListRepository.instance;
+    _profileRepo = UserProfileRepository.instance;
     _myListRepo.addListener(_onMyListChanged);
+    _profileRepo.addListener(_onMyListChanged);
     if (!_myListRepo.isInitialized && !_myListRepo.isLoading) {
       _myListRepo.init();
+    }
+    if (!_profileRepo.isInitialized) {
+      _profileRepo.init();
     }
     _loadSpotlight();
   }
@@ -62,6 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     _myListRepo.removeListener(_onMyListChanged);
+    _profileRepo.removeListener(_onMyListChanged);
     super.dispose();
   }
 
@@ -258,7 +267,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const HomeHeader(username: 'dikzzz'),
+            HomeHeader(username: _profileRepo.username),
             const SizedBox(height: 8),
             _buildSpotlightSection(),
             const SizedBox(height: 20),
@@ -288,43 +297,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildPlaceholderTab(String title, IconData icon) {
-    return SafeArea(
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 56,
-              height: 56,
-              decoration: BoxDecoration(
-                color: AppColors.surfaceElevated,
-                shape: BoxShape.circle,
-                border: Border.all(color: AppColors.borderSubtle),
-              ),
-              child: Icon(icon, color: AppColors.textMuted, size: 28),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              title,
-              style: AppTypography.titleMedium.copyWith(
-                color: AppColors.textPrimary,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Segera hadir di pembaruan berikutnya.',
-              style: AppTypography.bodySmall.copyWith(
-                color: AppColors.textMuted,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildBody() {
     switch (_currentIndex) {
       case 1:
@@ -348,7 +320,16 @@ class _HomeScreenState extends State<HomeScreen> {
           },
         );
       case 4:
-        return _buildPlaceholderTab('Profil Pengguna', Icons.person_rounded);
+        return ProfileScreen(
+          profileRepository: _profileRepo,
+          myListRepository: _myListRepo,
+          streamService: _streamService,
+          onNavigateTab: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+        );
       case 0:
       default:
         return _buildHomeTab();
