@@ -380,5 +380,102 @@ void main() {
         throwsException,
       );
     });
+
+    test('throws on GraphQL errors or null Page/airingSchedules and falls back to stale cache when cached', () async {
+      var clockTime = DateTime(2026, 11, 25, 12, 0);
+      Map<String, dynamic>? forcedErrorResponse;
+
+      final service = ScheduleService(
+        cacheTtl: const Duration(minutes: 10),
+        clock: () => clockTime,
+        graphQLRequester: (query, variables) async {
+          final errorPayload = forcedErrorResponse;
+          if (errorPayload != null) {
+            return errorPayload;
+          }
+          if (!isCurrentWeekQuery(variables)) {
+            return makePageResponse(schedules: []);
+          }
+          return makePageResponse(
+            schedules: [
+              makeScheduleNode(
+                scheduleId: 601,
+                mediaId: 151807,
+                englishTitle: 'Solo Leveling',
+                airingAt: DateTime(2026, 11, 25, 18, 0),
+                episode: 8,
+              ),
+            ],
+          );
+        },
+      );
+
+      // Uncached GraphQL error with data: {Page: null} must rethrow StateError.
+      forcedErrorResponse = {
+        'errors': [
+          {'message': 'Internal server error'},
+        ],
+        'data': {'Page': null},
+      };
+      await expectLater(
+        () => service.fetchWeeklySchedule(now: referenceNow),
+        throwsStateError,
+      );
+
+      // Uncached null airingSchedules must also rethrow StateError.
+      forcedErrorResponse = {
+        'errors': [
+          {'message': 'Rate limit exceeded'},
+        ],
+        'data': {
+          'Page': {
+            'pageInfo': {'hasNextPage': false, 'currentPage': 1},
+            'airingSchedules': null,
+          },
+        },
+      };
+      await expectLater(
+        () => service.fetchWeeklySchedule(now: referenceNow),
+        throwsStateError,
+      );
+
+      // Populate valid cache first.
+      forcedErrorResponse = null;
+      final fresh = await service.fetchWeeklySchedule(now: referenceNow);
+      expect(fresh.isStaleCache, isFalse);
+      expect(fresh.entriesForDate(DateTime(2026, 11, 25)).single.title, 'Solo Leveling');
+
+      // Expire cache and return GraphQL error payload with Page: null -> returns stale cache.
+      clockTime = clockTime.add(const Duration(minutes: 15));
+      forcedErrorResponse = {
+        'errors': [
+          {'message': 'Too Many Requests'},
+        ],
+        'data': {'Page': null},
+      };
+      final staleFromNullPage = await service.fetchWeeklySchedule(now: referenceNow);
+      expect(staleFromNullPage.isStaleCache, isTrue);
+      expect(
+        staleFromNullPage.entriesForDate(DateTime(2026, 11, 25)).single.title,
+        'Solo Leveling',
+      );
+
+      // Next call with airingSchedules: null -> cache was not overwritten and still returns stale cache.
+      forcedErrorResponse = {
+        'data': {
+          'Page': {
+            'pageInfo': {'hasNextPage': false, 'currentPage': 1},
+            'airingSchedules': null,
+          },
+        },
+      };
+      final staleFromNullSchedules =
+          await service.fetchWeeklySchedule(now: referenceNow);
+      expect(staleFromNullSchedules.isStaleCache, isTrue);
+      expect(
+        staleFromNullSchedules.entriesForDate(DateTime(2026, 11, 25)).single.title,
+        'Solo Leveling',
+      );
+    });
   });
 }

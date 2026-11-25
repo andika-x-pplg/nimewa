@@ -176,6 +176,13 @@ query ($page: Int, $perPage: Int, $airingAtGreater: Int, $airingAtLesser: Int) {
         },
       );
 
+      final errors = response['errors'];
+      if (errors is List && errors.isNotEmpty) {
+        throw StateError(
+          'AniList schedule query returned GraphQL errors: $errors',
+        );
+      }
+
       final data = response['data'] as Map<String, dynamic>?;
       if (data == null) {
         throw StateError(
@@ -185,11 +192,15 @@ query ($page: Int, $perPage: Int, $airingAtGreater: Int, $airingAtLesser: Int) {
 
       final pageData = data['Page'] as Map<String, dynamic>?;
       if (pageData == null) {
-        break;
+        throw StateError('AniList schedule query returned null Page');
       }
 
-      final rawSchedules =
-          pageData['airingSchedules'] as List<dynamic>? ?? const [];
+      final rawSchedules = pageData['airingSchedules'];
+      if (rawSchedules is! List<dynamic>) {
+        throw StateError(
+          'AniList schedule query returned null or invalid airingSchedules',
+        );
+      }
       for (final rawNode in rawSchedules) {
         if (rawNode is! Map<String, dynamic>) continue;
         final parsed = _parseScheduleNode(
