@@ -41,6 +41,12 @@ abstract final class AppTheme {
         type: BottomNavigationBarType.fixed,
         elevation: 0,
       ),
+      snackBarTheme: const SnackBarThemeData(
+        backgroundColor: AppColors.surfaceElevated,
+        contentTextStyle: TextStyle(color: AppColors.textPrimary),
+        actionTextColor: AppColors.accentBlue,
+        behavior: SnackBarBehavior.floating,
+      ),
       textTheme: const TextTheme(
         headlineLarge: AppTypography.headlineLarge,
         headlineMedium: AppTypography.headlineMedium,

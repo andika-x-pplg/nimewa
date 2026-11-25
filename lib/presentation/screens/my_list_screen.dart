@@ -329,10 +329,18 @@ class _MyListScreenState extends State<MyListScreen> {
   }
 
   Widget _buildFilterTabs() {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: MyListStatus.values.map((status) {
+    return Theme(
+      data: Theme.of(context).copyWith(
+        splashFactory: NoSplash.splashFactory,
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        hoverColor: Colors.transparent,
+        focusColor: Colors.transparent,
+      ),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: MyListStatus.values.map((status) {
           final isSelected = _selectedStatus == status;
           return Padding(
             padding: const EdgeInsets.only(right: 8),
@@ -366,6 +374,7 @@ class _MyListScreenState extends State<MyListScreen> {
             ),
           );
         }).toList(),
+        ),
       ),
     );
   }
