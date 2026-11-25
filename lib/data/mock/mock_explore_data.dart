@@ -422,19 +422,6 @@ const List<AnimeItem> mysteryAnimeList = [
     episodeInfo: 'SUB · 25 EPS (Tamat)',
     statusLabel: 'Tamat',
   ),
-  AnimeItem(
-    id: 'tokyo-ghoul-movie',
-    title: 'Tokyo Ghoul: ' 'S (Movie)',
-    japaneseTitle: '東京喰種 S',
-    rating: 8.3,
-    releaseYear: 2019,
-    genres: ['Action', 'Horror', 'Supernatural', 'Psychological'],
-    description: 'Kaneki Ken berhadapan dengan Shu Tsukiyama dalam aksi bertahan hidup dunia Ghoul.',
-    posterUrl: 'https://media.kitsu.app/anime/poster_images/8440/large.jpg',
-    backdropUrl: 'https://media.kitsu.app/anime/poster_images/8440/large.jpg',
-    episodeInfo: 'SUB · MOVIE',
-    statusLabel: 'Tamat',
-  ),
 ];
 
 const List<AnimeItem> horrorAnimeList = [
@@ -449,19 +436,6 @@ const List<AnimeItem> horrorAnimeList = [
     posterUrl: 'https://media.kitsu.app/anime/poster_images/44081/large.jpg',
     backdropUrl: 'https://media.kitsu.app/anime/poster_images/44081/large.jpg',
     episodeInfo: 'SUB · 12 EPS (Tamat)',
-    statusLabel: 'Tamat',
-  ),
-  AnimeItem(
-    id: 'tokyo-ghoul-movie',
-    title: 'Tokyo Ghoul: ' 'S (Movie)',
-    japaneseTitle: '東京喰種 S',
-    rating: 8.3,
-    releaseYear: 2019,
-    genres: ['Action', 'Horror', 'Supernatural'],
-    description: 'Kaneki Ken bertarung untuk bertahan hidup di tengah konflik antara manusia dan ghoul.',
-    posterUrl: 'https://media.kitsu.app/anime/poster_images/8440/large.jpg',
-    backdropUrl: 'https://media.kitsu.app/anime/poster_images/8440/large.jpg',
-    episodeInfo: 'SUB · MOVIE',
     statusLabel: 'Tamat',
   ),
 ];

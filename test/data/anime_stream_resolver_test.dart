@@ -382,6 +382,14 @@ void main() {
         server: 'Server 1 (Fast HD)',
       );
       expect(silentVoice.toLowerCase(), contains('koe-no-katachi'));
+
+      // Tokyo Ghoul Movie is unavailable per atomicity (live-action only, no anime movie exists)
+      final tgMovie = AnimeStreamResolver.resolveStreamUrl(
+        animeId: 'tokyo-ghoul-movie',
+        animeTitle: 'Tokyo Ghoul Movie',
+        server: 'Server 1 (Fast HD)',
+      );
+      expect(tgMovie, isEmpty);
     });
 
     test('resolves Steins;Gate to unavailable per atomicity', () {

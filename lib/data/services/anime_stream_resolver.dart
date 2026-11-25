@@ -80,7 +80,6 @@ class AnimeStreamResolver {
     'haikyuu-movie',
     'gintama-movie',
     'silent-voice',
-    'tokyo-ghoul-movie',
     'frieren',
     'one-punch-man',
   };
@@ -99,6 +98,7 @@ class AnimeStreamResolver {
     'hunter-x-hunter',
     'jujutsu-kaisen',
     'tokyo-ghoul',
+    'tokyo-ghoul-movie',
     'fullmetal-alchemist',
     'dandadan',
     'dandadan-s2',
@@ -1490,10 +1490,9 @@ class AnimeStreamResolver {
     });
   }
 
-  // --- Tokyo Ghoul Movie / Feature (101 Minutes) ---
+  // --- Tokyo Ghoul Movie (Unavailable per atomicity / live-action only, no anime movie exists) ---
   static List<_AnimeStreamEntry> _buildTokyoGhoulMovie() {
-    const url = 'https://archive.org/download/tokyo-ghoul-s/TokyoGhoulS.mp4';
-    return [const _AnimeStreamEntry(server1Url: url, server3Url: url)];
+    return const [];
   }
 
   // --- One Punch Man Season 1 (12 Episodes, Japanese Audio + Sub Indo / Eng Sub) ---

@@ -1086,17 +1086,7 @@ class OwnerVideoRepository {
       uploadedAt: now,
     ));
 
-    // 33. Tokyo Ghoul Movie (AniList ID 99920)
-    registerVideo(UploadedAnimeVideo(
-      aniListId: 99920,
-      seasonNumber: 1,
-      episodeNumber: 1,
-      episodeTitle: 'Tokyo Ghoul Movie Sub Indo',
-      videoUrl: 'https://archive.org/download/tokyo-ghoul-s/TokyoGhoulS.mp4',
-      server3Url: 'https://archive.org/cors/tokyo-ghoul-s/TokyoGhoulS.mp4',
-      server4Url: 'https://archive.org/download/tokyo-ghoul-s/TokyoGhoulS.mp4',
-      uploader: 'AppOwnerOfficial',
-      uploadedAt: now,
-    ));
+    // 33. Tokyo Ghoul Movie (AniList ID 99920): Unavailable per atomicity
+    // (TokyoGhoulS.mp4 is a 2019 live-action film, not an anime movie)
   }
 }

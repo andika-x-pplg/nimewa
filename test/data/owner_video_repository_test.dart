@@ -227,8 +227,9 @@ void main() {
       expect(repo.getVideo(152865, 1, 1)?.videoUrl, contains('haikyu-the-dumpster-battle-2024'));
       // 24. Chainsaw Man: Reze Arc Movie
       expect(repo.getVideo(172905, 1, 1)?.videoUrl, contains('rezearc/csmrezearc.mp4'));
-      // 25. Tokyo Ghoul Movie
-      expect(repo.getVideo(99920, 1, 1)?.videoUrl, contains('tokyo-ghoul-s/TokyoGhoulS.mp4'));
+      // 25. Tokyo Ghoul Movie (Unavailable per atomicity / live-action only, no anime movie exists)
+      expect(repo.getVideo(99920, 1, 1), isNull);
+      expect(repo.hasVideosForAnime(99920), isFalse);
     });
   });
 }

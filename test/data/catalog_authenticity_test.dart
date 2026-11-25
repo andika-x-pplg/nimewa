@@ -47,6 +47,7 @@ void main() {
         ('hunter-x-hunter', 'Hunter x Hunter (2011)'),
         ('bleach', 'Bleach'),
         ('demon-slayer-movie', 'Demon Slayer: Mugen Train Movie'),
+        ('tokyo-ghoul-movie', 'Tokyo Ghoul Movie'),
         ('kimetsu-no-yaiba-infinity', 'Kimetsu no Yaiba: Infinity Castle'),
         ('unreleased-season-s4', 'Unreleased Season 4'),
         ('blue-lock', 'Blue Lock'),
