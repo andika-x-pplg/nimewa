@@ -639,6 +639,13 @@ query ($id: Int) {
     return AnimeStreamResolver.hasCompleteEpisodes(idStr, title);
   }
 
+  /// Executes a raw GraphQL query against the AniList endpoint.
+  Future<Map<String, dynamic>> executeGraphQL(
+    String query,
+    Map<String, dynamic> variables,
+  ) =>
+      _postGraphQL(query, variables);
+
   Future<Map<String, dynamic>> _postGraphQL(
     String query,
     Map<String, dynamic> variables,
