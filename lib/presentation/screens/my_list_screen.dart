@@ -329,52 +329,57 @@ class _MyListScreenState extends State<MyListScreen> {
   }
 
   Widget _buildFilterTabs() {
-    return Theme(
-      data: Theme.of(context).copyWith(
-        splashFactory: NoSplash.splashFactory,
-        splashColor: Colors.transparent,
-        highlightColor: Colors.transparent,
-        hoverColor: Colors.transparent,
-        focusColor: Colors.transparent,
-      ),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: MyListStatus.values.map((status) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: MyListStatus.values.map((status) {
           final isSelected = _selectedStatus == status;
           return Padding(
             padding: const EdgeInsets.only(right: 8),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(minHeight: 44),
-              child: ChoiceChip(
-                label: Text(_tabLabel(status)),
-                selected: isSelected,
-                onSelected: (_) {
+            child: Semantics(
+              button: true,
+              selected: isSelected,
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () {
                   setState(() {
                     _selectedStatus = status;
                   });
                 },
-                backgroundColor: AppColors.surfaceCard,
-                selectedColor: AppColors.accentBlue,
-                side: BorderSide(
-                  color:
-                      isSelected ? AppColors.accentBlue : AppColors.borderSubtle,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 160),
+                  constraints: const BoxConstraints(minHeight: 44),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 10,
+                  ),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? AppColors.accentBlue
+                        : AppColors.surfaceCard,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: isSelected
+                          ? AppColors.accentBlue
+                          : AppColors.borderSubtle,
+                    ),
+                  ),
+                  child: Text(
+                    _tabLabel(status),
+                    style: AppTypography.labelLarge.copyWith(
+                      color: isSelected
+                          ? Colors.white
+                          : AppColors.textSecondary,
+                      fontWeight:
+                          isSelected ? FontWeight.w600 : FontWeight.w500,
+                    ),
+                  ),
                 ),
-                labelStyle: AppTypography.labelLarge.copyWith(
-                  color: isSelected
-                      ? Colors.white
-                      : AppColors.textSecondary,
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                showCheckmark: false,
               ),
             ),
           );
         }).toList(),
-        ),
       ),
     );
   }
