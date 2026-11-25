@@ -7,6 +7,8 @@ import 'package:nimeva/data/services/my_list_repository.dart';
 import 'package:nimeva/data/services/user_profile_repository.dart';
 import 'package:nimeva/presentation/screens/anime_watch_screen.dart';
 import 'package:nimeva/presentation/screens/profile_screen.dart';
+import 'package:nimeva/presentation/screens/rank_list_screen.dart';
+import 'package:nimeva/presentation/screens/watched_anime_list_screen.dart';
 
 class _FakeStreamService extends AnimeStreamService {
   final AnimeDetail detail;
@@ -161,6 +163,56 @@ void main() {
       await tester.tap(find.text('Hapus dari Histori'));
       await tester.pumpAndSettle();
       expect(profileRepo.watchHistory, isEmpty);
+    });
+
+    testWidgets('tapping EXP opens RankListScreen and tapping Total Anime opens WatchedAnimeListScreen', (tester) async {
+      final profileRepo = UserProfileRepository(disablePersistence: true);
+      final myListRepo = MyListRepository(disablePersistence: true);
+      await profileRepo.init();
+      await myListRepo.init();
+
+      final detail = makeDetail();
+      await profileRepo.addWatchExp(watchedSeconds: 15); // 150 EXP -> Lv. 2
+      await profileRepo.recordWatchHistory(
+        detail: detail,
+        episodeNumber: 1,
+        episodeTitle: 'Episode 1',
+        positionSeconds: 60,
+        durationSeconds: 1440,
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: ProfileScreen(
+            profileRepository: profileRepo,
+            myListRepository: myListRepo,
+            streamService: _FakeStreamService(detail),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Tap EXP -> opens RankListScreen
+      await tester.tap(find.text('EXP'));
+      await tester.pumpAndSettle();
+      expect(find.byType(RankListScreen), findsOneWidget);
+      expect(find.text('Daftar 16 Rank Nimeva'), findsOneWidget);
+      expect(find.text('50 / 100 EXP'), findsOneWidget);
+      await tester.dragUntilVisible(
+        find.text('Wibu'),
+        find.byType(ListView),
+        const Offset(0, -300),
+      );
+      expect(find.text('Wibu'), findsOneWidget);
+
+      // Back and tap Total Anime -> opens WatchedAnimeListScreen
+      await tester.pageBack();
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Total Anime'));
+      await tester.pumpAndSettle();
+      expect(find.byType(WatchedAnimeListScreen), findsOneWidget);
+      expect(find.text('Frieren'), findsOneWidget);
     });
   });
 }

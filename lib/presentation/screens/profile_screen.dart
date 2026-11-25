@@ -3,13 +3,17 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../data/models/my_list_entry.dart';
+import '../../data/models/rank_tier.dart';
 import '../../data/models/watch_history_entry.dart';
 import '../../data/services/anime_stream_service.dart';
 import '../../data/services/my_list_repository.dart';
 import '../../data/services/user_profile_repository.dart';
+import '../widgets/animated_rank_badge.dart';
 import '../widgets/anime_image_placeholder.dart';
 import 'anime_detail_screen.dart';
 import 'anime_watch_screen.dart';
+import 'rank_list_screen.dart';
+import 'watched_anime_list_screen.dart';
 
 /// User Profile screen displaying dynamic initial avatar, editable username,
 /// account stats (EXP, months active, total anime watched), watch history
@@ -267,12 +271,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  'Anggota Nimeva',
-                  style: AppTypography.bodySmall.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
+                const SizedBox(height: 6),
+                AnimatedRankBadge(
+                  tier: _profileRepo.currentRank,
+                  currentLevel: _profileRepo.level,
+                  compact: true,
                 ),
               ],
             ),
@@ -309,11 +312,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       child: Row(
         children: [
-          _buildStatItem('${_profileRepo.exp}', 'EXP'),
+          _buildStatItem(
+            RankCatalog.formatNumber(_profileRepo.exp),
+            'EXP',
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => RankListScreen(
+                    profileRepository: _profileRepo,
+                  ),
+                ),
+              );
+            },
+          ),
           _buildVerticalDivider(),
           _buildStatItem('${_profileRepo.monthsActive}', 'Bulan'),
           _buildVerticalDivider(),
-          _buildStatItem('${_totalWatchedAnime()}', 'Total Anime'),
+          _buildStatItem(
+            '${_totalWatchedAnime()}',
+            'Total Anime',
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => WatchedAnimeListScreen(
+                    myListRepository: _myListRepo,
+                    profileRepository: _profileRepo,
+                    streamService: _service,
+                  ),
+                ),
+              );
+            },
+          ),
         ],
       ),
     );
@@ -327,26 +356,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildStatItem(String value, String label) {
+  Widget _buildStatItem(String value, String label, {VoidCallback? onTap}) {
     return Expanded(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            value,
-            style: AppTypography.titleLarge.copyWith(
-              color: AppColors.textPrimary,
-              fontWeight: FontWeight.bold,
-            ),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(10),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                value,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTypography.titleLarge.copyWith(
+                  color: onTap != null
+                      ? AppColors.accentBlue
+                      : AppColors.textPrimary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                label,
+                style: AppTypography.labelSmall.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 2),
-          Text(
-            label,
-            style: AppTypography.labelSmall.copyWith(
-              color: AppColors.textSecondary,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

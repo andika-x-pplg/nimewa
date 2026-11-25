@@ -297,43 +297,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildPlaceholderTab(String title, IconData icon) {
-    return SafeArea(
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 56,
-              height: 56,
-              decoration: BoxDecoration(
-                color: AppColors.surfaceElevated,
-                shape: BoxShape.circle,
-                border: Border.all(color: AppColors.borderSubtle),
-              ),
-              child: Icon(icon, color: AppColors.textMuted, size: 28),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              title,
-              style: AppTypography.titleMedium.copyWith(
-                color: AppColors.textPrimary,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Segera hadir di pembaruan berikutnya.',
-              style: AppTypography.bodySmall.copyWith(
-                color: AppColors.textMuted,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildBody() {
     switch (_currentIndex) {
       case 1:

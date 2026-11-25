@@ -50,6 +50,7 @@ class _AnimeWatchScreenState extends State<AnimeWatchScreen> {
   VideoPlayerController? _videoController;
   bool _isVideoInitialized = false;
   bool _isVideoBuffering = false;
+  int _lastExpPositionSeconds = 0;
 
   MyListRepository get _myListRepo =>
       widget.myListRepository ?? MyListRepository.instance;
@@ -61,6 +62,7 @@ class _AnimeWatchScreenState extends State<AnimeWatchScreen> {
     super.initState();
     _currentEpisode = widget.initialEpisode;
     _currentPosition = widget.initialPosition ?? Duration.zero;
+    _lastExpPositionSeconds = _currentPosition.inSeconds;
     _selectedServer = availableServers.first;
     _initializePlayer();
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -218,6 +220,17 @@ class _AnimeWatchScreenState extends State<AnimeWatchScreen> {
   void _videoListener() {
     if (!mounted || _videoController == null) return;
     final value = _videoController!.value;
+    final posSeconds = value.position.inSeconds;
+    if (value.isPlaying && posSeconds > _lastExpPositionSeconds) {
+      final delta = posSeconds - _lastExpPositionSeconds;
+      _lastExpPositionSeconds = posSeconds;
+      // Anti-skip: only natural continuous playback (1..5s) awards EXP.
+      if (delta >= 1 && delta <= 5 && widget.anime.hasVideoAvailable) {
+        _profileRepo.addWatchExp(watchedSeconds: delta);
+      }
+    } else if (posSeconds < _lastExpPositionSeconds) {
+      _lastExpPositionSeconds = posSeconds;
+    }
     setState(() {
       if (value.position > Duration.zero) {
         _currentPosition = value.position;
@@ -261,6 +274,7 @@ class _AnimeWatchScreenState extends State<AnimeWatchScreen> {
     setState(() {
       _currentEpisode = episode;
       _currentPosition = Duration.zero;
+      _lastExpPositionSeconds = 0;
       _isPlaying = true;
     });
     _initializePlayer();

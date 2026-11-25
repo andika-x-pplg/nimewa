@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 
 import '../models/anime_detail.dart';
+import '../models/rank_tier.dart';
 import '../models/watch_history_entry.dart';
 import 'my_list_repository.dart';
 
@@ -32,7 +33,7 @@ class UserProfileRepository extends ChangeNotifier {
 
   String _username = 'dikzzz';
   DateTime? _joinedAt;
-  final int _exp = 0;
+  int _exp = 0;
   final Map<String, WatchHistoryEntry> _history = {};
   bool _initialized = false;
   Future<void> _persistChain = Future<void>.value();
@@ -43,6 +44,10 @@ class UserProfileRepository extends ChangeNotifier {
       _username.trim().isNotEmpty ? _username.trim()[0].toUpperCase() : 'N';
   DateTime get joinedAt => _joinedAt ?? _clock();
   int get exp => _exp;
+  int get level => RankCatalog.levelForTotalExp(_exp);
+  int get currentLevelExp => RankCatalog.currentLevelExp(_exp);
+  int get expPerLevel => RankCatalog.expPerLevel;
+  RankTier get currentRank => RankCatalog.tierForLevel(level);
 
   /// Total months the user has been on Nimeva (minimum 1).
   int get monthsActive {
@@ -102,6 +107,10 @@ class UserProfileRepository extends ChangeNotifier {
             if (parsedJoin != null) {
               _joinedAt = parsedJoin;
             }
+            final savedExp = (decoded['exp'] as num?)?.toInt();
+            if (savedExp != null && savedExp >= 0) {
+              _exp = savedExp;
+            }
             final histList = decoded['history'];
             if (histList is List) {
               _history.clear();
@@ -153,6 +162,23 @@ class UserProfileRepository extends ChangeNotifier {
     _username = trimmed;
     notifyListeners();
     await _persist();
+  }
+
+  /// Awards EXP based on real watched seconds without skipping.
+  /// Returns the actual EXP points earned.
+  Future<int> addWatchExp({
+    required int watchedSeconds,
+    int bonusExp = 0,
+  }) async {
+    if (watchedSeconds <= 0 && bonusExp <= 0) return 0;
+    final earned =
+        (watchedSeconds > 0 ? watchedSeconds * currentRank.expPerSecond : 0) +
+            (bonusExp > 0 ? bonusExp : 0);
+    if (earned <= 0) return 0;
+    _exp += earned;
+    notifyListeners();
+    await _persist();
+    return earned;
   }
 
   Future<void> recordWatchHistory({
