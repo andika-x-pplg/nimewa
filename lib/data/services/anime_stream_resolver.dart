@@ -90,7 +90,6 @@ class AnimeStreamResolver {
     'haikyuu-movie',
     'gintama-movie',
     'silent-voice',
-    'frieren',
     'one-punch-man',
   };
 
@@ -127,6 +126,7 @@ class AnimeStreamResolver {
     'attack-on-titan-final-1',
     'attack-on-titan-final-2',
     'happy-sugar-life',
+    'frieren',
   };
 
   /// Returns true if and only if the anime or season has a complete, authentic set

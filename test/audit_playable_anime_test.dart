@@ -29,7 +29,6 @@ void main() {
       'haikyuu-movie',
       'gintama-movie',
       'silent-voice',
-      'frieren',
       'one-punch-man',
     ];
 
@@ -183,6 +182,7 @@ void main() {
     }
 
     expect(AnimeStreamResolver.hasCompleteEpisodes('101351', 'Happy Sugar Life'), isFalse);
+    expect(AnimeStreamResolver.hasCompleteEpisodes('154587', 'Sousou no Frieren'), isFalse);
     expect(
       AnimeStreamResolver.getEpisodeTitle('101351', 'Happy Sugar Life', 1),
       'Episode 1: The Sugar Girl Eats Love',
