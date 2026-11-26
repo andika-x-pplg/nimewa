@@ -260,7 +260,7 @@ class AnimeStreamService {
         (index) => EpisodeItem(
           id: 'solo-leveling-eps-${index + 1}',
           episodeNumber: index + 1,
-          title: 'Episode ${index + 1} - Kebangkitan Bayangan',
+          title: AnimeStreamResolver.getEpisodeTitle('solo-leveling', 'Solo Leveling', index + 1),
           releaseDate: '2024-01-${(index + 1).toString().padLeft(2, '0')}',
           streamUrl: AnimeStreamResolver.resolveStreamUrl(
             animeId: 'solo-leveling',
@@ -307,7 +307,7 @@ class AnimeStreamService {
         (index) => EpisodeItem(
           id: 'tokyo-revengers-s3-eps-${index + 1}',
           episodeNumber: index + 1,
-          title: 'Episode ${index + 1} - Insiden Kanto',
+          title: AnimeStreamResolver.getEpisodeTitle('tokyo-revengers-s3', 'Tokyo Revengers Season 3', index + 1),
           releaseDate: '2023-10-${((index + 1) % 28) + 1}',
           streamUrl: AnimeStreamResolver.resolveStreamUrl(
             animeId: 'tokyo-revengers-s3',
@@ -336,7 +336,7 @@ class AnimeStreamService {
         (index) => EpisodeItem(
           id: 'demon-slayer-eps-${index + 1}',
           episodeNumber: index + 1,
-          title: 'Episode ${index + 1} Sub Indo',
+          title: AnimeStreamResolver.getEpisodeTitle('demon-slayer', 'Demon Slayer', index + 1),
           releaseDate: '2019-04-${(index + 1).toString().padLeft(2, '0')}',
           streamUrl: AnimeStreamResolver.resolveStreamUrl(
             animeId: 'demon-slayer',
@@ -365,7 +365,7 @@ class AnimeStreamService {
         (index) => EpisodeItem(
           id: 'attack-on-titan-eps-${index + 1}',
           episodeNumber: index + 1,
-          title: 'Episode ${index + 1} Sub Indo',
+          title: AnimeStreamResolver.getEpisodeTitle('attack-on-titan', 'Attack on Titan', index + 1),
           releaseDate: '2013-04-${(index + 1).toString().padLeft(2, '0')}',
           streamUrl: AnimeStreamResolver.resolveStreamUrl(
             animeId: 'attack-on-titan',
@@ -394,7 +394,7 @@ class AnimeStreamService {
         (index) => EpisodeItem(
           id: 'death-note-eps-${index + 1}',
           episodeNumber: index + 1,
-          title: 'Episode ${index + 1} Sub Indo',
+          title: AnimeStreamResolver.getEpisodeTitle('death-note', 'Death Note', index + 1),
           releaseDate: '2006-10-${(index + 1).toString().padLeft(2, '0')}',
           streamUrl: AnimeStreamResolver.resolveStreamUrl(
             animeId: 'death-note',
@@ -503,7 +503,7 @@ class AnimeStreamService {
         (index) => EpisodeItem(
           id: 'chainsaw-man-eps-${index + 1}',
           episodeNumber: index + 1,
-          title: 'Episode ${index + 1} Sub Indo',
+          title: AnimeStreamResolver.getEpisodeTitle('chainsaw-man', 'Chainsaw Man', index + 1),
           releaseDate: '2022-10-${(index + 1).toString().padLeft(2, '0')}',
           streamUrl: AnimeStreamResolver.resolveStreamUrl(
             animeId: 'chainsaw-man',
@@ -560,7 +560,7 @@ class AnimeStreamService {
         (index) => EpisodeItem(
           id: 'tokyo-revengers-eps-${index + 1}',
           episodeNumber: index + 1,
-          title: 'Episode ${index + 1} Sub Indo',
+          title: AnimeStreamResolver.getEpisodeTitle('tokyo-revengers', 'Tokyo Revengers', index + 1),
           releaseDate: '2021-04-${(index + 1).toString().padLeft(2, '0')}',
           streamUrl: AnimeStreamResolver.resolveStreamUrl(
             animeId: 'tokyo-revengers',
@@ -607,7 +607,7 @@ class AnimeStreamService {
         (index) => EpisodeItem(
           id: 'tokyo-revengers-s2-eps-${index + 1}',
           episodeNumber: index + 1,
-          title: 'Episode ${index + 1} - Perang Suci Natal',
+          title: AnimeStreamResolver.getEpisodeTitle('tokyo-revengers-s2', 'Tokyo Revengers Season 2', index + 1),
           releaseDate: '2023-01-${(index + 1).toString().padLeft(2, '0')}',
           streamUrl: AnimeStreamResolver.resolveStreamUrl(
             animeId: 'tokyo-revengers-s2',

@@ -98,36 +98,24 @@ void main() {
     expect(issues, isEmpty);
   });
 
-  test('Boku no Kokoro S1 & S2 streams and 9 added anime posters/IDs are valid and distinct', () {
-    expect(AnimeStreamResolver.hasCompleteEpisodes('153152', 'Boku no Kokoro no Yabai Yatsu'), isTrue);
-    expect(AnimeStreamResolver.hasCompleteEpisodes('166216', 'Boku no Kokoro no Yabai Yatsu 2nd Season'), isTrue);
+  test('Boku no Kokoro S1 & S2 disabled until Japanese-audio subbed source exists, 9 added anime posters/IDs valid, and episode titles have no Sub Indo tag', () async {
+    expect(AnimeStreamResolver.hasCompleteEpisodes('153152', 'Boku no Kokoro no Yabai Yatsu'), isFalse);
+    expect(AnimeStreamResolver.hasCompleteEpisodes('166216', 'Boku no Kokoro no Yabai Yatsu 2nd Season'), isFalse);
     expect(AnimeStreamResolver.hasCompleteEpisodes('182317', 'Boku no Kokoro no Yabai Yatsu Movie'), isFalse);
     expect(AnimeStreamResolver.hasCompleteEpisodes('170221', 'Boku no Kokoro no Yabai Yatsu: Twi-Yaba'), isFalse);
     expect(AnimeStreamResolver.hasCompleteEpisodes('209247', 'Boku no Kokoro no Yabai Yatsu 3rd Season'), isFalse);
 
-    final s1Urls = List.generate(
-      12,
-      (i) => AnimeStreamResolver.resolveStreamUrl(
-        animeId: '153152',
-        animeTitle: 'The Dangers in My Heart',
-        server: 'Server 1 (Fast HD)',
-        episodeNumber: i + 1,
-      ),
-    );
-    expect(s1Urls.every((u) => u.startsWith('https://archive.org/')), isTrue);
-    expect(s1Urls.toSet().length, 12);
-
-    final s2Urls = List.generate(
-      13,
-      (i) => AnimeStreamResolver.resolveStreamUrl(
-        animeId: '166216',
-        animeTitle: 'The Dangers in My Heart Season 2',
-        server: 'Server 1 (Fast HD)',
-        episodeNumber: i + 1,
-      ),
-    );
-    expect(s2Urls.every((u) => u.startsWith('https://archive.org/')), isTrue);
-    expect(s2Urls.toSet().length, 13);
+    const service = AnimeStreamService(networkDelay: Duration.zero);
+    for (final key in ['demon-slayer', 'attack-on-titan', 'death-note', 'solo-leveling', 'chainsaw-man', 'tokyo-revengers']) {
+      final detail = await service.getAnimeDetail(key);
+      expect(detail.episodes, isNotEmpty, reason: '$key should have episodes');
+      for (final ep in detail.episodes) {
+        expect(ep.title.toLowerCase().contains('sub indo'), isFalse, reason: '$key ep ${ep.episodeNumber} title should not contain Sub Indo');
+      }
+    }
+    expect(AnimeStreamResolver.getEpisodeTitle('101922', 'Demon Slayer', 1), 'Episode 1: Cruelty');
+    expect(AnimeStreamResolver.getEpisodeTitle('151807', 'Solo Leveling', 1), 'Episode 1: I\'m Used to It');
+    expect(AnimeStreamResolver.getEpisodeTitle('21087', 'One Punch Man', 1), 'Episode 1: The Strongest Man');
 
     const addedIds = {
       '153152',

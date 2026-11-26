@@ -603,7 +603,12 @@ query ($id: Int) {
                 (i) => EpisodeItem(
                   id: '${item.id}-eps-${i + 1}',
                   episodeNumber: i + 1,
-                  title: count == 1 ? 'Full Movie Sub Indo' : 'Episode ${i + 1} Sub Indo',
+                    title: AnimeStreamResolver.getEpisodeTitle(
+                      item.aniListId > 0 ? item.aniListId.toString() : item.id,
+                      item.title,
+                      i + 1,
+                      isMovie: count == 1,
+                    ),
                   releaseDate: '2024-01-${(i + 1).toString().padLeft(2, '0')}',
                   streamUrl: AnimeStreamResolver.resolveStreamUrl(
                     animeId: item.aniListId > 0 ? item.aniListId.toString() : item.id,
@@ -658,7 +663,11 @@ query ($id: Int) {
                 (i) => EpisodeItem(
                   id: '${item.id}-eps-${i + 1}',
                   episodeNumber: i + 1,
-                  title: 'Episode ${i + 1} Sub Indo',
+                  title: AnimeStreamResolver.getEpisodeTitle(
+                    item.id,
+                    item.title,
+                    i + 1,
+                  ),
                   releaseDate: '2024-01-${(i + 1).toString().padLeft(2, '0')}',
                   streamUrl: AnimeStreamResolver.resolveStreamUrl(
                     animeId: item.id,
@@ -860,7 +869,7 @@ query ($id: Int) {
       episodeInfo: 'SUB · 12 EPS (Tamat)',
       statusLabel: 'Tamat',
       aniListId: 153152,
-      hasVideoAvailable: true,
+      hasVideoAvailable: false,
     ),
     AnimeItem(
       id: '166216',
@@ -876,7 +885,7 @@ query ($id: Int) {
       episodeInfo: 'SUB · 13 EPS (Tamat)',
       statusLabel: 'Tamat',
       aniListId: 166216,
-      hasVideoAvailable: true,
+      hasVideoAvailable: false,
     ),
     AnimeItem(
       id: '127911',

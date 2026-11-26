@@ -456,9 +456,12 @@ class AnimeApiClient {
       (index) => EpisodeItem(
         id: '$id-eps-${index + 1}',
         episodeNumber: index + 1,
-        title: meta.totalEpisodes == 1 && meta.episodeInfo.contains('MOVIE')
-            ? 'Full Movie Sub Indo'
-            : 'Episode ${index + 1} Sub Indo',
+        title: AnimeStreamResolver.getEpisodeTitle(
+          id,
+          title,
+          index + 1,
+          isMovie: meta.totalEpisodes == 1 && meta.episodeInfo.contains('MOVIE'),
+        ),
         releaseDate: '2025-01-${(index + 1).toString().padLeft(2, '0')}',
         streamUrl: AnimeStreamResolver.resolveStreamUrl(
           animeId: id,
@@ -522,7 +525,12 @@ class AnimeApiClient {
       (i) => EpisodeItem(
         id: '${item.id}-eps-${i + 1}',
         episodeNumber: i + 1,
-        title: isMovie ? 'Full Movie Sub Indo' : 'Episode ${i + 1} Sub Indo',
+        title: AnimeStreamResolver.getEpisodeTitle(
+          item.id,
+          item.title,
+          i + 1,
+          isMovie: isMovie,
+        ),
         releaseDate: '2025-01-${(i + 1).toString().padLeft(2, '0')}',
         streamUrl: AnimeStreamResolver.resolveStreamUrl(
           animeId: item.id,
