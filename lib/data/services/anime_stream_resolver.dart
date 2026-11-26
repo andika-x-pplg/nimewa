@@ -43,6 +43,8 @@ class AnimeStreamResolver {
     '269': 'bleach',
     '21355': 'rezero',
     '9253': 'steins-gate',
+    '153152': 'boku-no-kokoro',
+    '165215': 'boku-no-kokoro-s2',
     '21827': 'your-name',
     '152865': 'haikyuu-movie',
     '20954': 'silent-voice',
@@ -107,6 +109,8 @@ class AnimeStreamResolver {
     'steins-gate',
     'one-piece',
     'yosuga-no-sora',
+    'boku-no-kokoro',
+    'boku-no-kokoro-s2',
   };
 
   /// Returns true if and only if the anime or season has a complete, authentic set
@@ -608,6 +612,17 @@ class AnimeStreamResolver {
       return 'jujutsu-kaisen';
     }
 
+    // Boku no Kokoro no Yabai Yatsu / The Dangers in My Heart
+    if (combined.contains('boku no kokoro') ||
+        combined.contains('dangers in my heart') ||
+        combined.contains('僕の心のヤバイやつ') ||
+        id.startsWith('boku-no-kokoro')) {
+      if (season >= 2 || id == '165215' || id == 'boku-no-kokoro-s2') {
+        return 'boku-no-kokoro-s2';
+      }
+      return 'boku-no-kokoro';
+    }
+
     // Tokyo Revengers
     if (combined.contains('tokyo revengers') ||
         combined.contains('takemichi') ||
@@ -1019,6 +1034,71 @@ class AnimeStreamResolver {
         server4Url: url,
       );
     });
+  }
+
+  // --- Boku no Kokoro no Yabai Yatsu Season 1 (12 Episodes, Japanese Audio + Sub Eng) ---
+  static List<_AnimeStreamEntry> _buildBokuNoKokoroS1() {
+    const itemId =
+        'the-dangers-in-my-heart-boku-no-kokoro-no-yabai-yatsu-seasons-1-and-2-ona';
+    const folder = 'The Dangers in My Heart  Boku no Kokoro no Yabai Yatsu Season 1';
+    const files = [
+      'The Dangers in My Heart S01E01_I Was Stolen Away .mp4',
+      'The Dangers in My Heart S01E02_I Died .mp4',
+      'The Dangers in My Heart S01E03_I Want to Hold You .mp4',
+      'The Dangers in My Heart S01E04_I Have a Mental Illness .mp4',
+      'The Dangers in My Heart S01E05_We Got Separated .mp4',
+      'The Dangers in My Heart S01E06_I Melted .mp4',
+      'The Dangers in My Heart S01E07_We Traded Places .mp4',
+      'The Dangers in My Heart S01E08_I Had a Dream .mp4',
+      'The Dangers in My Heart S01E09_I Hate Yamada .mp4',
+      'The Dangers in My Heart S01E10_We Walked Slowly .mp4',
+      'The Dangers in My Heart S01E11_We Are a Bit Alike .mp4',
+      'The Dangers in My Heart S01E12_I Wanted to Be Seen .mp4',
+    ];
+    final encodedFolder = Uri.encodeComponent(folder);
+    return files.map((file) {
+      final encodedFile = Uri.encodeComponent(file);
+      final url = 'https://archive.org/download/$itemId/$encodedFolder/$encodedFile';
+      final s3Url = 'https://archive.org/cors/$itemId/$encodedFolder/$encodedFile';
+      return _AnimeStreamEntry(
+        server1Url: url,
+        server3Url: s3Url,
+        server4Url: url,
+      );
+    }).toList(growable: false);
+  }
+
+  // --- Boku no Kokoro no Yabai Yatsu Season 2 (13 Episodes, Japanese Audio + Sub Eng) ---
+  static List<_AnimeStreamEntry> _buildBokuNoKokoroS2() {
+    const itemId =
+        'the-dangers-in-my-heart-boku-no-kokoro-no-yabai-yatsu-seasons-1-and-2-ona';
+    const folder = 'The Dangers in My Heart  Boku no Kokoro no Yabai Yatsu Season 2';
+    const files = [
+      'The Dangers in My Heart S02E01_We`re Searching .mp4',
+      'The Dangers in My Heart S02E02_I`m Growing Up .mp4',
+      'The Dangers in My Heart S02E03_Yamada and I .mp4',
+      'The Dangers in My Heart S02E04_Yamada Likes... .mp4',
+      'The Dangers in My Heart S02E05_I Want to Know .mp4',
+      'The Dangers in My Heart S02E06_I`m Visiting Yamada .mp4',
+      'The Dangers in My Heart S02E07_We`re Overflowing .mp4',
+      'The Dangers in My Heart S02E08_We Stayed Up Late .mp4',
+      'The Dangers in My Heart S02E09_We Promised .mp4',
+      'The Dangers in My Heart S02E10_I Want to Love Yamada .mp4',
+      'The Dangers in My Heart S02E11_I Don`t Want to Lose .mp4',
+      'The Dangers in My Heart S02E12_I Want to Tell Her .mp4',
+      'The Dangers in My Heart S02E13_I, We, Fell in Love .mp4',
+    ];
+    final encodedFolder = Uri.encodeComponent(folder);
+    return files.map((file) {
+      final encodedFile = Uri.encodeComponent(file);
+      final url = 'https://archive.org/download/$itemId/$encodedFolder/$encodedFile';
+      final s3Url = 'https://archive.org/cors/$itemId/$encodedFolder/$encodedFile';
+      return _AnimeStreamEntry(
+        server1Url: url,
+        server3Url: s3Url,
+        server4Url: url,
+      );
+    }).toList(growable: false);
   }
 
   // --- Demon Slayer: Mugen Ressha-hen TV Arc (7 Episodes, Japanese Audio + Sub Indo 720p) ---
@@ -1538,6 +1618,8 @@ class AnimeStreamResolver {
     'steins-gate': _buildSteinsGate(),
     'dandadan': _buildDandadan(),
     'rezero': _buildReZero(),
+    'boku-no-kokoro': _buildBokuNoKokoroS1(),
+    'boku-no-kokoro-s2': _buildBokuNoKokoroS2(),
     'shigatsu-wa-kimi': _buildYourLieInApril(),
     'your-name': _buildYourName(),
     'haikyuu-movie': _buildHaikyuuMovie(),
