@@ -36,6 +36,21 @@ class AnimeStreamResolver {
     '146984': 'attack-on-titan-final-1',
     '162314': 'attack-on-titan-final-2',
     '101351': 'happy-sugar-life',
+    '199': 'spirited-away',
+    '918': 'gintama-s1',
+    '9969': 'gintama-s2',
+    '15417': 'gintama-s2-p2',
+    '20996': 'gintama-s3',
+    '97889': 'gintama-s4',
+    '99714': 'gintama-s5',
+    '100784': 'gintama-s6',
+    '101925': 'gintama-s7',
+    '162890': 'gintama-ginpachi',
+    '190327': 'jojo-sbr-1',
+    '210482': 'jojo-sbr-2',
+    '161645': 'apothecary-s1',
+    '176301': 'apothecary-s2',
+    '195516': 'apothecary-s3',
     '1535': 'death-note',
     '113415': 'jujutsu-kaisen',
     '131573': 'jujutsu-kaisen-0',
@@ -91,6 +106,7 @@ class AnimeStreamResolver {
     'gintama-movie',
     'silent-voice',
     'one-punch-man',
+    'spirited-away',
   };
 
   /// Set of anime keys known to be incomplete or lacking authentic episode files.
@@ -127,6 +143,20 @@ class AnimeStreamResolver {
     'attack-on-titan-final-2',
     'happy-sugar-life',
     'frieren',
+    'gintama-s1',
+    'gintama-s2',
+    'gintama-s2-p2',
+    'gintama-s3',
+    'gintama-s4',
+    'gintama-s5',
+    'gintama-s6',
+    'gintama-s7',
+    'gintama-ginpachi',
+    'jojo-sbr-1',
+    'jojo-sbr-2',
+    'apothecary-s1',
+    'apothecary-s2',
+    'apothecary-s3',
   };
 
   /// Returns true if and only if the anime or season has a complete, authentic set
@@ -651,6 +681,15 @@ class AnimeStreamResolver {
         id == '101351' ||
         id == 'happy-sugar-life') {
       return 'happy-sugar-life';
+    }
+
+    // Spirited Away (Sen to Chihiro no Kamikakushi)
+    if (combined.contains('spirited away') ||
+        combined.contains('sen to chihiro') ||
+        combined.contains('千と千尋の神隠し') ||
+        id == '199' ||
+        id == 'spirited-away') {
+      return 'spirited-away';
     }
 
     // Jujutsu Kaisen
@@ -1697,6 +1736,7 @@ class AnimeStreamResolver {
     'tokyo-revengers-s2': _buildTokyoRevengersS2(),
     'tokyo-revengers-s3': _buildTokyoRevengersS3(),
     'happy-sugar-life': _buildHappySugarLife(),
+    'spirited-away': _buildSpiritedAway(),
   };
 
   /// Returns an authentic episode title for the given anime and episode number
@@ -2102,7 +2142,25 @@ class AnimeStreamResolver {
       'An Eternal Moment with You',
       'Happy Sugar Life',
     ],
+    'spirited-away': [
+      'Sen to Chihiro no Kamikakushi (Spirited Away)',
+    ],
   };
+
+  // --- Spirited Away (Movie, Japanese Audio + English Sub 1080p) ---
+  static List<_AnimeStreamEntry> _buildSpiritedAway() {
+    const url =
+        'https://archive.org/download/ep.-1.v-0.1639299147.1080p/EP.1.v0.1639299147.1080p.mp4';
+    const s3Url =
+        'https://archive.org/cors/ep.-1.v-0.1639299147.1080p/EP.1.v0.1639299147.1080p.mp4';
+    return const [
+      _AnimeStreamEntry(
+        server1Url: url,
+        server3Url: s3Url,
+        server4Url: url,
+      ),
+    ];
+  }
 
   // --- Happy Sugar Life (12 Episodes, Japanese Audio + English Sub) ---
   static List<_AnimeStreamEntry> _buildHappySugarLife() {

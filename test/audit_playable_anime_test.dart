@@ -30,6 +30,7 @@ void main() {
       'gintama-movie',
       'silent-voice',
       'one-punch-man',
+      'spirited-away',
     ];
 
     final issues = <String>[];
@@ -207,6 +208,43 @@ void main() {
     expect(tenBatchItems.map((a) => a.posterUrl).toSet().length, 10);
     expect(tenBatchItems.map((a) => a.backdropUrl).toSet().length, 10);
     for (final item in tenBatchItems) {
+      expect(item.aniListId, int.parse(item.id));
+    }
+
+    expect(AnimeStreamResolver.hasCompleteEpisodes('199', 'Spirited Away'), isTrue);
+    expect(
+      AnimeStreamResolver.resolveStreamUrl(
+        animeId: '199',
+        animeTitle: 'Spirited Away',
+        server: 'Server 1 (Fast HD)',
+        episodeNumber: 1,
+      ),
+      'https://archive.org/download/ep.-1.v-0.1639299147.1080p/EP.1.v0.1639299147.1080p.mp4',
+    );
+    const batch2Ids = {
+      '199',
+      '918',
+      '9969',
+      '15417',
+      '20996',
+      '97889',
+      '99714',
+      '100784',
+      '101925',
+      '162890',
+      '190327',
+      '210482',
+      '161645',
+      '176301',
+      '195516',
+    };
+    final batch2Items = AniListApiClient.cachedPopularAnime
+        .where((a) => batch2Ids.contains(a.id))
+        .toList();
+    expect(batch2Items.length, 15);
+    expect(batch2Items.map((a) => a.posterUrl).toSet().length, 15);
+    expect(batch2Items.map((a) => a.backdropUrl).toSet().length, 15);
+    for (final item in batch2Items) {
       expect(item.aniListId, int.parse(item.id));
     }
   });
