@@ -1125,7 +1125,7 @@ query ($id: Int) {
       episodeInfo: 'SUB · 12 EPS (Tamat)',
       statusLabel: 'Tamat',
       aniListId: 101351,
-      hasVideoAvailable: true,
+      hasVideoAvailable: false,
     ),
     AnimeItem(
       id: '2476',

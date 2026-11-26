@@ -92,7 +92,6 @@ class AnimeStreamResolver {
     'silent-voice',
     'frieren',
     'one-punch-man',
-    'happy-sugar-life',
   };
 
   /// Set of anime keys known to be incomplete or lacking authentic episode files.
@@ -127,6 +126,7 @@ class AnimeStreamResolver {
     'attack-on-titan-s4-p2',
     'attack-on-titan-final-1',
     'attack-on-titan-final-2',
+    'happy-sugar-life',
   };
 
   /// Returns true if and only if the anime or season has a complete, authentic set

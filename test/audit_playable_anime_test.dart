@@ -182,18 +182,7 @@ void main() {
       );
     }
 
-    expect(AnimeStreamResolver.hasCompleteEpisodes('101351', 'Happy Sugar Life'), isTrue);
-    final hslUrls = List.generate(
-      12,
-      (i) => AnimeStreamResolver.resolveStreamUrl(
-        animeId: '101351',
-        animeTitle: 'Happy Sugar Life',
-        server: 'Server 1 (Fast HD)',
-        episodeNumber: i + 1,
-      ),
-    );
-    expect(hslUrls.every((u) => u.startsWith('https://archive.org/')), isTrue);
-    expect(hslUrls.toSet().length, 12);
+    expect(AnimeStreamResolver.hasCompleteEpisodes('101351', 'Happy Sugar Life'), isFalse);
     expect(
       AnimeStreamResolver.getEpisodeTitle('101351', 'Happy Sugar Life', 1),
       'Episode 1: The Sugar Girl Eats Love',
