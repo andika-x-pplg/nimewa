@@ -8,6 +8,7 @@ import '../../data/models/anime_item.dart';
 import '../../data/models/episode_item.dart';
 import '../../data/services/anime_stream_service.dart';
 import '../../data/services/my_list_repository.dart';
+import '../../data/services/user_profile_repository.dart';
 import '../widgets/anime_image_placeholder.dart';
 import 'anime_watch_screen.dart';
 
@@ -426,6 +427,12 @@ class _AnimeDetailScreenState extends State<AnimeDetailScreen> {
           anime: detail,
           initialEpisode: episode,
           myListRepository: _myListRepo,
+          initialPosition: UserProfileRepository.instance.getSavedPosition(
+            detail.id,
+            episode.episodeNumber,
+            aniListId: detail.aniListId,
+            title: detail.title,
+          ),
         ),
       ),
     );

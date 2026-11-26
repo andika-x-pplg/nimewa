@@ -11,6 +11,7 @@ import '../../data/models/episode_item.dart';
 import '../../data/services/anime_stream_resolver.dart';
 import '../../data/services/my_list_repository.dart';
 import '../../data/services/user_profile_repository.dart';
+import '../widgets/episode_progress_border.dart';
 
 /// Screen for watching anime video streams with interactive video controls,
 /// server selection, episode navigation, and quick playback actions.
@@ -243,6 +244,7 @@ class _AnimeWatchScreenState extends State<AnimeWatchScreen> {
       if (delta >= 1 && delta <= 5 && widget.anime.hasVideoAvailable) {
         _profileRepo.addWatchExp(watchedSeconds: delta);
       }
+      _saveWatchHistory();
     } else if (posSeconds < _lastExpPositionSeconds) {
       _lastExpPositionSeconds = posSeconds;
     }
@@ -286,10 +288,17 @@ class _AnimeWatchScreenState extends State<AnimeWatchScreen> {
 
   void _selectEpisode(EpisodeItem episode) {
     _saveWatchHistory();
+    final savedPos = _profileRepo.getSavedPosition(
+          widget.anime.id,
+          episode.episodeNumber,
+          aniListId: widget.anime.aniListId,
+          title: widget.anime.title,
+        ) ??
+        Duration.zero;
     setState(() {
       _currentEpisode = episode;
-      _currentPosition = Duration.zero;
-      _lastExpPositionSeconds = 0;
+      _currentPosition = savedPos;
+      _lastExpPositionSeconds = savedPos.inSeconds;
       _isPlaying = true;
     });
     _initializePlayer();
@@ -1619,12 +1628,28 @@ class _AnimeWatchScreenState extends State<AnimeWatchScreen> {
             itemBuilder: (context, index) {
               final ep = episodes[index];
               final isCurrent = ep.id == _currentEpisode.id;
+              final epProgress = isCurrent
+                  ? (_effectiveDuration.inSeconds > 0
+                      ? (_currentPosition.inSeconds /
+                              _effectiveDuration.inSeconds)
+                          .clamp(0.0, 1.0)
+                      : 0.0)
+                  : _profileRepo.getEpisodeProgressFraction(
+                      widget.anime.id,
+                      ep.episodeNumber,
+                      aniListId: widget.anime.aniListId,
+                      title: widget.anime.title,
+                    );
 
-              return InkWell(
-                key: Key('episode_item_${ep.episodeNumber}'),
-                onTap: () => _selectEpisode(ep),
-                borderRadius: BorderRadius.circular(10),
-                child: AnimatedContainer(
+              return EpisodeProgressBorder(
+                progress: epProgress,
+                borderRadius: 10,
+                strokeWidth: 2.2,
+                child: InkWell(
+                  key: Key('episode_item_${ep.episodeNumber}'),
+                  onTap: () => _selectEpisode(ep),
+                  borderRadius: BorderRadius.circular(10),
+                  child: AnimatedContainer(
                   duration: const Duration(milliseconds: 180),
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                   decoration: BoxDecoration(
@@ -1729,6 +1754,7 @@ class _AnimeWatchScreenState extends State<AnimeWatchScreen> {
                     ],
                   ),
                 ),
+              ),
               );
             },
           ),

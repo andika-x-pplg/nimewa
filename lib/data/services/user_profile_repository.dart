@@ -35,6 +35,7 @@ class UserProfileRepository extends ChangeNotifier {
   DateTime? _joinedAt;
   int _exp = 0;
   final Map<String, WatchHistoryEntry> _history = {};
+  final Map<String, Map<int, WatchHistoryEntry>> _episodePositions = {};
   bool _initialized = false;
   Future<void> _persistChain = Future<void>.value();
 
@@ -119,6 +120,28 @@ class UserProfileRepository extends ChangeNotifier {
                   final entry = WatchHistoryEntry.fromJson(item);
                   if (entry.canonicalKey.isNotEmpty) {
                     _history[entry.canonicalKey] = entry;
+                    _episodePositions.putIfAbsent(
+                      entry.canonicalKey,
+                      () => {},
+                    )[entry.episodeNumber] = entry;
+                  }
+                }
+              }
+            }
+            final epMap = decoded['episodePositions'];
+            if (epMap is Map<String, dynamic>) {
+              for (final mapEntry in epMap.entries) {
+                final list = mapEntry.value;
+                if (list is List) {
+                  final perEp = _episodePositions.putIfAbsent(
+                    mapEntry.key,
+                    () => {},
+                  );
+                  for (final item in list) {
+                    if (item is Map<String, dynamic>) {
+                      final entry = WatchHistoryEntry.fromJson(item);
+                      perEp[entry.episodeNumber] = entry;
+                    }
                   }
                 }
               }
@@ -147,6 +170,12 @@ class UserProfileRepository extends ChangeNotifier {
           'joinedAt': joinedAt.toIso8601String(),
           'exp': _exp,
           'history': watchHistory.map((e) => e.toJson()).toList(),
+          'episodePositions': _episodePositions.map(
+            (k, v) => MapEntry(
+              k,
+              v.values.map((e) => e.toJson()).toList(),
+            ),
+          ),
         });
         await file.writeAsString(payload);
       } catch (_) {
@@ -193,7 +222,7 @@ class UserProfileRepository extends ChangeNotifier {
       aniListId: detail.aniListId,
       title: detail.title,
     );
-    _history[key] = WatchHistoryEntry(
+    final entry = WatchHistoryEntry(
       canonicalKey: key,
       animeId: detail.id,
       aniListId: detail.aniListId,
@@ -205,6 +234,8 @@ class UserProfileRepository extends ChangeNotifier {
       durationSeconds: durationSeconds < 0 ? 0 : durationSeconds,
       watchedAt: _clock(),
     );
+    _history[key] = entry;
+    _episodePositions.putIfAbsent(key, () => {})[episodeNumber] = entry;
     notifyListeners();
     await _persist();
   }
@@ -220,10 +251,30 @@ class UserProfileRepository extends ChangeNotifier {
       aniListId: aniListId,
       title: title,
     );
-    final entry = _history[key];
-    if (entry == null || entry.episodeNumber != episodeNumber) return null;
-    if (entry.positionSeconds <= 0) return null;
+    final epEntry = _episodePositions[key]?[episodeNumber];
+    final entry = epEntry ??
+        (_history[key]?.episodeNumber == episodeNumber ? _history[key] : null);
+    if (entry == null || entry.positionSeconds <= 0) return null;
     return Duration(seconds: entry.positionSeconds);
+  }
+
+  /// Returns `0.0..1.0` watch progress fraction for a specific episode.
+  double getEpisodeProgressFraction(
+    String animeId,
+    int episodeNumber, {
+    int aniListId = 0,
+    String title = '',
+  }) {
+    final key = MyListRepository.canonicalKeyFor(
+      animeId,
+      aniListId: aniListId,
+      title: title,
+    );
+    final epEntry = _episodePositions[key]?[episodeNumber];
+    final entry = epEntry ??
+        (_history[key]?.episodeNumber == episodeNumber ? _history[key] : null);
+    if (entry == null) return 0.0;
+    return entry.progressFraction;
   }
 
   Future<void> removeHistoryEntry(String canonicalKey) async {
