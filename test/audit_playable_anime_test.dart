@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:nimeva/data/services/anilist_api_client.dart';
 import 'package:nimeva/data/services/anime_stream_resolver.dart';
 import 'package:nimeva/data/services/anime_stream_service.dart';
 import 'package:nimeva/data/services/owner_video_repository.dart';
@@ -95,6 +96,59 @@ void main() {
       isFalse,
     );
     expect(issues, isEmpty);
+  });
+
+  test('Boku no Kokoro S1 & S2 streams and 9 added anime posters/IDs are valid and distinct', () {
+    expect(AnimeStreamResolver.hasCompleteEpisodes('153152', 'Boku no Kokoro no Yabai Yatsu'), isTrue);
+    expect(AnimeStreamResolver.hasCompleteEpisodes('166216', 'Boku no Kokoro no Yabai Yatsu 2nd Season'), isTrue);
+    expect(AnimeStreamResolver.hasCompleteEpisodes('182317', 'Boku no Kokoro no Yabai Yatsu Movie'), isFalse);
+    expect(AnimeStreamResolver.hasCompleteEpisodes('170221', 'Boku no Kokoro no Yabai Yatsu: Twi-Yaba'), isFalse);
+    expect(AnimeStreamResolver.hasCompleteEpisodes('209247', 'Boku no Kokoro no Yabai Yatsu 3rd Season'), isFalse);
+
+    final s1Urls = List.generate(
+      12,
+      (i) => AnimeStreamResolver.resolveStreamUrl(
+        animeId: '153152',
+        animeTitle: 'The Dangers in My Heart',
+        server: 'Server 1 (Fast HD)',
+        episodeNumber: i + 1,
+      ),
+    );
+    expect(s1Urls.every((u) => u.startsWith('https://archive.org/')), isTrue);
+    expect(s1Urls.toSet().length, 12);
+
+    final s2Urls = List.generate(
+      13,
+      (i) => AnimeStreamResolver.resolveStreamUrl(
+        animeId: '166216',
+        animeTitle: 'The Dangers in My Heart Season 2',
+        server: 'Server 1 (Fast HD)',
+        episodeNumber: i + 1,
+      ),
+    );
+    expect(s2Urls.every((u) => u.startsWith('https://archive.org/')), isTrue);
+    expect(s2Urls.toSet().length, 13);
+
+    const addedIds = {
+      '153152',
+      '166216',
+      '127911',
+      '132405',
+      '154768',
+      '143338',
+      '163623',
+      '170942',
+      '177552',
+    };
+    final addedItems = AniListApiClient.cachedPopularAnime
+        .where((a) => addedIds.contains(a.id))
+        .toList();
+    expect(addedItems.length, 9);
+    expect(addedItems.map((a) => a.posterUrl).toSet().length, 9);
+    expect(addedItems.map((a) => a.backdropUrl).toSet().length, 9);
+    for (final item in addedItems) {
+      expect(item.aniListId, int.parse(item.id));
+    }
   });
 }
 

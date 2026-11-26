@@ -44,7 +44,7 @@ class AnimeStreamResolver {
     '21355': 'rezero',
     '9253': 'steins-gate',
     '153152': 'boku-no-kokoro',
-    '165215': 'boku-no-kokoro-s2',
+    '166216': 'boku-no-kokoro-s2',
     '21827': 'your-name',
     '152865': 'haikyuu-movie',
     '20954': 'silent-voice',
@@ -84,6 +84,8 @@ class AnimeStreamResolver {
     'silent-voice',
     'frieren',
     'one-punch-man',
+    'boku-no-kokoro',
+    'boku-no-kokoro-s2',
   };
 
   /// Set of anime keys known to be incomplete or lacking authentic episode files.
@@ -109,8 +111,6 @@ class AnimeStreamResolver {
     'steins-gate',
     'one-piece',
     'yosuga-no-sora',
-    'boku-no-kokoro',
-    'boku-no-kokoro-s2',
   };
 
   /// Returns true if and only if the anime or season has a complete, authentic set
@@ -612,12 +612,17 @@ class AnimeStreamResolver {
       return 'jujutsu-kaisen';
     }
 
-    // Boku no Kokoro no Yabai Yatsu / The Dangers in My Heart
-    if (combined.contains('boku no kokoro') ||
-        combined.contains('dangers in my heart') ||
-        combined.contains('僕の心のヤバイやつ') ||
-        id.startsWith('boku-no-kokoro')) {
-      if (season >= 2 || id == '165215' || id == 'boku-no-kokoro-s2') {
+    // Boku no Kokoro no Yabai Yatsu / The Dangers in My Heart (TV S1 & S2 only)
+    if ((combined.contains('boku no kokoro') ||
+            combined.contains('dangers in my heart') ||
+            combined.contains('僕の心のヤバイやつ') ||
+            id.startsWith('boku-no-kokoro')) &&
+        !combined.contains('movie') &&
+        !combined.contains('special') &&
+        !combined.contains('twi-yaba') &&
+        !combined.contains('3rd') &&
+        season <= 2) {
+      if (season == 2 || id == '166216' || id == 'boku-no-kokoro-s2') {
         return 'boku-no-kokoro-s2';
       }
       return 'boku-no-kokoro';
