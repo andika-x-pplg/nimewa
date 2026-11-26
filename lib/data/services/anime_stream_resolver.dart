@@ -35,6 +35,7 @@ class AnimeStreamResolver {
     '131681': 'attack-on-titan-s4-p2',
     '146984': 'attack-on-titan-final-1',
     '162314': 'attack-on-titan-final-2',
+    '101351': 'happy-sugar-life',
     '1535': 'death-note',
     '113415': 'jujutsu-kaisen',
     '131573': 'jujutsu-kaisen-0',
@@ -91,6 +92,7 @@ class AnimeStreamResolver {
     'silent-voice',
     'frieren',
     'one-punch-man',
+    'happy-sugar-life',
   };
 
   /// Set of anime keys known to be incomplete or lacking authentic episode files.
@@ -641,6 +643,14 @@ class AnimeStreamResolver {
       }
       if (season >= 4) return 'attack-on-titan-s4';
       return 'attack-on-titan';
+    }
+
+    // Happy Sugar Life
+    if (combined.contains('happy sugar life') ||
+        combined.contains('ハッピーシュガーライフ') ||
+        id == '101351' ||
+        id == 'happy-sugar-life') {
+      return 'happy-sugar-life';
     }
 
     // Jujutsu Kaisen
@@ -1686,6 +1696,7 @@ class AnimeStreamResolver {
     'dandadan-s2': _buildDandadanS2(),
     'tokyo-revengers-s2': _buildTokyoRevengersS2(),
     'tokyo-revengers-s3': _buildTokyoRevengersS3(),
+    'happy-sugar-life': _buildHappySugarLife(),
   };
 
   /// Returns an authentic episode title for the given anime and episode number
@@ -2077,7 +2088,50 @@ class AnimeStreamResolver {
       'The Dominator of the Universe',
       'The Strongest Hero',
     ],
+    'happy-sugar-life': [
+      'The Sugar Girl Eats Love',
+      'Shio\'s Miniature Garden',
+      'A Long Monochromatic Night',
+      'The Sugar Girl Doesn\'t Notice',
+      'The Taste of Punishment',
+      'We Revolve Around the Moon',
+      'What the Sugar Girl Is Made Of',
+      'Room 1208',
+      'Wedding of Atonement',
+      'A Proposal Under a Starry Sky',
+      'An Eternal Moment with You',
+      'Happy Sugar Life',
+    ],
   };
+
+  // --- Happy Sugar Life (12 Episodes, Japanese Audio + English Sub) ---
+  static List<_AnimeStreamEntry> _buildHappySugarLife() {
+    const itemId = 'shimatta-happy-sugar-life-bd-1080p-flac';
+    const files = [
+      '[Shimatta] Happy Sugar Life - 01 [BD 1080p FLAC][58C23731].mkv',
+      '[Shimatta] Happy Sugar Life - 02 [BD 1080p FLAC][0AA94D32].mkv',
+      '[Shimatta] Happy Sugar Life - 03 [BD 1080p FLAC][652C6807].mkv',
+      '[Shimatta] Happy Sugar Life - 04 [BD 1080p FLAC][E2437895].mkv',
+      '[Shimatta] Happy Sugar Life - 05 [BD 1080p FLAC][EB8B49D5].mkv',
+      '[Shimatta] Happy Sugar Life - 06 [BD 1080p FLAC][96E0B0B8].mkv',
+      '[Shimatta] Happy Sugar Life - 07 [BD 1080p FLAC][F227C265].mkv',
+      '[Shimatta] Happy Sugar Life - 08 [BD 1080p FLAC][31B14098].mkv',
+      '[Shimatta] Happy Sugar Life - 09 [BD 1080p FLAC][ADE54846].mkv',
+      '[Shimatta] Happy Sugar Life - 10 [BD 1080p FLAC][76EDE1B8].mkv',
+      '[Shimatta] Happy Sugar Life - 11 [BD 1080p FLAC][E26A3A75].mkv',
+      '[Shimatta] Happy Sugar Life - 12 [BD 1080p FLAC][2EA25C7B].mkv',
+    ];
+    return files.map((file) {
+      final encoded = Uri.encodeComponent(file);
+      final url = 'https://archive.org/download/$itemId/$encoded';
+      final s3Url = 'https://archive.org/cors/$itemId/$encoded';
+      return _AnimeStreamEntry(
+        server1Url: url,
+        server3Url: s3Url,
+        server4Url: url,
+      );
+    }).toList(growable: false);
+  }
 }
 
 class _AnimeStreamEntry {

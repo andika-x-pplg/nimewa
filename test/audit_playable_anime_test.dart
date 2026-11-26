@@ -181,6 +181,45 @@ void main() {
         reason: '$title should be unavailable, not AoT S1',
       );
     }
+
+    expect(AnimeStreamResolver.hasCompleteEpisodes('101351', 'Happy Sugar Life'), isTrue);
+    final hslUrls = List.generate(
+      12,
+      (i) => AnimeStreamResolver.resolveStreamUrl(
+        animeId: '101351',
+        animeTitle: 'Happy Sugar Life',
+        server: 'Server 1 (Fast HD)',
+        episodeNumber: i + 1,
+      ),
+    );
+    expect(hslUrls.every((u) => u.startsWith('https://archive.org/')), isTrue);
+    expect(hslUrls.toSet().length, 12);
+    expect(
+      AnimeStreamResolver.getEpisodeTitle('101351', 'Happy Sugar Life', 1),
+      'Episode 1: The Sugar Girl Eats Love',
+    );
+
+    const tenBatchIds = {
+      '10620',
+      '101351',
+      '2476',
+      '934',
+      '20613',
+      '15583',
+      '20832',
+      '21517',
+      '101921',
+      '20910',
+    };
+    final tenBatchItems = AniListApiClient.cachedPopularAnime
+        .where((a) => tenBatchIds.contains(a.id))
+        .toList();
+    expect(tenBatchItems.length, 10);
+    expect(tenBatchItems.map((a) => a.posterUrl).toSet().length, 10);
+    expect(tenBatchItems.map((a) => a.backdropUrl).toSet().length, 10);
+    for (final item in tenBatchItems) {
+      expect(item.aniListId, int.parse(item.id));
+    }
   });
 }
 
