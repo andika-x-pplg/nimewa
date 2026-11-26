@@ -100,7 +100,7 @@ void main() {
 
       // History entry shows exact timestamp and resumes AnimeWatchScreen with initialPosition
       expect(find.textContaining('02:05'), findsOneWidget);
-      await tester.tap(find.text('My List Saya'));
+      await tester.tap(find.text('Daftar Saya'));
       expect(navigatedTab, equals(3));
 
       await tester.tap(find.byIcon(Icons.play_arrow_rounded).first);

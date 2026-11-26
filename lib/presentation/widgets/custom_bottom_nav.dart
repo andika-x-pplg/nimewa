@@ -19,10 +19,10 @@ class CustomBottomNavBar extends StatelessWidget {
   final ValueChanged<int> onTap;
 
   static const List<_NavItem> _items = [
-    _NavItem(label: 'Home', icon: Icons.home_rounded),
-    _NavItem(label: 'Explore', icon: Icons.explore_rounded),
+    _NavItem(label: 'Beranda', icon: Icons.home_rounded),
+    _NavItem(label: 'Jelajahi', icon: Icons.explore_rounded),
     _NavItem(label: 'Jadwal', icon: Icons.calendar_month_rounded),
-    _NavItem(label: 'My list', icon: Icons.bookmark_rounded),
+    _NavItem(label: 'Daftarku', icon: Icons.bookmark_rounded),
     _NavItem(label: 'Profile', icon: Icons.person_rounded),
   ];
 

@@ -642,7 +642,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           _buildMenuTile(
             icon: Icons.bookmark_rounded,
-            title: 'My List Saya',
+            title: 'Daftar Saya',
             subtitle: 'Lihat anime Watching, Saved, dan Completed',
             onTap: () => widget.onNavigateTab?.call(3),
           ),

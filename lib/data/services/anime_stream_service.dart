@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'anilist_api_client.dart';
 import 'anime_api_client.dart';
 import 'anime_stream_resolver.dart';
@@ -18,6 +21,52 @@ class AnimeStreamService {
     this.apiClient = const AnimeApiClient(),
     this.anilistApiClient = const AniListApiClient(),
   });
+
+  static final Map<String, String> _synopsisIdCache = {};
+
+  static Future<String> translateSynopsisToIndonesian(String text) async {
+    final clean = text.trim();
+    if (clean.isEmpty) return clean;
+    final cached = _synopsisIdCache[clean];
+    if (cached != null) return cached;
+
+    try {
+      final uri = Uri.https('translate.googleapis.com', '/translate_a/single', {
+        'client': 'gtx',
+        'sl': 'en',
+        'tl': 'id',
+        'dt': 't',
+        'q': clean,
+      });
+      final client = HttpClient();
+      try {
+        final req = await client.getUrl(uri).timeout(const Duration(seconds: 2));
+        final res = await req.close().timeout(const Duration(seconds: 3));
+        if (res.statusCode == 200) {
+          final body = await res.transform(utf8.decoder).join();
+          final decoded = jsonDecode(body);
+          if (decoded is List && decoded.isNotEmpty && decoded.first is List) {
+            final buffer = StringBuffer();
+            for (final segment in decoded.first as List) {
+              if (segment is List && segment.isNotEmpty && segment.first != null) {
+                buffer.write(segment.first.toString());
+              }
+            }
+            final result = buffer.toString().trim();
+            if (result.isNotEmpty) {
+              _synopsisIdCache[clean] = result;
+              return result;
+            }
+          }
+        }
+      } finally {
+        client.close(force: true);
+      }
+    } catch (_) {
+      // Fallback to original synopsis when offline or rate-limited.
+    }
+    return clean;
+  }
 
   /// Fetches spotlight anime (10 items) for home hero carousel.
   Future<List<AnimeItem>> getSpotlightAnime() async {
@@ -71,17 +120,21 @@ class AnimeStreamService {
     if (parsedAniListId != null) {
       try {
         final detail = await anilistApiClient.fetchAnimeDetail(parsedAniListId);
+        final translatedSynopsis =
+            await translateSynopsisToIndonesian(detail.synopsis);
         final hasVideo = AnimeStreamResolver.hasCompleteEpisodes(cleanId, detail.title);
         final key = AnimeStreamResolver.detectAnimeKey(cleanId, detail.title);
         final curated = _curatedDetails[key];
         if (hasVideo && curated != null && curated.episodes.isNotEmpty) {
           return detail.copyWith(
+            synopsis: translatedSynopsis,
             hasVideoAvailable: true,
             episodes: curated.episodes,
             relations: detail.relations.isNotEmpty ? detail.relations : curated.relations,
           );
         }
         return detail.copyWith(
+          synopsis: translatedSynopsis,
           hasVideoAvailable: hasVideo,
           episodes: hasVideo ? detail.episodes : const [],
         );

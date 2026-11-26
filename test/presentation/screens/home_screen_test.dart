@@ -44,10 +44,10 @@ void main() {
 
       // Verify CustomBottomNavBar and all 5 tabs
       expect(find.byType(CustomBottomNavBar), findsOneWidget);
-      expect(find.text('Home'), findsOneWidget);
-      expect(find.text('Explore'), findsOneWidget);
+      expect(find.text('Beranda'), findsOneWidget);
+      expect(find.text('Jelajahi'), findsOneWidget);
       expect(find.text('Jadwal'), findsOneWidget);
-      expect(find.text('My list'), findsOneWidget);
+      expect(find.text('Daftarku'), findsOneWidget);
       expect(find.text('Profile'), findsOneWidget);
     });
 
@@ -61,8 +61,8 @@ void main() {
       CustomBottomNavBar navBar = tester.widget<CustomBottomNavBar>(navBarFinder);
       expect(navBar.currentIndex, equals(0));
 
-      // Tap Explore tab (index 1)
-      await tester.tap(find.text('Explore'));
+      // Tap Jelajahi tab (index 1)
+      await tester.tap(find.text('Jelajahi'));
       await tester.pumpAndSettle();
 
       navBar = tester.widget<CustomBottomNavBar>(navBarFinder);
@@ -75,8 +75,8 @@ void main() {
       navBar = tester.widget<CustomBottomNavBar>(navBarFinder);
       expect(navBar.currentIndex, equals(2));
 
-      // Tap My list tab (index 3)
-      await tester.tap(find.text('My list'));
+      // Tap Daftarku tab (index 3)
+      await tester.tap(find.text('Daftarku'));
       await tester.pumpAndSettle();
 
       navBar = tester.widget<CustomBottomNavBar>(navBarFinder);
@@ -89,8 +89,8 @@ void main() {
       navBar = tester.widget<CustomBottomNavBar>(navBarFinder);
       expect(navBar.currentIndex, equals(4));
 
-      // Tap Home tab (index 0)
-      await tester.tap(find.text('Home'));
+      // Tap Beranda tab (index 0)
+      await tester.tap(find.text('Beranda'));
       await tester.pumpAndSettle();
 
       navBar = tester.widget<CustomBottomNavBar>(navBarFinder);
@@ -127,7 +127,7 @@ void main() {
       expect(find.text('Jelajah'), findsNothing);
 
       // Tap Explore
-      await tester.tap(find.text('Explore'));
+      await tester.tap(find.text('Jelajahi'));
       await tester.pumpAndSettle();
 
       // Now ExploreScreen is rendered with anime cards
@@ -136,7 +136,7 @@ void main() {
       expect(find.byType(AnimeGridCard), findsWidgets);
 
       // Tap Home again
-      await tester.tap(find.text('Home'));
+      await tester.tap(find.text('Beranda'));
       await tester.pumpAndSettle();
 
       expect(find.text('dikzzz'), findsOneWidget);
