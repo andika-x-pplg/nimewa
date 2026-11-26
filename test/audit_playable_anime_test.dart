@@ -9,7 +9,6 @@ void main() {
     final keys = [
       'demon-slayer',
       'demon-slayer-s2',
-      'demon-slayer-s3',
       'demon-slayer-s4',
       'demon-slayer-mugen-tv',
       'attack-on-titan',
@@ -91,6 +90,10 @@ void main() {
       // ignore: avoid_print
       print('ISSUE: $i');
     }
+    expect(
+      AnimeStreamResolver.hasCompleteEpisodes('145139', 'Demon Slayer Swordsmith Village Arc'),
+      isFalse,
+    );
     expect(issues, isEmpty);
   });
 }

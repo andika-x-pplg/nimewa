@@ -721,18 +721,18 @@ class OwnerVideoRepository {
       ));
     }
 
-    // 9. Demon Slayer Season 3 (AniList ID 145139)
+    // 9. Demon Slayer Season 4: Hashira Training Arc (AniList ID 166240, 8 Episodes, Japanese Audio + Sub)
     registerEpisodes(
-      aniListId: 145139,
-      seasonNumber: 3,
-      count: 11,
+      aniListId: 166240,
+      seasonNumber: 4,
+      count: 8,
       baseUrlPattern:
           'https://archive.org/download/knyhgh1243ekrngtfkmrgtihj/knyhgh1243ekrngtfkmrgtihj-hd-{ep}.mp4',
       server3BaseUrlPattern:
           'https://archive.org/cors/knyhgh1243ekrngtfkmrgtihj/knyhgh1243ekrngtfkmrgtihj-hd-{ep}.mp4',
       server4BaseUrlPattern:
           'https://archive.org/download/knyhgh1243ekrngtfkmrgtihj/knyhgh1243ekrngtfkmrgtihj-hd-{ep}.mp4',
-      seriesTitle: 'Demon Slayer S3',
+      seriesTitle: 'Demon Slayer S4',
     );
 
     // 10. Attack on Titan Season 1 (AniList ID 16498, 25 Episodes, Japanese Audio)

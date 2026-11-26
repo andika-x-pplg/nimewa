@@ -48,6 +48,7 @@ class AnimeGridCard extends StatelessWidget {
                           ? AnimeImagePlaceholder(title: item.title)
                           : Image.network(
                               item.posterUrl,
+                              headers: const {'User-Agent': 'Nimeva/1.0'},
                               fit: BoxFit.cover,
                               errorBuilder: (context, error, stackTrace) =>
                                   AnimeImagePlaceholder(
