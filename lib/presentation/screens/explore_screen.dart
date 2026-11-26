@@ -68,6 +68,23 @@ class _ExploreScreenState extends State<ExploreScreen> {
     'Sports',
     'Supernatural',
     'Thriller',
+    'Movie',
+    'Demons',
+    'Harem',
+    'Game',
+    'Historical',
+    'Josei',
+    'Magic',
+    'Martial Arts',
+    'Military',
+    'Parody',
+    'Police',
+    'Samurai',
+    'School',
+    'Shoujo',
+    'Shoujo Ai',
+    'Super Power',
+    'Vampire',
   ];
 
   @override

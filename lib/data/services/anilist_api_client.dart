@@ -185,27 +185,47 @@ query ($page: Int, $perPage: Int) {
     return cachedPopularAnime.skip((page - 1) * limit).take(limit).toList();
   }
 
-  /// Fetches anime filtered by genre.
+  static const Map<String, String> _categoryTagMap = {
+    'isekai': 'Isekai',
+    'demons': 'Demons',
+    'harem': 'Male Harem',
+    'game': 'Video Games',
+    'historical': 'Historical',
+    'josei': 'Josei',
+    'magic': 'Magic',
+    'martial arts': 'Martial Arts',
+    'military': 'Military',
+    'parody': 'Parody',
+    'police': 'Police',
+    'samurai': 'Samurai',
+    'school': 'School',
+    'shoujo': 'Shoujo',
+    'shoujo ai': 'Yuri',
+    'super power': 'Super Power',
+    'vampire': 'Vampire',
+  };
+
+  /// Fetches anime filtered by genre, format (Movie), or AniList tag.
   Future<List<AnimeItem>> fetchAnimeByCategory(
     String genre, {
     int limit = 20,
     int page = 1,
   }) async {
-    const query = r'''
-query ($page: Int, $perPage: Int, $genre: String) {
+    final normalized = genre.trim().toLowerCase();
+    final isMovie = normalized == 'movie';
+    final mappedTag = _categoryTagMap[normalized];
+
+    final String query;
+    final Map<String, dynamic> variables;
+
+    if (isMovie) {
+      query = r'''
+query ($page: Int, $perPage: Int) {
   Page(page: $page, perPage: $perPage) {
-    media(type: ANIME, genre: $genre, sort: [POPULARITY_DESC]) {
+    media(type: ANIME, format: MOVIE, sort: [POPULARITY_DESC]) {
       id
-      title {
-        romaji
-        english
-        native
-      }
-      coverImage {
-        extraLarge
-        large
-        color
-      }
+      title { romaji english native }
+      coverImage { extraLarge large color }
       bannerImage
       episodes
       season
@@ -218,11 +238,53 @@ query ($page: Int, $perPage: Int, $genre: String) {
   }
 }
 ''';
+      variables = {'page': page, 'perPage': limit};
+    } else if (mappedTag != null) {
+      query = r'''
+query ($page: Int, $perPage: Int, $tag: String) {
+  Page(page: $page, perPage: $perPage) {
+    media(type: ANIME, tag: $tag, sort: [POPULARITY_DESC]) {
+      id
+      title { romaji english native }
+      coverImage { extraLarge large color }
+      bannerImage
+      episodes
+      season
+      seasonYear
+      status
+      averageScore
+      description
+      genres
+    }
+  }
+}
+''';
+      variables = {'page': page, 'perPage': limit, 'tag': mappedTag};
+    } else {
+      query = r'''
+query ($page: Int, $perPage: Int, $genre: String) {
+  Page(page: $page, perPage: $perPage) {
+    media(type: ANIME, genre: $genre, sort: [POPULARITY_DESC]) {
+      id
+      title { romaji english native }
+      coverImage { extraLarge large color }
+      bannerImage
+      episodes
+      season
+      seasonYear
+      status
+      averageScore
+      description
+      genres
+    }
+  }
+}
+''';
+      variables = {'page': page, 'perPage': limit, 'genre': genre};
+    }
+
     try {
-      final json = await _postGraphQL(
-        query,
-        {'page': page, 'perPage': limit, 'genre': genre},
-      );
+      final json = await _postGraphQL(query, variables);
       final mediaList = json['data']?['Page']?['media'] as List<dynamic>?;
       if (mediaList != null && mediaList.isNotEmpty) {
         return mediaList
