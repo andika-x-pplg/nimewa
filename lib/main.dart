@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'core/theme/app_theme.dart';
-import 'presentation/screens/home_screen.dart';
+import 'presentation/screens/splash_launch_screen.dart';
 
 void main() {
   runApp(const NimevaApp());
@@ -17,7 +17,7 @@ class NimevaApp extends StatelessWidget {
       title: 'Nimeva',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkTheme,
-      home: const HomeScreen(),
+      home: const SplashLaunchScreen(),
     );
   }
 }
