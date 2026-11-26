@@ -200,8 +200,17 @@ class AnimeStreamService {
       return _curatedDetails['one-punch-man-s2']!;
     }
 
-    // Fetch from live API
-    return apiClient.fetchAnimeDetail(cleanId);
+    // Fetch from live API and align episode count with resolver streams
+    final fetched = await apiClient.fetchAnimeDetail(cleanId);
+    final key = AnimeStreamResolver.detectAnimeKey(cleanId, fetched.title);
+    final expectedCount = AnimeStreamResolver.episodeCountForKey(key);
+    if (expectedCount > 0 && fetched.episodes.length > expectedCount) {
+      return fetched.copyWith(
+        totalEpisodes: expectedCount,
+        episodes: fetched.episodes.take(expectedCount).toList(),
+      );
+    }
+    return fetched;
   }
 
   /// Fetches video streaming URL for a specific episode.

@@ -110,6 +110,9 @@ class AnimeStreamResolver {
 
   /// Returns true if and only if the anime or season has a complete, authentic set
   /// of episodes starting from Episode 1 up to its full count without missing episodes.
+  static int episodeCountForKey(String key) =>
+      _animeEpisodeMap[key]?.length ?? 0;
+
   static bool hasCompleteEpisodes(String animeId, String animeTitle) {
     final cleanId = animeId.toLowerCase().trim();
     final cleanTitle = animeTitle.toLowerCase().trim();
@@ -988,11 +991,12 @@ class AnimeStreamResolver {
   // --- Demon Slayer Season 3 (11 Episodes, Swordsmith Village Arc) ---
   static List<_AnimeStreamEntry> _buildKnySeason3() {
     return List.generate(11, (index) {
-      const url =
-          'https://archive.org/download/knyhgh1243ekrngtfkmrgtihj/knyhgh1243ekrngtfkmrgtihj-hd-1.mp4';
-      const s3Url =
-          'https://archive.org/cors/knyhgh1243ekrngtfkmrgtihj/knyhgh1243ekrngtfkmrgtihj-hd-1.mp4';
-      return const _AnimeStreamEntry(
+      final epNum = index + 1;
+      final url =
+          'https://archive.org/download/knyhgh1243ekrngtfkmrgtihj/knyhgh1243ekrngtfkmrgtihj-hd-$epNum.mp4';
+      final s3Url =
+          'https://archive.org/cors/knyhgh1243ekrngtfkmrgtihj/knyhgh1243ekrngtfkmrgtihj-hd-$epNum.mp4';
+      return _AnimeStreamEntry(
         server1Url: url,
         server3Url: s3Url,
         server4Url: url,

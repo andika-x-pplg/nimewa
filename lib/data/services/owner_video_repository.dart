@@ -727,11 +727,11 @@ class OwnerVideoRepository {
       seasonNumber: 3,
       count: 11,
       baseUrlPattern:
-          'https://archive.org/download/knyhgh1243ekrngtfkmrgtihj/knyhgh1243ekrngtfkmrgtihj-hd-1.mp4',
+          'https://archive.org/download/knyhgh1243ekrngtfkmrgtihj/knyhgh1243ekrngtfkmrgtihj-hd-{ep}.mp4',
       server3BaseUrlPattern:
-          'https://archive.org/cors/knyhgh1243ekrngtfkmrgtihj/knyhgh1243ekrngtfkmrgtihj-hd-1.mp4',
+          'https://archive.org/cors/knyhgh1243ekrngtfkmrgtihj/knyhgh1243ekrngtfkmrgtihj-hd-{ep}.mp4',
       server4BaseUrlPattern:
-          'https://archive.org/download/knyhgh1243ekrngtfkmrgtihj/knyhgh1243ekrngtfkmrgtihj-hd-1.mp4',
+          'https://archive.org/download/knyhgh1243ekrngtfkmrgtihj/knyhgh1243ekrngtfkmrgtihj-hd-{ep}.mp4',
       seriesTitle: 'Demon Slayer S3',
     );
 
