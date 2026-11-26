@@ -219,7 +219,7 @@ void main() {
         server: 'Server 1 (Fast HD)',
         episodeNumber: 1,
       ),
-      'https://archive.org/download/ep.-1.v-0.1639299147.1080p/EP.1.v0.1639299147.1080p.mp4',
+      'https://archive.org/download/spirited-away-sub_202609/AnimePahe_Sen_to_Chihiro_no_Kamikakushi_-_01_BD_1038p_Arid.mp4',
     );
     const batch2Ids = {
       '199',

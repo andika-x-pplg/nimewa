@@ -2147,12 +2147,12 @@ class AnimeStreamResolver {
     ],
   };
 
-  // --- Spirited Away (Movie, Japanese Audio + English Sub 1080p) ---
+  // --- Spirited Away (Movie, Japanese Audio + English Hardsub 1080p BD) ---
   static List<_AnimeStreamEntry> _buildSpiritedAway() {
     const url =
-        'https://archive.org/download/ep.-1.v-0.1639299147.1080p/EP.1.v0.1639299147.1080p.mp4';
+        'https://archive.org/download/spirited-away-sub_202609/AnimePahe_Sen_to_Chihiro_no_Kamikakushi_-_01_BD_1038p_Arid.mp4';
     const s3Url =
-        'https://archive.org/cors/ep.-1.v-0.1639299147.1080p/EP.1.v0.1639299147.1080p.mp4';
+        'https://archive.org/cors/spirited-away-sub_202609/AnimePahe_Sen_to_Chihiro_no_Kamikakushi_-_01_BD_1038p_Arid.mp4';
     return const [
       _AnimeStreamEntry(
         server1Url: url,
