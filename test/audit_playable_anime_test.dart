@@ -137,6 +137,30 @@ void main() {
     for (final item in addedItems) {
       expect(item.aniListId, int.parse(item.id));
     }
+
+    const aotSequelIds = {
+      '20958',
+      '99147',
+      '104578',
+      '110277',
+      '131681',
+      '146984',
+      '162314',
+    };
+    final aotItems = AniListApiClient.cachedPopularAnime
+        .where((a) => aotSequelIds.contains(a.id))
+        .toList();
+    expect(aotItems.length, 7);
+    expect(aotItems.map((a) => a.posterUrl).toSet().length, 7);
+    expect(aotItems.map((a) => a.backdropUrl).toSet().length, 7);
+    for (final item in aotItems) {
+      expect(item.aniListId, int.parse(item.id));
+      expect(
+        AnimeStreamResolver.hasCompleteEpisodes(item.id, item.title),
+        isFalse,
+        reason: '${item.title} should not falsely fall back to AoT S1',
+      );
+    }
   });
 }
 

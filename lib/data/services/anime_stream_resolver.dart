@@ -28,6 +28,13 @@ class AnimeStreamResolver {
     '171018': 'dandadan',
     '178526': 'dandadan-s2',
     '16498': 'attack-on-titan',
+    '20958': 'attack-on-titan-s2',
+    '99147': 'attack-on-titan-s3',
+    '104578': 'attack-on-titan-s3-p2',
+    '110277': 'attack-on-titan-s4',
+    '131681': 'attack-on-titan-s4-p2',
+    '146984': 'attack-on-titan-final-1',
+    '162314': 'attack-on-titan-final-2',
     '1535': 'death-note',
     '113415': 'jujutsu-kaisen',
     '131573': 'jujutsu-kaisen-0',
@@ -111,6 +118,13 @@ class AnimeStreamResolver {
     'yosuga-no-sora',
     'boku-no-kokoro',
     'boku-no-kokoro-s2',
+    'attack-on-titan-s2',
+    'attack-on-titan-s3',
+    'attack-on-titan-s3-p2',
+    'attack-on-titan-s4',
+    'attack-on-titan-s4-p2',
+    'attack-on-titan-final-1',
+    'attack-on-titan-final-2',
   };
 
   /// Returns true if and only if the anime or season has a complete, authentic set
@@ -593,8 +607,22 @@ class AnimeStreamResolver {
         id == '7442' ||
         id == 'attack-on-titan-final' ||
         id.startsWith('attack-on-titan')) {
+      if (combined.contains('final chapters') || combined.contains('kanketsu')) {
+        return combined.contains('special 2') || combined.contains('kouhen')
+            ? 'attack-on-titan-final-2'
+            : 'attack-on-titan-final-1';
+      }
+      if (combined.contains('final season')) {
+        return combined.contains('part 2')
+            ? 'attack-on-titan-s4-p2'
+            : 'attack-on-titan-s4';
+      }
       if (season == 2) return 'attack-on-titan-s2';
-      if (season == 3) return 'attack-on-titan-s3';
+      if (season == 3) {
+        return combined.contains('part 2')
+            ? 'attack-on-titan-s3-p2'
+            : 'attack-on-titan-s3';
+      }
       if (season >= 4) return 'attack-on-titan-s4';
       return 'attack-on-titan';
     }
