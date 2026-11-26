@@ -607,6 +607,22 @@ class AnimeStreamResolver {
         id == '7442' ||
         id == 'attack-on-titan-final' ||
         id.startsWith('attack-on-titan')) {
+      if (combined.contains('lost girls') ||
+          combined.contains('junior high') ||
+          combined.contains('chimi') ||
+          combined.contains('ova') ||
+          combined.contains('no regrets') ||
+          combined.contains('chronicle') ||
+          combined.contains('crimson bow') ||
+          combined.contains('wings of freedom') ||
+          combined.contains('roar of awakening') ||
+          combined.contains('picture drama') ||
+          combined.contains('last attack') ||
+          combined.contains('part i') ||
+          combined.contains('movie') ||
+          combined.contains('film')) {
+        return 'attack-on-titan-spinoff';
+      }
       if (combined.contains('final chapters') || combined.contains('kanketsu')) {
         return combined.contains('special 2') || combined.contains('kouhen')
             ? 'attack-on-titan-final-2'

@@ -161,6 +161,26 @@ void main() {
         reason: '${item.title} should not falsely fall back to AoT S1',
       );
     }
+
+    const aotSpinoffs = [
+      'Attack on Titan: Lost Girls',
+      'Attack on Titan: Junior High',
+      'Attack on Titan Part I: Crimson Bow and Arrow',
+      'Attack on Titan Part II: Wings of Freedom',
+      'Attack on Titan: The Roar of Awakening',
+      'Attack on Titan: No Regrets',
+      'Attack on Titan ~Chronicle~',
+      'Attack on Titan OVA',
+      'Attack on Titan Picture Drama',
+      'Shingeki no Kyojin: Chimi Kyara Gekijou',
+    ];
+    for (final title in aotSpinoffs) {
+      expect(
+        AnimeStreamResolver.hasCompleteEpisodes('999000', title),
+        isFalse,
+        reason: '$title should be unavailable, not AoT S1',
+      );
+    }
   });
 }
 
