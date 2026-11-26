@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -9,6 +7,7 @@ import '../../core/theme/app_typography.dart';
 import '../../data/models/anime_detail.dart';
 import '../../data/models/episode_item.dart';
 import '../../data/services/anime_stream_resolver.dart';
+import '../../data/services/download_repository.dart';
 import '../../data/services/my_list_repository.dart';
 import '../../data/services/user_profile_repository.dart';
 import '../widgets/episode_progress_border.dart';
@@ -1410,78 +1409,14 @@ class _AnimeWatchScreenState extends State<AnimeWatchScreen> {
       return;
     }
 
-    setState(() {
-      _isDownloading = true;
-      _downloadProgress = 0.0;
-    });
-
-    final client = HttpClient();
-    try {
-      final request = await client.getUrl(uri);
-      final response = await request.close();
-      if (response.statusCode < 200 || response.statusCode >= 300) {
-        throw HttpException('HTTP ${response.statusCode}');
-      }
-
-      final safeTitle = widget.anime.title
-          .replaceAll(RegExp(r'[^a-zA-Z0-9_\-]+'), '_')
-          .replaceAll(RegExp(r'_+'), '_');
-      final fileName = '${safeTitle}_Ep_${_currentEpisode.episodeNumber}.mp4';
-
-      Directory targetDir = Directory.systemTemp;
-      if (Platform.isAndroid) {
-        final dlDir = Directory('/storage/emulated/0/Download/Nimeva');
-        try {
-          if (!dlDir.existsSync()) dlDir.createSync(recursive: true);
-          targetDir = dlDir;
-        } catch (_) {}
-      }
-      final outFile = File('${targetDir.path}/$fileName');
-      final sink = outFile.openWrite();
-      final totalBytes = response.contentLength;
-      int received = 0;
-
-      await for (final chunk in response) {
-        sink.add(chunk);
-        received += chunk.length;
-        if (totalBytes > 0 && mounted) {
-          setState(() => _downloadProgress = received / totalBytes);
-        }
-      }
-      await sink.flush();
-      await sink.close();
-
-      if (mounted) {
-        messenger.hideCurrentSnackBar();
-        messenger.showSnackBar(
-          SnackBar(
-            content: Text(
-              'Episode ${_currentEpisode.episodeNumber} selesai diunduh ($fileName)',
-            ),
-            duration: const Duration(seconds: 3),
-          ),
-        );
-      }
-    } catch (_) {
-      if (mounted) {
-        messenger.hideCurrentSnackBar();
-        messenger.showSnackBar(
-          SnackBar(
-            content: Text(
-              'Gagal mengunduh Episode ${_currentEpisode.episodeNumber}. Coba ganti server.',
-            ),
-          ),
-        );
-      }
-    } finally {
-      client.close(force: true);
-      if (mounted) {
-        setState(() {
-          _isDownloading = false;
-          _downloadProgress = null;
-        });
-      }
-    }
+    await DownloadRepository.instance.startDownload(
+      animeId: widget.anime.id,
+      title: widget.anime.title,
+      posterUrl: widget.anime.posterUrl,
+      episodeNumber: _currentEpisode.episodeNumber,
+      episodeTitle: _currentEpisode.title,
+      streamUrl: url,
+    );
   }
 
   Widget _buildQuickActions() {

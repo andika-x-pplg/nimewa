@@ -12,6 +12,7 @@ import '../widgets/animated_rank_badge.dart';
 import '../widgets/anime_image_placeholder.dart';
 import 'anime_detail_screen.dart';
 import 'anime_watch_screen.dart';
+import 'downloads_screen.dart';
 import 'rank_list_screen.dart';
 import 'watched_anime_list_screen.dart';
 
@@ -652,6 +653,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
             title: 'Jadwal Rilis Anime',
             subtitle: 'Pantau jadwal tayang mingguan',
             onTap: () => widget.onNavigateTab?.call(2),
+          ),
+          const Divider(height: 1, color: AppColors.borderSubtle),
+          _buildMenuTile(
+            icon: Icons.download_done_rounded,
+            title: 'Download',
+            subtitle: 'Lihat, jeda, lanjutkan, atau hapus unduhan',
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const DownloadsScreen(),
+                ),
+              );
+            },
           ),
           if (hasHistory) ...[
             const Divider(height: 1, color: AppColors.borderSubtle),
