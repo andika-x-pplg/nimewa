@@ -374,5 +374,84 @@ void main() {
       expect(find.byKey(const Key('subtitle_sync_bar')), findsNothing);
       expect(find.byKey(const Key('in_player_live_translator_box')), findsNothing);
     });
+
+    testWidgets('shows synopsis with Lihat banyak/sedikit toggle and Platform Resmi button next to Server 4', (tester) async {
+      tester.view.physicalSize = const Size(500, 1200);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      final longSynopsisAnime = AnimeDetail(
+        id: 'solo-leveling',
+        title: 'Solo Leveling',
+        japaneseTitle: '俺だけレベルアップな件',
+        synopsis:
+            'In a world where hunters must battle deadly monsters to protect humanity, Sung Jinwoo is known as the weakest hunter of all mankind until a mysterious System chooses him as its sole player.',
+        rating: 8.7,
+        releaseYear: 2024,
+        status: 'Ongoing',
+        genres: ['Action', 'Fantasy'],
+        studio: 'A-1 Pictures',
+        posterUrl: '',
+        backdropUrl: '',
+        totalEpisodes: 12,
+        episodes: testEpisodes,
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.darkTheme,
+          home: AnimeWatchScreen(
+            anime: longSynopsisAnime,
+            initialEpisode: testEpisodes.first,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Platform Resmi'), findsOneWidget);
+      expect(find.text('Sinopsis'), findsOneWidget);
+      expect(find.text('Lihat banyak'), findsOneWidget);
+
+      await tester.ensureVisible(find.byKey(const Key('btn_toggle_synopsis')));
+      await tester.tap(find.byKey(const Key('btn_toggle_synopsis')));
+      await tester.pumpAndSettle();
+      expect(find.text('Lihat sedikit'), findsOneWidget);
+    });
+
+    testWidgets('fullscreen landscape mode exposes lock, brightness, volume, full layar, and episode nav controls', (tester) async {
+      tester.view.physicalSize = const Size(500, 1200);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await tester.pumpWidget(createWatchScreen());
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('video_fullscreen_button')));
+      await tester.pumpAndSettle();
+      tester.view.physicalSize = const Size(900, 400);
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('video_lock_button')), findsOneWidget);
+      expect(find.byKey(const Key('video_brightness_slider')), findsOneWidget);
+      expect(find.byKey(const Key('video_volume_slider')), findsOneWidget);
+      expect(find.byKey(const Key('video_full_screen_fill_button')), findsOneWidget);
+      expect(find.byKey(const Key('video_fullscreen_prev_ep')), findsOneWidget);
+      expect(find.byKey(const Key('video_fullscreen_next_ep')), findsOneWidget);
+      expect(find.text('Ep 2'), findsOneWidget);
+
+      // Lock screen -> hides center & slider controls
+      await tester.tap(find.byKey(const Key('video_lock_button')));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('video_forward_10')), findsNothing);
+      expect(find.byKey(const Key('video_volume_slider')), findsNothing);
+      expect(find.byKey(const Key('video_lock_button')), findsOneWidget);
+
+      // Unlock screen -> restores controls
+      await tester.tap(find.byKey(const Key('video_lock_button')));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('video_forward_10')), findsOneWidget);
+    });
   });
 }
