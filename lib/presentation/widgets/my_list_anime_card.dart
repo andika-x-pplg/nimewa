@@ -275,7 +275,7 @@ class MyListAnimeCard extends StatelessWidget {
             const PopupMenuItem<String>(
               value: 'watching',
               child: Text(
-                'Pindah ke Watching',
+                'Pindah ke Ditonton',
                 style: TextStyle(color: AppColors.textPrimary),
               ),
             ),
@@ -283,7 +283,7 @@ class MyListAnimeCard extends StatelessWidget {
             const PopupMenuItem<String>(
               value: 'saved',
               child: Text(
-                'Pindah ke Saved',
+                'Pindah ke Disimpan',
                 style: TextStyle(color: AppColors.textPrimary),
               ),
             ),
@@ -291,7 +291,7 @@ class MyListAnimeCard extends StatelessWidget {
             const PopupMenuItem<String>(
               value: 'completed',
               child: Text(
-                'Tandai Selesai (Completed)',
+                'Tandai Selesai',
                 style: TextStyle(color: AppColors.textPrimary),
               ),
             ),
@@ -299,7 +299,7 @@ class MyListAnimeCard extends StatelessWidget {
             const PopupMenuItem<String>(
               value: 'delete',
               child: Text(
-                'Hapus dari My List',
+                'Hapus dari Daftarku',
                 style: TextStyle(
                   color: Color(0xFFFF5A5F),
                   fontWeight: FontWeight.w600,

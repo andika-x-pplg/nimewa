@@ -129,6 +129,7 @@ void main() {
       final repo = MyListRepository(disablePersistence: true);
       await repo.init();
       final detail = makeDetail(totalEpisodes: 3);
+      await repo.toggleSaveFromDetail(detail);
 
       await tester.pumpWidget(
         MaterialApp(

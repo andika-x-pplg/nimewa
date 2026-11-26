@@ -77,25 +77,25 @@ void main() {
       await tester.pumpWidget(wrapScreen(repo));
       await tester.pumpAndSettle();
 
-      expect(find.text('My list'), findsOneWidget);
-      expect(find.text('Watching · 1'), findsOneWidget);
-      expect(find.text('Saved · 1'), findsOneWidget);
-      expect(find.text('Completed · 1'), findsOneWidget);
+      expect(find.text('Daftarku'), findsOneWidget);
+      expect(find.text('Ditonton · 1'), findsOneWidget);
+      expect(find.text('Disimpan · 1'), findsOneWidget);
+      expect(find.text('Selesai · 1'), findsOneWidget);
 
-      // Default tab is Watching
+      // Default tab is Ditonton
       expect(find.text('Frieren'), findsOneWidget);
       expect(find.text('One Piece'), findsNothing);
       expect(find.text('Death Note'), findsNothing);
       expect(find.textContaining('1 anime'), findsOneWidget);
 
-      // Switch to Saved
-      await tester.tap(find.text('Saved · 1'));
+      // Switch to Disimpan
+      await tester.tap(find.text('Disimpan · 1'));
       await tester.pumpAndSettle();
       expect(find.text('One Piece'), findsOneWidget);
       expect(find.text('Frieren'), findsNothing);
 
-      // Switch to Completed
-      await tester.tap(find.text('Completed · 1'));
+      // Switch to Selesai
+      await tester.tap(find.text('Selesai · 1'));
       await tester.pumpAndSettle();
       expect(find.text('Death Note'), findsOneWidget);
       expect(find.text('One Piece'), findsNothing);
@@ -153,23 +153,23 @@ void main() {
 
       expect(repo.findEntry('154587', title: 'Frieren')?.watchedEpisode, equals(12));
 
-      // Change status to Completed
+      // Change status to Selesai
       await tester.tap(menuBtn);
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Tandai Selesai (Completed)'));
+      await tester.tap(find.text('Tandai Selesai'));
       await tester.pumpAndSettle();
 
       expect(repo.countByStatus(MyListStatus.watching), equals(0));
       expect(repo.countByStatus(MyListStatus.completed), equals(1));
 
-      // Switch to Completed tab and delete with Undo
-      await tester.tap(find.text('Completed · 1'));
+      // Switch to Selesai tab and delete with Undo
+      await tester.tap(find.text('Selesai · 1'));
       await tester.pumpAndSettle();
       expect(find.text('Frieren'), findsOneWidget);
 
       await tester.tap(menuBtn);
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Hapus dari My List'));
+      await tester.tap(find.text('Hapus dari Daftarku'));
       await tester.pumpAndSettle();
 
       expect(repo.countByStatus(MyListStatus.completed), equals(0));

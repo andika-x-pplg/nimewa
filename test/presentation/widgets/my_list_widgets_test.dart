@@ -146,13 +146,13 @@ void main() {
 
       await tester.tap(menuBtn);
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Tandai Selesai (Completed)'));
+      await tester.tap(find.text('Tandai Selesai'));
       await tester.pumpAndSettle();
       expect(changedStatus, equals(MyListStatus.completed));
 
       await tester.tap(menuBtn);
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Hapus dari My List'));
+      await tester.tap(find.text('Hapus dari Daftarku'));
       await tester.pumpAndSettle();
       expect(deleted, isTrue);
     });

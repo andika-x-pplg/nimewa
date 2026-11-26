@@ -70,11 +70,11 @@ class _MyListScreenState extends State<MyListScreen> {
     final count = _repo.countByStatus(status);
     switch (status) {
       case MyListStatus.watching:
-        return 'Watching · $count';
+        return 'Ditonton · $count';
       case MyListStatus.saved:
-        return 'Saved · $count';
+        return 'Disimpan · $count';
       case MyListStatus.completed:
-        return 'Completed · $count';
+        return 'Selesai · $count';
     }
   }
 
@@ -236,7 +236,7 @@ class _MyListScreenState extends State<MyListScreen> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'My list',
+                          'Daftarku',
                           style: AppTypography.headlineLarge.copyWith(
                             color: AppColors.textPrimary,
                             fontWeight: FontWeight.bold,

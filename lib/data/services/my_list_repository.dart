@@ -332,20 +332,17 @@ class MyListRepository extends ChangeNotifier {
       aniListId: detail.aniListId,
       title: detail.title,
     );
-    final key = existing?.canonicalKey ??
-        canonicalKeyFor(
-          detail.id,
-          aniListId: detail.aniListId,
-          title: detail.title,
-        );
+    // Only update My List progress if the user has already saved this anime.
+    if (existing == null) return;
+    final key = existing.canonicalKey;
 
     final totalEps = max(
-      existing?.totalEpisodes ?? 0,
+      existing.totalEpisodes,
       detail.episodes.isNotEmpty
           ? max(detail.totalEpisodes, detail.episodes.length)
           : detail.totalEpisodes,
     );
-    final nextWatched = max(existing?.watchedEpisode ?? 0, episodeNumber);
+    final nextWatched = max(existing.watchedEpisode, episodeNumber);
     final clampedWatched = totalEps > 0 ? min(nextWatched, totalEps) : nextWatched;
     final nextStatus = (totalEps > 0 && clampedWatched >= totalEps)
         ? MyListStatus.completed
@@ -353,31 +350,25 @@ class MyListRepository extends ChangeNotifier {
 
     _entries[key] = MyListEntry(
       canonicalKey: key,
-      animeId: existing?.animeId.isNotEmpty == true ? existing!.animeId : detail.id,
-      aniListId: detail.aniListId > 0
-          ? detail.aniListId
-          : (existing?.aniListId ?? 0),
+      animeId: existing.animeId.isNotEmpty ? existing.animeId : detail.id,
+      aniListId: detail.aniListId > 0 ? detail.aniListId : existing.aniListId,
       title: detail.title,
       japaneseTitle: detail.japaneseTitle,
-      posterUrl: detail.posterUrl.isNotEmpty
-          ? detail.posterUrl
-          : (existing?.posterUrl ?? ''),
+      posterUrl:
+          detail.posterUrl.isNotEmpty ? detail.posterUrl : existing.posterUrl,
       backdropUrl: detail.backdropUrl.isNotEmpty
           ? detail.backdropUrl
-          : (existing?.backdropUrl ?? ''),
-      rating: detail.rating > 0 ? detail.rating : (existing?.rating ?? 0.0),
-      releaseYear: detail.releaseYear > 0
-          ? detail.releaseYear
-          : (existing?.releaseYear ?? 0),
-      genres: detail.genres.isNotEmpty
-          ? detail.genres
-          : (existing?.genres ?? const []),
+          : existing.backdropUrl,
+      rating: detail.rating > 0 ? detail.rating : existing.rating,
+      releaseYear:
+          detail.releaseYear > 0 ? detail.releaseYear : existing.releaseYear,
+      genres: detail.genres.isNotEmpty ? detail.genres : existing.genres,
       description: detail.synopsis.isNotEmpty
           ? detail.synopsis
-          : (existing?.description ?? ''),
+          : existing.description,
       totalEpisodes: totalEps,
       watchedEpisode: clampedWatched,
-      currentEpisodeTitle: episodeTitle ?? existing?.currentEpisodeTitle,
+      currentEpisodeTitle: episodeTitle ?? existing.currentEpisodeTitle,
       status: nextStatus,
       hasVideoAvailable: true,
       updatedAt: _clock(),

@@ -145,7 +145,7 @@ void main() {
       );
 
       const externalItem = AnimeItem(
-        id: '166240',
+        id: '171018',
         title: 'Dan Da Dan',
         japaneseTitle: 'ダンダダン',
         rating: 8.6,
@@ -155,7 +155,7 @@ void main() {
         posterUrl: '',
         backdropUrl: '',
         episodeInfo: 'SUB · 12 EPS',
-        aniListId: 166240,
+        aniListId: 171018,
         hasVideoAvailable: true, // Even if mock/API item claims true, resolver is authoritative (false)
       );
 
