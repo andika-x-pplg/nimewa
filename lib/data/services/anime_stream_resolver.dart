@@ -88,6 +88,9 @@ class AnimeStreamResolver {
     '2001': 'gurren-lagann',
     '4107': 'gurren-lagann-movie-1',
     '4565': 'gurren-lagann-movie-2',
+    '126546': 'seirei-gensouki',
+    '141182': 'seirei-gensouki-s2',
+    '217578': 'seirei-gensouki-s3',
     '1535': 'death-note',
     '113415': 'jujutsu-kaisen',
     '131573': 'jujutsu-kaisen-0',
@@ -148,6 +151,8 @@ class AnimeStreamResolver {
     'dungeon-meshi',
     'anohana',
     'white-album-2',
+    'seirei-gensouki',
+    'seirei-gensouki-s2',
   };
 
   /// Set of anime keys known to be incomplete or lacking authentic episode files.
@@ -231,6 +236,7 @@ class AnimeStreamResolver {
     'gurren-lagann',
     'gurren-lagann-movie-1',
     'gurren-lagann-movie-2',
+    'seirei-gensouki-s3',
   };
 
   /// Returns true if and only if the anime or season has a complete, authentic set
@@ -817,6 +823,18 @@ class AnimeStreamResolver {
         id == '18245' ||
         id == 'white-album-2') {
       return 'white-album-2';
+    }
+
+    // Seirei Gensouki: Spirit Chronicles (Season 1 & Season 2)
+    if (combined.contains('seirei gensouki') ||
+        combined.contains('spirit chronicles') ||
+        combined.contains('精霊幻想記') ||
+        id.startsWith('seirei-gensouki')) {
+      if (season >= 3 || id == '217578') return 'seirei-gensouki-s3';
+      if (season == 2 || id == '141182' || id == 'seirei-gensouki-s2') {
+        return 'seirei-gensouki-s2';
+      }
+      return 'seirei-gensouki';
     }
 
     // Jujutsu Kaisen
@@ -1870,6 +1888,8 @@ class AnimeStreamResolver {
     'hotarubi-no-mori-e': _buildHotarubiNoMoriE(),
     'anohana': _buildAnohana(),
     'white-album-2': _buildWhiteAlbum2(),
+    'seirei-gensouki': _buildSeireiGensoukiS1(),
+    'seirei-gensouki-s2': _buildSeireiGensoukiS2(),
   };
 
   /// Returns an authentic episode title for the given anime and episode number
@@ -2341,7 +2361,93 @@ class AnimeStreamResolver {
       'Graduation',
       'A Love That Cannot Reach',
     ],
+    'seirei-gensouki': [
+      'Memories of a Previous Life',
+      'Royal Academy',
+      'Kingdom of Lies',
+      'Assassin Girl',
+      'Forest of Spirits',
+      'Festival Night',
+      'Land of Promise',
+      'Royal Lineage',
+      'Each One\'s Decision',
+      'Spirit Awakening',
+      'Silver Bride',
+      'Fated Reunion',
+    ],
+    'seirei-gensouki-s2': [
+      'Before Our Eyes',
+      'To the Yagumo Region',
+      'Hero of Light',
+      'Heroic Descent',
+      'Savior',
+      'Heroic Party',
+      'Ruin and Reunion',
+      'Princess Christina',
+      'Awakening of the Heart',
+      'Battle of the Spirits',
+      'A Reason to Fight',
+      'Bonds Across Time',
+    ],
   };
+
+  // --- Seirei Gensouki Season 1 (12 Episodes, Japanese Audio + English Sub 1080p) ---
+  static List<_AnimeStreamEntry> _buildSeireiGensoukiS1() {
+    const itemId = 'kusathegrass-anime-seirei-gensouki-s1';
+    const files = [
+      '[SubsPlease] Seirei Gensouki S1 - 01 (1080p) [488.mp4',
+      '[SubsPlease] Seirei Gensouki S1 - 02 (1080p) [EDFC5435].mkv.mp4',
+      '[SubsPlease] Seirei Gensouki S1 - 03 (1080p) [B897760D].mkv.mp4',
+      '[SubsPlease] Seirei Gensouki S1 - 04 (1080p) [A27AA2EF].mkv.mp4',
+      '[SubsPlease] Seirei Gensouki S1 - 05 (1080p) [6ABAB137].mkv.mp4',
+      '[SubsPlease] Seirei Gensouki S1 - 06 (1080p) [1A7A01F6].mkv.mp4',
+      '[SubsPlease] Seirei Gensouki S1 - 07 (1080p) [4B83A3EE].mkv.mp4',
+      '[SubsPlease] Seirei Gensouki S1 - 08 (1080p) [7829494B].mkv.mp4',
+      '[SubsPlease] Seirei Gensouki S1 - 09 (1080p) [7DE8C9BE].mkv.mp4',
+      '[SubsPlease] Seirei Gensouki S1 - 10 (1080p) [770E2E76].mkv.mp4',
+      '[SubsPlease] Seirei Gensouki S1 - 11 (1080p) [A2F26758].mkv.mp4',
+      '[SubsPlease] Seirei Gensouki S1 - 12 (1080p) [B62856D9].mkv.mp4',
+    ];
+    return files.map((file) {
+      final encoded = Uri.encodeComponent(file);
+      final url = 'https://archive.org/download/$itemId/$encoded';
+      final s3Url = 'https://archive.org/cors/$itemId/$encoded';
+      return _AnimeStreamEntry(
+        server1Url: url,
+        server3Url: s3Url,
+        server4Url: url,
+      );
+    }).toList(growable: false);
+  }
+
+  // --- Seirei Gensouki Season 2 (12 Episodes, Japanese Audio + English Sub 1080p) ---
+  static List<_AnimeStreamEntry> _buildSeireiGensoukiS2() {
+    const itemId = 'kusathegrass-anime-seirei-gensouki-s2';
+    const files = [
+      '[SubsPlease] Seirei Gensouki S2 - 01 (1080p) [B53E2CC5].mkv.mp4',
+      '[SubsPlease] Seirei Gensouki S2 - 02 (1080p) [B0AE980D].mkv.mp4',
+      '[SubsPlease] Seirei Gensouki S2 - 03 (1080p) [8C8D3863].mkv.mp4',
+      '[SubsPlease] Seirei Gensouki S2 - 04 (1080p) [63A982A7].mkv.mp4',
+      '[SubsPlease] Seirei Gensouki S2 - 05 (1080p) [B2526589].mkv.mp4',
+      '[SubsPlease] Seirei Gensouki S2 - 06 (1080p) [95FA1D8E].mkv.mp4',
+      '[SubsPlease] Seirei Gensouki S2 - 07 (1080p) [5A018FED].mkv.mp4',
+      '[SubsPlease] Seirei Gensouki S2 - 08 (1080p) [E8B23792].mkv.mp4',
+      '[SubsPlease] Seirei Gensouki S2 - 09 (1080p) [D3527F79].mkv.mp4',
+      '[SubsPlease] Seirei Gensouki S2 - 10 (1080p) [395E9FF7].mkv.mp4',
+      '[SubsPlease] Seirei Gensouki S2 - 11 (1080p) [D5355970].mkv.mp4',
+      '[SubsPlease] Seirei Gensouki S2 - 12 (1080p) [F7A9F930].mkv.mp4',
+    ];
+    return files.map((file) {
+      final encoded = Uri.encodeComponent(file);
+      final url = 'https://archive.org/download/$itemId/$encoded';
+      final s3Url = 'https://archive.org/cors/$itemId/$encoded';
+      return _AnimeStreamEntry(
+        server1Url: url,
+        server3Url: s3Url,
+        server4Url: url,
+      );
+    }).toList(growable: false);
+  }
 
   // --- Hotarubi no Mori e (Movie, Japanese Audio + Sub Indo 1080p) ---
   static List<_AnimeStreamEntry> _buildHotarubiNoMoriE() {

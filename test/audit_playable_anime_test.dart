@@ -35,6 +35,8 @@ void main() {
       'dungeon-meshi',
       'anohana',
       'white-album-2',
+      'seirei-gensouki',
+      'seirei-gensouki-s2',
     ];
 
     final issues = <String>[];
