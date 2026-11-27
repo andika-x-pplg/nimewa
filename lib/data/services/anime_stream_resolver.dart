@@ -117,6 +117,11 @@ class AnimeStreamResolver {
     '18119': 'servant-x-service',
     '114232': 'higehiro',
     '98820': 'just-because',
+    '437': 'perfect-blue',
+    '7724': 'shiki',
+    '101759': 'promised-neverland-s1',
+    '108725': 'promised-neverland-s2',
+    '98460': 'devilman-crybaby',
     '1535': 'death-note',
     '113415': 'jujutsu-kaisen',
     '131573': 'jujutsu-kaisen-0',
@@ -289,6 +294,11 @@ class AnimeStreamResolver {
     'servant-x-service',
     'higehiro',
     'just-because',
+    'perfect-blue',
+    'shiki',
+    'promised-neverland-s1',
+    'promised-neverland-s2',
+    'devilman-crybaby',
   };
 
   /// Returns true if and only if the anime or season has a complete, authentic set
@@ -1089,6 +1099,43 @@ class AnimeStreamResolver {
         id == '98820' ||
         id == 'just-because') {
       return 'just-because';
+    }
+
+    // Perfect Blue (unavailable in Japanese audio + hardsub MP4 on Archive.org)
+    if (combined.contains('perfect blue') ||
+        combined.contains('パーフェクトブルー') ||
+        id == '437' ||
+        id == 'perfect-blue') {
+      return 'perfect-blue';
+    }
+
+    // Shiki (unavailable on Archive.org)
+    if (id == '7724' ||
+        id == 'shiki' ||
+        combined == 'shiki' ||
+        combined.contains('屍鬼')) {
+      return 'shiki';
+    }
+
+    // The Promised Neverland (Season 1 & 2, unavailable in Japanese audio + hardsub MP4 on Archive.org)
+    if (combined.contains('promised neverland') ||
+        combined.contains('yakusoku no neverland') ||
+        combined.contains('約束のネバーランド') ||
+        id == '101759' ||
+        id == '108725' ||
+        id.startsWith('promised-neverland')) {
+      if (season == 2 || id == '108725' || id == 'promised-neverland-s2') {
+        return 'promised-neverland-s2';
+      }
+      return 'promised-neverland-s1';
+    }
+
+    // Devilman Crybaby (unavailable on Archive.org)
+    if (combined.contains('devilman crybaby') ||
+        combined.contains('devilman: crybaby') ||
+        id == '98460' ||
+        id == 'devilman-crybaby') {
+      return 'devilman-crybaby';
     }
 
     // Jujutsu Kaisen
