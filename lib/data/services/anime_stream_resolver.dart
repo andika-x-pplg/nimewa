@@ -97,6 +97,11 @@ class AnimeStreamResolver {
     '100010': 'mahou-shoujo-site',
     '143200': 'summer-pockets',
     '20800': 'yuuki-yuuna',
+    '114446': 'higurashi-gou',
+    '9756': 'madoka-magica',
+    '97986': 'made-in-abyss',
+    '177159': 'momentary-lily',
+    '108147': 'granbelm',
     '1535': 'death-note',
     '113415': 'jujutsu-kaisen',
     '131573': 'jujutsu-kaisen-0',
@@ -249,6 +254,11 @@ class AnimeStreamResolver {
     'summer-pockets',
     'yuuki-yuuna',
     'takopii-no-genzai-movie',
+    'higurashi-gou',
+    'madoka-magica',
+    'made-in-abyss',
+    'momentary-lily',
+    'granbelm',
   };
 
   /// Returns true if and only if the anime or season has a complete, authentic set
@@ -900,6 +910,46 @@ class AnimeStreamResolver {
         id == '20800' ||
         id == 'yuuki-yuuna') {
       return 'yuuki-yuuna';
+    }
+
+    // Higurashi no Naku Koro ni Gou (unavailable on Archive.org)
+    if (combined.contains('higurashi') ||
+        combined.contains('ひぐらし') ||
+        id == '114446' ||
+        id == 'higurashi-gou') {
+      return 'higurashi-gou';
+    }
+
+    // Mahou Shoujo Madoka Magica (unavailable on Archive.org)
+    if (combined.contains('madoka') ||
+        combined.contains('まどか') ||
+        id == '9756' ||
+        id == 'madoka-magica') {
+      return 'madoka-magica';
+    }
+
+    // Made in Abyss (unavailable in Japanese audio + hardsub MP4 on Archive.org)
+    if (combined.contains('made in abyss') ||
+        combined.contains('メイドインアビス') ||
+        id == '97986' ||
+        id == 'made-in-abyss') {
+      return 'made-in-abyss';
+    }
+
+    // Momentary Lily (no burned-in subtitles on Archive.org MP4)
+    if (combined.contains('momentary lily') ||
+        combined.contains('もめんたりー') ||
+        id == '177159' ||
+        id == 'momentary-lily') {
+      return 'momentary-lily';
+    }
+
+    // Granbelm (unavailable on Archive.org)
+    if (combined.contains('granbelm') ||
+        combined.contains('グランベルム') ||
+        id == '108147' ||
+        id == 'granbelm') {
+      return 'granbelm';
     }
 
     // Jujutsu Kaisen
