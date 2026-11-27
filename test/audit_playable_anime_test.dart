@@ -289,6 +289,15 @@ void main() {
       expect(item.aniListId, int.parse(item.id));
       expect(AnimeStreamResolver.hasCompleteEpisodes(item.id, item.title), isFalse);
     }
+
+    expect(
+      AnimeStreamResolver.hasCompleteEpisodes('10212', 'Dr. Slump and Arale-chan: N-cha! Wakuwaku Heart no Natsuyasumi'),
+      isFalse,
+    );
+    expect(
+      AnimeStreamResolver.hasCompleteEpisodes('999001', 'Supreme Harem'),
+      isFalse,
+    );
   });
 }
 

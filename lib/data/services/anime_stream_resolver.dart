@@ -622,8 +622,8 @@ class AnimeStreamResolver {
     // Re:Zero
     if (combined.contains('re:zero') ||
         combined.contains('rezero') ||
-        combined.contains('rem') ||
-        combined.contains('emilia') ||
+        combined.contains('kara hajimeru isekai') ||
+        combined.contains('リゼロ') ||
         id == 'rezero-s3' ||
         id == 'rezero-s2' ||
         id == 'rezero') {
