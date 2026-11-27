@@ -32,6 +32,7 @@ void main() {
       'one-punch-man',
       'spirited-away',
       'eat-your-pancreas',
+      'dungeon-meshi',
     ];
 
     final issues = <String>[];
@@ -289,6 +290,23 @@ void main() {
       expect(item.aniListId, int.parse(item.id));
       expect(AnimeStreamResolver.hasCompleteEpisodes(item.id, item.title), isFalse);
     }
+
+    expect(AnimeStreamResolver.hasCompleteEpisodes('153518', 'Delicious in Dungeon'), isTrue);
+    final dgmUrls = List.generate(
+      24,
+      (i) => AnimeStreamResolver.resolveStreamUrl(
+        animeId: '153518',
+        animeTitle: 'Delicious in Dungeon',
+        server: 'Server 1 (Fast HD)',
+        episodeNumber: i + 1,
+      ),
+    );
+    expect(dgmUrls.every((u) => u.startsWith('https://archive.org/')), isTrue);
+    expect(dgmUrls.toSet().length, 24);
+    expect(
+      AnimeStreamResolver.getEpisodeTitle('153518', 'Dungeon Meshi', 1),
+      'Episode 1: Hot Pot / Tart',
+    );
 
     expect(
       AnimeStreamResolver.hasCompleteEpisodes('10212', 'Dr. Slump and Arale-chan: N-cha! Wakuwaku Heart no Natsuyasumi'),

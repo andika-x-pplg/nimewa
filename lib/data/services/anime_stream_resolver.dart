@@ -67,6 +67,7 @@ class AnimeStreamResolver {
     '21507': 'mob-psycho-s1',
     '101338': 'mob-psycho-s2',
     '140439': 'mob-psycho-s3',
+    '153518': 'dungeon-meshi',
     '1535': 'death-note',
     '113415': 'jujutsu-kaisen',
     '131573': 'jujutsu-kaisen-0',
@@ -124,6 +125,7 @@ class AnimeStreamResolver {
     'one-punch-man',
     'spirited-away',
     'eat-your-pancreas',
+    'dungeon-meshi',
   };
 
   /// Set of anime keys known to be incomplete or lacking authentic episode files.
@@ -741,6 +743,15 @@ class AnimeStreamResolver {
         id == '99750' ||
         id == 'eat-your-pancreas') {
       return 'eat-your-pancreas';
+    }
+
+    // Delicious in Dungeon (Dungeon Meshi)
+    if (combined.contains('delicious in dungeon') ||
+        combined.contains('dungeon meshi') ||
+        combined.contains('ダンジョン飯') ||
+        id == '153518' ||
+        id == 'dungeon-meshi') {
+      return 'dungeon-meshi';
     }
 
     // Jujutsu Kaisen
@@ -1790,6 +1801,7 @@ class AnimeStreamResolver {
     'spirited-away': _buildSpiritedAway(),
     '5-cm-per-second': _build5CmPerSecond(),
     'eat-your-pancreas': _buildEatYourPancreas(),
+    'dungeon-meshi': _buildDungeonMeshi(),
   };
 
   /// Returns an authentic episode title for the given anime and episode number
@@ -2204,7 +2216,52 @@ class AnimeStreamResolver {
     'eat-your-pancreas': [
       'Kimi no Suizou wo Tabetai (I Want to Eat Your Pancreas)',
     ],
+    'dungeon-meshi': [
+      'Hot Pot / Tart',
+      'Roast Basilisk / Omelet / Kakiage',
+      'Living Armor',
+      'Stewed Cabbage / Orcs',
+      'Snacks / Sorbet',
+      'Court Cuisine / Boiled in Saltwater',
+      'Kelpie / Porridge / Broiled with Sauce',
+      'Raspberries / Grilled Meat',
+      'Tentacles / Stew',
+      'Giant Frogs / Aboveground',
+      'Red Dragon I',
+      'Red Dragon II',
+      'Red Dragon III / Good Medicine',
+      'Sea Serpent',
+      'Dryad / Cockatrice',
+      'Cleaners / Mirinboshi',
+      'Harpy / Chimera',
+      'Shapeshifter',
+      'Nightmare / Hag',
+      'Ice Golem / Barometz',
+      'Egg / Golden Country',
+      'Griffin / Familiar',
+      'Griffin Soup / Dumplings',
+      'Bacon and Eggs / Dumplings II',
+    ],
   };
+
+  // --- Delicious in Dungeon / Dungeon Meshi (24 Episodes, Japanese Audio + Sub Indo) ---
+  static List<_AnimeStreamEntry> _buildDungeonMeshi() {
+    const itemId = 'REdNX1dpbnRlciAyMDI0';
+    return List.generate(24, (index) {
+      final epNum = index + 1;
+      final pad = epNum.toString().padLeft(2, '0');
+      final fileName = epNum == 24
+          ? 'Meownime_DGM--24_End_360p.mp4'
+          : 'Meownime_DGM--${pad}_360p.mp4';
+      final url = 'https://archive.org/download/$itemId/$fileName';
+      final s3Url = 'https://archive.org/cors/$itemId/$fileName';
+      return _AnimeStreamEntry(
+        server1Url: url,
+        server3Url: s3Url,
+        server4Url: url,
+      );
+    });
+  }
 
   // --- 5 Centimeters per Second (Movie, Japanese Audio + English Sub 1080p) ---
   static List<_AnimeStreamEntry> _build5CmPerSecond() {
