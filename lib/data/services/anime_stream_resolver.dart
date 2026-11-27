@@ -74,6 +74,11 @@ class AnimeStreamResolver {
     '19': 'monster',
     '1575': 'code-geass-s1',
     '2904': 'code-geass-s2',
+    '20987': 'umaru-s1',
+    '98572': 'umaru-s2',
+    '143270': 'lycoris-recoil',
+    '137822': 'blue-lock-s1',
+    '163146': 'blue-lock-s2',
     '1535': 'death-note',
     '113415': 'jujutsu-kaisen',
     '131573': 'jujutsu-kaisen-0',
@@ -203,6 +208,11 @@ class AnimeStreamResolver {
     'monster',
     'code-geass-s1',
     'code-geass-s2',
+    'umaru-s1',
+    'umaru-s2',
+    'lycoris-recoil',
+    'blue-lock-s1',
+    'blue-lock-s2',
   };
 
   /// Returns true if and only if the anime or season has a complete, authentic set
