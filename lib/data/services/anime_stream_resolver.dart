@@ -51,6 +51,11 @@ class AnimeStreamResolver {
     '161645': 'apothecary-s1',
     '176301': 'apothecary-s2',
     '195516': 'apothecary-s3',
+    '1689': '5-cm-per-second',
+    '99750': 'eat-your-pancreas',
+    '20872': 'plastic-memories',
+    '21234': 'erased',
+    '21860': 'sukasuka',
     '1535': 'death-note',
     '113415': 'jujutsu-kaisen',
     '131573': 'jujutsu-kaisen-0',
@@ -107,6 +112,8 @@ class AnimeStreamResolver {
     'silent-voice',
     'one-punch-man',
     'spirited-away',
+    '5-cm-per-second',
+    'eat-your-pancreas',
   };
 
   /// Set of anime keys known to be incomplete or lacking authentic episode files.
@@ -157,6 +164,9 @@ class AnimeStreamResolver {
     'apothecary-s1',
     'apothecary-s2',
     'apothecary-s3',
+    'plastic-memories',
+    'erased',
+    'sukasuka',
   };
 
   /// Returns true if and only if the anime or season has a complete, authentic set
@@ -690,6 +700,25 @@ class AnimeStreamResolver {
         id == '199' ||
         id == 'spirited-away') {
       return 'spirited-away';
+    }
+
+    // 5 Centimeters per Second (Byousoku 5 Centimeter)
+    if (combined.contains('5 centimeters per second') ||
+        combined.contains('5cm per second') ||
+        combined.contains('byousoku 5 centimeter') ||
+        combined.contains('秒速５センチメートル') ||
+        id == '1689' ||
+        id == '5-cm-per-second') {
+      return '5-cm-per-second';
+    }
+
+    // I Want to Eat Your Pancreas (Kimi no Suizou wo Tabetai)
+    if (combined.contains('eat your pancreas') ||
+        combined.contains('kimi no suizou') ||
+        combined.contains('君の膵臓をたべたい') ||
+        id == '99750' ||
+        id == 'eat-your-pancreas') {
+      return 'eat-your-pancreas';
     }
 
     // Jujutsu Kaisen
@@ -1737,6 +1766,8 @@ class AnimeStreamResolver {
     'tokyo-revengers-s3': _buildTokyoRevengersS3(),
     'happy-sugar-life': _buildHappySugarLife(),
     'spirited-away': _buildSpiritedAway(),
+    '5-cm-per-second': _build5CmPerSecond(),
+    'eat-your-pancreas': _buildEatYourPancreas(),
   };
 
   /// Returns an authentic episode title for the given anime and episode number
@@ -2145,7 +2176,43 @@ class AnimeStreamResolver {
     'spirited-away': [
       'Sen to Chihiro no Kamikakushi (Spirited Away)',
     ],
+    '5-cm-per-second': [
+      'Byousoku 5 Centimeter (5 Centimeters per Second)',
+    ],
+    'eat-your-pancreas': [
+      'Kimi no Suizou wo Tabetai (I Want to Eat Your Pancreas)',
+    ],
   };
+
+  // --- 5 Centimeters per Second (Movie, Japanese Audio + English Sub 1080p) ---
+  static List<_AnimeStreamEntry> _build5CmPerSecond() {
+    const url =
+        'https://archive.org/download/KudoSubsByousoku5CentimeterBD1080p4D6298E9/%5BKudo-subs%5D%20Byousoku%205%20Centimeter%20%5BBD-1080p%5D%20%5B4D6298E9%5D.mp4';
+    const s3Url =
+        'https://archive.org/cors/KudoSubsByousoku5CentimeterBD1080p4D6298E9/%5BKudo-subs%5D%20Byousoku%205%20Centimeter%20%5BBD-1080p%5D%20%5B4D6298E9%5D.mp4';
+    return const [
+      _AnimeStreamEntry(
+        server1Url: url,
+        server3Url: s3Url,
+        server4Url: url,
+      ),
+    ];
+  }
+
+  // --- I Want to Eat Your Pancreas (Movie, Japanese Audio + Sub) ---
+  static List<_AnimeStreamEntry> _buildEatYourPancreas() {
+    const url =
+        'https://archive.org/download/kimi-no-suizou-wo-tabetai_202204/kimi-no-suizou-wo-tabetai-episode-1.mp4';
+    const s3Url =
+        'https://archive.org/cors/kimi-no-suizou-wo-tabetai_202204/kimi-no-suizou-wo-tabetai-episode-1.mp4';
+    return const [
+      _AnimeStreamEntry(
+        server1Url: url,
+        server3Url: s3Url,
+        server4Url: url,
+      ),
+    ];
+  }
 
   // --- Spirited Away (Movie, Japanese Audio + English Hardsub 1080p BD) ---
   static List<_AnimeStreamEntry> _buildSpiritedAway() {

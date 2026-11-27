@@ -31,6 +31,8 @@ void main() {
       'silent-voice',
       'one-punch-man',
       'spirited-away',
+      '5-cm-per-second',
+      'eat-your-pancreas',
     ];
 
     final issues = <String>[];
@@ -245,6 +247,23 @@ void main() {
     expect(batch2Items.map((a) => a.posterUrl).toSet().length, 15);
     expect(batch2Items.map((a) => a.backdropUrl).toSet().length, 15);
     for (final item in batch2Items) {
+      expect(item.aniListId, int.parse(item.id));
+    }
+
+    expect(AnimeStreamResolver.hasCompleteEpisodes('1689', '5 Centimeters per Second'), isTrue);
+    expect(AnimeStreamResolver.hasCompleteEpisodes('99750', 'I Want to Eat Your Pancreas'), isTrue);
+    expect(AnimeStreamResolver.hasCompleteEpisodes('20872', 'Plastic Memories'), isFalse);
+    expect(AnimeStreamResolver.hasCompleteEpisodes('21234', 'Boku dake ga Inai Machi'), isFalse);
+    expect(AnimeStreamResolver.hasCompleteEpisodes('21860', 'Shuumatsu Nani Shitemasu ka'), isFalse);
+
+    const batch3Ids = {'1689', '99750', '20872', '21234', '21860'};
+    final batch3Items = AniListApiClient.cachedPopularAnime
+        .where((a) => batch3Ids.contains(a.id))
+        .toList();
+    expect(batch3Items.length, 5);
+    expect(batch3Items.map((a) => a.posterUrl).toSet().length, 5);
+    expect(batch3Items.map((a) => a.backdropUrl).toSet().length, 5);
+    for (final item in batch3Items) {
       expect(item.aniListId, int.parse(item.id));
     }
   });

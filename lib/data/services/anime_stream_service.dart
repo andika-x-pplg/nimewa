@@ -787,5 +787,35 @@ class AnimeStreamService {
         );
       }).toList(),
     ),
+    '5-cm-per-second': AnimeDetail(
+      id: '1689',
+      title: '5 Centimeters per Second (Byousoku 5 Centimeter)',
+      japaneseTitle: '秒速５センチメートル',
+      rating: 7.1,
+      releaseYear: 2007,
+      genres: const ['Drama', 'Movie', 'Romance', 'Slice of Life'],
+      synopsis: 'Kisah jarak, waktu, dan kenangan antara Takaki Tono dan Akari Shinohara yang perlahan menjauh seiring dewasa.',
+      posterUrl: 'https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx1689-rJKhjLEjQHSy.jpg',
+      backdropUrl: 'https://s4.anilist.co/file/anilistcdn/media/anime/banner/1689.jpg',
+      status: 'Tamat',
+      studio: 'CoMix Wave Films',
+      totalEpisodes: 1,
+      aniListId: 1689,
+      hasVideoAvailable: true,
+      episodes: [
+        EpisodeItem(
+          id: '1689-eps-1',
+          episodeNumber: 1,
+          title: AnimeStreamResolver.getEpisodeTitle('1689', '5 Centimeters per Second', 1, isMovie: true),
+          releaseDate: '2007-03-03',
+          streamUrl: AnimeStreamResolver.resolveStreamUrl(
+            animeId: '1689',
+            animeTitle: '5 Centimeters per Second',
+            server: 'Server 1 (Fast HD)',
+            episodeNumber: 1,
+          ),
+        ),
+      ],
+    ),
   };
 }
