@@ -265,6 +265,30 @@ void main() {
     for (final item in batch3Items) {
       expect(item.aniListId, int.parse(item.id));
     }
+
+    const drMobIds = {
+      '105333',
+      '113936',
+      '142876',
+      '131518',
+      '162670',
+      '172019',
+      '189117',
+      '199221',
+      '21507',
+      '101338',
+      '140439',
+    };
+    final drMobItems = AniListApiClient.cachedPopularAnime
+        .where((a) => drMobIds.contains(a.id))
+        .toList();
+    expect(drMobItems.length, 11);
+    expect(drMobItems.map((a) => a.posterUrl).toSet().length, 11);
+    expect(drMobItems.map((a) => a.backdropUrl).toSet().length, 11);
+    for (final item in drMobItems) {
+      expect(item.aniListId, int.parse(item.id));
+      expect(AnimeStreamResolver.hasCompleteEpisodes(item.id, item.title), isFalse);
+    }
   });
 }
 
