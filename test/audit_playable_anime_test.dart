@@ -37,6 +37,9 @@ void main() {
       'white-album-2',
       'seirei-gensouki',
       'seirei-gensouki-s2',
+      'takopii-no-genzai',
+      'gakkougurashi',
+      'mahou-shoujo-site',
     ];
 
     final issues = <String>[];

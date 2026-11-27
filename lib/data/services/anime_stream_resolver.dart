@@ -91,6 +91,11 @@ class AnimeStreamResolver {
     '126546': 'seirei-gensouki',
     '141182': 'seirei-gensouki-s2',
     '217578': 'seirei-gensouki-s3',
+    '185407': 'takopii-no-genzai',
+    '20754': 'gakkougurashi',
+    '100010': 'mahou-shoujo-site',
+    '143200': 'summer-pockets',
+    '20800': 'yuuki-yuuna',
     '1535': 'death-note',
     '113415': 'jujutsu-kaisen',
     '131573': 'jujutsu-kaisen-0',
@@ -153,6 +158,9 @@ class AnimeStreamResolver {
     'white-album-2',
     'seirei-gensouki',
     'seirei-gensouki-s2',
+    'takopii-no-genzai',
+    'gakkougurashi',
+    'mahou-shoujo-site',
   };
 
   /// Set of anime keys known to be incomplete or lacking authentic episode files.
@@ -237,6 +245,8 @@ class AnimeStreamResolver {
     'gurren-lagann-movie-1',
     'gurren-lagann-movie-2',
     'seirei-gensouki-s3',
+    'summer-pockets',
+    'yuuki-yuuna',
   };
 
   /// Returns true if and only if the anime or season has a complete, authentic set
@@ -835,6 +845,51 @@ class AnimeStreamResolver {
         return 'seirei-gensouki-s2';
       }
       return 'seirei-gensouki';
+    }
+
+    // Takopii no Genzai (Takopi's Original Sin, 6 Episodes)
+    if (combined.contains('takopii') ||
+        combined.contains('takopi') ||
+        combined.contains('タコピー') ||
+        id == '185407' ||
+        id == 'takopii-no-genzai') {
+      return 'takopii-no-genzai';
+    }
+
+    // Gakkougurashi! (School-Live!, 12 Episodes)
+    if (combined.contains('gakkougurashi') ||
+        combined.contains('gakkou gurashi') ||
+        combined.contains('gakkou-gurashi') ||
+        combined.contains('school-live') ||
+        combined.contains('がっこうぐらし') ||
+        id == '20754' ||
+        id == 'gakkougurashi') {
+      return 'gakkougurashi';
+    }
+
+    // Mahou Shoujo Site (Magical Girl Site, 12 Episodes)
+    if (combined.contains('mahou shoujo site') ||
+        combined.contains('magical girl site') ||
+        combined.contains('魔法少女サイト') ||
+        id == '100010' ||
+        id == 'mahou-shoujo-site') {
+      return 'mahou-shoujo-site';
+    }
+
+    // Summer Pockets (incomplete/unavailable on Archive.org)
+    if (combined.contains('summer pockets') ||
+        id == '143200' ||
+        id == 'summer-pockets') {
+      return 'summer-pockets';
+    }
+
+    // Yuuki Yuuna wa Yuusha de Aru (incomplete on Archive.org)
+    if (combined.contains('yuuki yuuna') ||
+        combined.contains('yuki yuna') ||
+        combined.contains('結城友奈') ||
+        id == '20800' ||
+        id == 'yuuki-yuuna') {
+      return 'yuuki-yuuna';
     }
 
     // Jujutsu Kaisen
@@ -1890,6 +1945,9 @@ class AnimeStreamResolver {
     'white-album-2': _buildWhiteAlbum2(),
     'seirei-gensouki': _buildSeireiGensoukiS1(),
     'seirei-gensouki-s2': _buildSeireiGensoukiS2(),
+    'takopii-no-genzai': _buildTakopiiNoGenzai(),
+    'gakkougurashi': _buildGakkougurashi(),
+    'mahou-shoujo-site': _buildMahouShoujoSite(),
   };
 
   /// Returns an authentic episode title for the given anime and episode number
@@ -2389,6 +2447,42 @@ class AnimeStreamResolver {
       'A Reason to Fight',
       'Bonds Across Time',
     ],
+    'takopii-no-genzai': [
+      'To You in 2016',
+      'Takopi\'s Salvation',
+      'Takopi\'s Confession',
+      'Azuma-kun\'s Salvation',
+      'To You in 2022',
+      'To All of You in 2016',
+    ],
+    'gakkougurashi': [
+      'Beginning',
+      'Memories',
+      'That Time',
+      'Outing',
+      'Meeting',
+      'Welcome',
+      'A Letter',
+      'Future',
+      'Holiday',
+      'Rainy Day',
+      'Scar',
+      'Graduation',
+    ],
+    'mahou-shoujo-site': [
+      'Magical Girl Site',
+      'Tempest',
+      'The Princess and the Poisoned Apple',
+      'The Successor and the Transfer Student',
+      'Revenge and Resolve',
+      'Fake',
+      'Joint Strategy',
+      'Last Summer',
+      'God Won\'t Abandon Me',
+      'Breaking',
+      'The Rebel Girls',
+      'We Are...',
+    ],
   };
 
   // --- Seirei Gensouki Season 1 (12 Episodes, Japanese Audio + English Sub 1080p) ---
@@ -2531,6 +2625,77 @@ class AnimeStreamResolver {
         server4Url: url,
       );
     });
+  }
+
+  // --- Takopii no Genzai (6 Episodes, Japanese Audio + English Sub 1080p) ---
+  static List<_AnimeStreamEntry> _buildTakopiiNoGenzai() {
+    const files = [
+      '%5BErai-raws%5D%20Takopii%20no%20Genzai%20-%2001%20%5B1080p%20CR%20WEB-DL%20AVC%20AAC%5D%5BMultiSub%5D%5B4C910B16%5D.1080.mp4',
+      '%5BErai-raws%5D%20Takopii%20no%20Genzai%20-%2002%20%5B1080p%20CR%20WEB-DL%20AVC%20AAC%5D%5BMultiSub%5D%5BF88060E5%5D.1080.mp4',
+      '%5BErai-raws%5D%20Takopii%20no%20Genzai%20-%2003%20%5B1080p%20CR%20WEB-DL%20AVC%20AAC%5D%5BMultiSub%5D%5B4CAE1C8F%5D.1080.mp4',
+      '%5BErai-raws%5D%20Takopii%20no%20Genzai%20-%2004%20%5B1080p%20CR%20WEB-DL%20AVC%20AAC%5D%5BMultiSub%5D%5B3FDB92B6%5D.1080.mp4',
+      '%5BErai-raws%5D%20Takopii%20no%20Genzai%20-%2005%20%5B1080p%20CR%20WEB-DL%20AVC%20AAC%5D%5BMultiSub%5D%5BD245D23E%5D.1080.mp4',
+      '%5BErai-raws%5D%20Takopii%20no%20Genzai%20-%2006%20%5B1080p%20CR%20WEB-DL%20AVC%20AAC%5D%5BMultiSub%5D%5B87FFEBE1%5D.1080.mp4',
+    ];
+    return files.map((file) {
+      final url = 'https://archive.org/download/takopiis-original-sin/$file';
+      final s3Url = 'https://archive.org/cors/takopiis-original-sin/$file';
+      return _AnimeStreamEntry(
+        server1Url: url,
+        server3Url: s3Url,
+        server4Url: url,
+      );
+    }).toList();
+  }
+
+  // --- Gakkougurashi! (12 Episodes, Japanese Audio + Indonesian Sub) ---
+  static List<_AnimeStreamEntry> _buildGakkougurashi() {
+    return List.generate(12, (i) {
+      final ep = i + 1;
+      final n = ep.toString().padLeft(2, '0');
+      final String path;
+      if (ep == 10) {
+        path = '480gg10/%5B480%5DGakkou%20Gurashi%20-%2010.mp4';
+      } else if (ep == 12) {
+        path = '720gg12/%5B720%5DGakkou%20Gurashi%20-%2012%20END.mp4';
+      } else {
+        path = '720gg$n/%5B720%5DGakkou%20Gurashi%20-%20$n.mp4';
+      }
+      final url = 'https://archive.org/download/$path';
+      final s3Url = 'https://archive.org/cors/$path';
+      return _AnimeStreamEntry(
+        server1Url: url,
+        server3Url: s3Url,
+        server4Url: url,
+      );
+    });
+  }
+
+  // --- Mahou Shoujo Site (12 Episodes, Japanese Audio + English Sub 1080p) ---
+  static List<_AnimeStreamEntry> _buildMahouShoujoSite() {
+    const paths = [
+      'ytdown.com-you-tube-magical-girl-site-episode-1-magical-girl-media-t-my-2-xq-b-ks-0-001-1080p/YTDown.com_YouTube_Magical-Girl-Site-Episode-1-Magical-Girl_Media_tMy2XQ-bKs0_001_1080p.mp4',
+      'ytdown.com-you-tube-magical-girl-site-episode-2-tempest-engl-media-w-usg-7gij-2-ai-001-1080p/YTDown.com_YouTube_Magical-Girl-Site-Episode-2-Tempest-Engl_Media_wUSg7gij2AI_001_1080p.mp4',
+      'ytdown.com-you-tube-magical-girl-site-episode-3-the-poisoned-media-okwd-c-1bu-ij-4-001-1080p/YTDown.com_YouTube_Magical-Girl-Site-Episode-3-The-Poisoned_Media_OkwdC1buIJ4_001_1080p.mp4',
+      'ytdown.com-you-tube-magical-girl-site-episode-4-the-successo-media-vewhl-rrpmo-001-1080p/YTDown.com_YouTube_Magical-Girl-Site-Episode-4-The-Successo_Media_VEWhl_Rrpmo_001_1080p.mp4',
+      'ytdown.com-you-tube-magical-girl-site-episode-5-revenge-and-media-1-zsx-xewg-cs-001-1080p/YTDown.com_YouTube_Magical-Girl-Site-Episode-5-Revenge-and-_Media_1ZsxXewg_cs_001_1080p.mp4',
+      'ytdown.com-you-tube-magical-girl-site-episode-6-fake-english-media-l-5-l-4-cc-yqo-4-001-1080p/YTDown.com_YouTube_Magical-Girl-Site-Episode-6-Fake-English_Media_l5L_4CcYqo4_001_1080p.mp4',
+      'ytdown.com-you-tube-magical-girl-site-episode-7-joint-strate-media-5-ubn-6-fo-oz-4-001-1080p/YTDown.com_YouTube_Magical-Girl-Site-Episode-7-Joint-Strate_Media_5UBn6Fo-OZ4_001_1080p.mp4',
+      'ytdown.com-you-tube-magical-girl-site-episode-8-last-summer-media-ju-bm-gtdb-xcw-001-1080p/YTDown.com_YouTube_Magical-Girl-Site-Episode-8-Last-Summer-_Media_JuBmGTDbXCw_001_1080p.mp4',
+      'MGS-ep-9/YTDown.com_YouTube_Magical-Girl-Site-Episode-9-God-Won-t-Ab_Media_pTAC7YaPyDQ_001_1080p.mp4',
+      'ytdown.com-you-tube-magical-girl-site-episode-10-breaking-en-media-l-wjknd-3a-9f-q-001-1080p/YTDown.com_YouTube_Magical-Girl-Site-Episode-10-Breaking-En_Media_lWJknd3a9fQ_001_1080p.mp4',
+      'the-rebel-girls/YTDown.com_YouTube_Magical-Girl-Site-Episode-11-The-Rebel-G_Media_2GBcHPCBJtc_001_1080p.mp4',
+      'ytdown.com-you-tube-magical-girl-site-episode-12-we-are-engl-media-oiep-46-iweas-001-1080p/YTDown.com_YouTube_Magical-Girl-Site-Episode-12-We-Are-Engl_Media_OIEp46IWeas_001_1080p.mp4',
+    ];
+    return paths.map((path) {
+      final url = 'https://archive.org/download/$path';
+      final s3Url = 'https://archive.org/cors/$path';
+      return _AnimeStreamEntry(
+        server1Url: url,
+        server3Url: s3Url,
+        server4Url: url,
+      );
+    }).toList();
   }
 
   // --- 5 Centimeters per Second (Movie, Japanese Audio + English Sub 1080p) ---
