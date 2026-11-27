@@ -79,6 +79,12 @@ class AnimeStreamResolver {
     '143270': 'lycoris-recoil',
     '137822': 'blue-lock-s1',
     '163146': 'blue-lock-s2',
+    '10408': 'hotarubi-no-mori-e',
+    '9989': 'anohana',
+    '18245': 'white-album-2',
+    '2167': 'clannad-s1',
+    '4181': 'clannad-after-story',
+    '16662': 'the-wind-rises',
     '1535': 'death-note',
     '113415': 'jujutsu-kaisen',
     '131573': 'jujutsu-kaisen-0',
@@ -137,6 +143,9 @@ class AnimeStreamResolver {
     'spirited-away',
     'eat-your-pancreas',
     'dungeon-meshi',
+    'hotarubi-no-mori-e',
+    'anohana',
+    'white-album-2',
   };
 
   /// Set of anime keys known to be incomplete or lacking authentic episode files.
@@ -213,6 +222,9 @@ class AnimeStreamResolver {
     'lycoris-recoil',
     'blue-lock-s1',
     'blue-lock-s2',
+    'clannad-s1',
+    'clannad-after-story',
+    'the-wind-rises',
   };
 
   /// Returns true if and only if the anime or season has a complete, authentic set
@@ -774,6 +786,31 @@ class AnimeStreamResolver {
         id == '153518' ||
         id == 'dungeon-meshi') {
       return 'dungeon-meshi';
+    }
+
+    // Hotarubi no Mori e
+    if (combined.contains('hotarubi no mori') ||
+        combined.contains('forest of fireflies') ||
+        combined.contains('蛍火の杜へ') ||
+        id == '10408' ||
+        id == 'hotarubi-no-mori-e') {
+      return 'hotarubi-no-mori-e';
+    }
+
+    // Anohana
+    if (combined.contains('anohana') ||
+        combined.contains('ano hi mita hana') ||
+        combined.contains('あの日見た花の名前') ||
+        id == '9989' ||
+        id == 'anohana') {
+      return 'anohana';
+    }
+
+    // White Album 2
+    if (combined.contains('white album 2') ||
+        id == '18245' ||
+        id == 'white-album-2') {
+      return 'white-album-2';
     }
 
     // Jujutsu Kaisen
@@ -1824,6 +1861,9 @@ class AnimeStreamResolver {
     '5-cm-per-second': _build5CmPerSecond(),
     'eat-your-pancreas': _buildEatYourPancreas(),
     'dungeon-meshi': _buildDungeonMeshi(),
+    'hotarubi-no-mori-e': _buildHotarubiNoMoriE(),
+    'anohana': _buildAnohana(),
+    'white-album-2': _buildWhiteAlbum2(),
   };
 
   /// Returns an authentic episode title for the given anime and episode number
@@ -2264,7 +2304,103 @@ class AnimeStreamResolver {
       'Griffin Soup / Dumplings',
       'Bacon and Eggs / Dumplings II',
     ],
+    'hotarubi-no-mori-e': [
+      'Hotarubi no Mori e (Into the Forest of Fireflies\' Light)',
+    ],
+    'anohana': [
+      'Super Peace Busters',
+      'Menma the Hero',
+      'Search for Menma Club',
+      'A White Dress with a Ribbon',
+      'Tunnel',
+      'Forget, Don\'t Forget',
+      'True Wish',
+      'I Wonder',
+      'Everyone and Menma',
+      'Fireworks',
+      'The Flower That Bloomed That Summer',
+    ],
+    'white-album-2': [
+      'White Album',
+      'A Piano and a Guitar, Side by Side',
+      'Light Music Club, Reunited',
+      'Sound of Silence',
+      'Touching Hearts',
+      'Before the Festival',
+      'The Greatest, Final Day',
+      'As Winter Draws Near',
+      'Passing Hearts',
+      'As the Snow Melts, and Until It Falls Again',
+      'Until the Snow Melts',
+      'Graduation',
+      'A Love That Cannot Reach',
+    ],
   };
+
+  // --- Hotarubi no Mori e (Movie, Japanese Audio + Sub Indo 1080p) ---
+  static List<_AnimeStreamEntry> _buildHotarubiNoMoriE() {
+    const url =
+        'https://archive.org/download/hotarubi-no-mori-e-anime-coo-l-1080-p/Hotarubi%20no%20Mori%20e%20%5B%20Anime%20Coo%20L%20%5D%201080P.mp4';
+    const s3Url =
+        'https://archive.org/cors/hotarubi-no-mori-e-anime-coo-l-1080-p/Hotarubi%20no%20Mori%20e%20%5B%20Anime%20Coo%20L%20%5D%201080P.mp4';
+    return const [
+      _AnimeStreamEntry(
+        server1Url: url,
+        server3Url: s3Url,
+        server4Url: url,
+      ),
+    ];
+  }
+
+  // --- Anohana: The Flower We Saw That Day (11 Episodes, Japanese Audio + Sub Indo 720p) ---
+  static List<_AnimeStreamEntry> _buildAnohana() {
+    const itemId = 'ano-hi-mita-hana-no-namae-wo-bokutachi-wa-mada-shiranai-ape99';
+    const files = [
+      '01 - Chou Heiwa Busters - 720P.mp4',
+      '02 - Yuusha Menma - 720P.mp4',
+      '03 - Menma wo Sagasou no Kai - 720P.mp4',
+      '04 - Shiro no, Ribbon no One-Piece - 720P.mp4',
+      '05 - Tunnel - 720P.mp4',
+      '06 - Wasurete Wasurenaide - 720P.mp4',
+      '07 - Honto no Onegai - 720P.mp4',
+      '08 - I Wonder - 720P.mp4',
+      '09 - Minna to Menma - 720P.mp4',
+      '10 - Hanabi - 720P.mp4',
+      '11 - Ano Natsu ni Saku Hana - 720P.mp4',
+    ];
+    return files.map((file) {
+      final encoded = Uri.encodeComponent(file);
+      final url = 'https://archive.org/download/$itemId/$encoded';
+      final s3Url = 'https://archive.org/cors/$itemId/$encoded';
+      return _AnimeStreamEntry(
+        server1Url: url,
+        server3Url: s3Url,
+        server4Url: url,
+      );
+    }).toList(growable: false);
+  }
+
+  // --- White Album 2 (13 Episodes, Japanese Audio + Sub Indo 480p) ---
+  static List<_AnimeStreamEntry> _buildWhiteAlbum2() {
+    return List.generate(13, (index) {
+      final epNum = index + 1;
+      final pad = epNum.toString().padLeft(2, '0');
+      final itemId = epNum == 13
+          ? '480-white-album-2-13-end'
+          : '480-white-album-2-$pad';
+      final fileName = epNum == 13
+          ? '[480]White Album 2 - 13 END.mp4'
+          : '[480]White Album 2 - $pad.mp4';
+      final encoded = Uri.encodeComponent(fileName);
+      final url = 'https://archive.org/download/$itemId/$encoded';
+      final s3Url = 'https://archive.org/cors/$itemId/$encoded';
+      return _AnimeStreamEntry(
+        server1Url: url,
+        server3Url: s3Url,
+        server4Url: url,
+      );
+    });
+  }
 
   // --- Delicious in Dungeon / Dungeon Meshi (24 Episodes, Japanese Audio + Sub Indo) ---
   static List<_AnimeStreamEntry> _buildDungeonMeshi() {

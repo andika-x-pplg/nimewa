@@ -33,6 +33,9 @@ void main() {
       'spirited-away',
       'eat-your-pancreas',
       'dungeon-meshi',
+      'hotarubi-no-mori-e',
+      'anohana',
+      'white-album-2',
     ];
 
     final issues = <String>[];
