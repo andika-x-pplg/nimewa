@@ -107,6 +107,12 @@ class AnimeStreamResolver {
     '111762': 'fruits-basket-s2',
     '124194': 'fruits-basket-s3',
     '136192': 'fruits-basket-prelude',
+    '17895': 'golden-time',
+    '109020': 'yesterday-wo-utatte',
+    '21857': 'masamune-kun',
+    '146953': 'masamune-kun-s2',
+    '157397': 'yumemiru-danshi',
+    '105932': 'araburu-kisetsu',
     '1535': 'death-note',
     '113415': 'jujutsu-kaisen',
     '131573': 'jujutsu-kaisen-0',
@@ -269,6 +275,12 @@ class AnimeStreamResolver {
     'fruits-basket-s2',
     'fruits-basket-s3',
     'fruits-basket-prelude',
+    'golden-time',
+    'yesterday-wo-utatte',
+    'masamune-kun',
+    'masamune-kun-s2',
+    'yumemiru-danshi',
+    'araburu-kisetsu',
   };
 
   /// Returns true if and only if the anime or season has a complete, authentic set
@@ -986,6 +998,55 @@ class AnimeStreamResolver {
         return 'fruits-basket-s2';
       }
       return 'fruits-basket-s1';
+    }
+
+    // Golden Time (softsub MKV only on Archive.org)
+    if (combined.contains('golden time') ||
+        combined.contains('ゴールデンタイム') ||
+        id == '17895' ||
+        id == 'golden-time') {
+      return 'golden-time';
+    }
+
+    // Yesterday wo Utatte (missing Episode 1 on Archive.org)
+    if (combined.contains('yesterday wo utatte') ||
+        combined.contains('sing yesterday for me') ||
+        combined.contains('sing "yesterday" for me') ||
+        combined.contains('イエスタデイをうたって') ||
+        id == '109020' ||
+        id == 'yesterday-wo-utatte') {
+      return 'yesterday-wo-utatte';
+    }
+
+    // Masamune-kun no Revenge (unavailable in Japanese audio + hardsub MP4 on Archive.org)
+    if (combined.contains('masamune-kun') ||
+        combined.contains('masamune kun') ||
+        combined.contains('政宗くん') ||
+        id == '21857' ||
+        id == '146953' ||
+        id.startsWith('masamune-kun')) {
+      if (season == 2 || id == '146953' || id == 'masamune-kun-s2' || combined.contains('revenge r')) {
+        return 'masamune-kun-s2';
+      }
+      return 'masamune-kun';
+    }
+
+    // Yumemiru Danshi wa Genjitsushugisha (Russian dub only on Archive.org)
+    if (combined.contains('yumemiru danshi') ||
+        combined.contains('dreaming boy is a realist') ||
+        combined.contains('夢見る男子') ||
+        id == '157397' ||
+        id == 'yumemiru-danshi') {
+      return 'yumemiru-danshi';
+    }
+
+    // Araburu Kisetsu no Otome-domo yo. (missing Episodes 1-2 MP4 on Archive.org)
+    if (combined.contains('araburu kisetsu') ||
+        combined.contains('o maidens in your savage season') ||
+        combined.contains('荒ぶる季節') ||
+        id == '105932' ||
+        id == 'araburu-kisetsu') {
+      return 'araburu-kisetsu';
     }
 
     // Jujutsu Kaisen
