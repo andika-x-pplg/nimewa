@@ -68,6 +68,12 @@ class AnimeStreamResolver {
     '101338': 'mob-psycho-s2',
     '140439': 'mob-psycho-s3',
     '153518': 'dungeon-meshi',
+    '101348': 'vinland-saga-s1',
+    '136430': 'vinland-saga-s2',
+    '1': 'cowboy-bebop',
+    '19': 'monster',
+    '1575': 'code-geass-s1',
+    '2904': 'code-geass-s2',
     '1535': 'death-note',
     '113415': 'jujutsu-kaisen',
     '131573': 'jujutsu-kaisen-0',
@@ -191,6 +197,12 @@ class AnimeStreamResolver {
     'mob-psycho-s1',
     'mob-psycho-s2',
     'mob-psycho-s3',
+    'vinland-saga-s1',
+    'vinland-saga-s2',
+    'cowboy-bebop',
+    'monster',
+    'code-geass-s1',
+    'code-geass-s2',
   };
 
   /// Returns true if and only if the anime or season has a complete, authentic set
