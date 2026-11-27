@@ -112,7 +112,6 @@ class AnimeStreamResolver {
     'silent-voice',
     'one-punch-man',
     'spirited-away',
-    '5-cm-per-second',
     'eat-your-pancreas',
   };
 
@@ -167,6 +166,7 @@ class AnimeStreamResolver {
     'plastic-memories',
     'erased',
     'sukasuka',
+    '5-cm-per-second',
   };
 
   /// Returns true if and only if the anime or season has a complete, authentic set

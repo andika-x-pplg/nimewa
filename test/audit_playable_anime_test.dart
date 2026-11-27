@@ -31,7 +31,6 @@ void main() {
       'silent-voice',
       'one-punch-man',
       'spirited-away',
-      '5-cm-per-second',
       'eat-your-pancreas',
     ];
 
@@ -250,7 +249,7 @@ void main() {
       expect(item.aniListId, int.parse(item.id));
     }
 
-    expect(AnimeStreamResolver.hasCompleteEpisodes('1689', '5 Centimeters per Second'), isTrue);
+    expect(AnimeStreamResolver.hasCompleteEpisodes('1689', '5 Centimeters per Second'), isFalse);
     expect(AnimeStreamResolver.hasCompleteEpisodes('99750', 'I Want to Eat Your Pancreas'), isTrue);
     expect(AnimeStreamResolver.hasCompleteEpisodes('20872', 'Plastic Memories'), isFalse);
     expect(AnimeStreamResolver.hasCompleteEpisodes('21234', 'Boku dake ga Inai Machi'), isFalse);
