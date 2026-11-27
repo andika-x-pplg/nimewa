@@ -92,6 +92,7 @@ class AnimeStreamResolver {
     '141182': 'seirei-gensouki-s2',
     '217578': 'seirei-gensouki-s3',
     '185407': 'takopii-no-genzai',
+    '212539': 'takopii-no-genzai-movie',
     '20754': 'gakkougurashi',
     '100010': 'mahou-shoujo-site',
     '143200': 'summer-pockets',
@@ -247,6 +248,7 @@ class AnimeStreamResolver {
     'seirei-gensouki-s3',
     'summer-pockets',
     'yuuki-yuuna',
+    'takopii-no-genzai-movie',
   };
 
   /// Returns true if and only if the anime or season has a complete, authentic set
@@ -852,7 +854,15 @@ class AnimeStreamResolver {
         combined.contains('takopi') ||
         combined.contains('タコピー') ||
         id == '185407' ||
-        id == 'takopii-no-genzai') {
+        id == '212539' ||
+        id.startsWith('takopii-no-genzai')) {
+      if (id == '212539' ||
+          id == 'takopii-no-genzai-movie' ||
+          combined.contains('arigatou, mata ashita') ||
+          combined.contains('arigatou mata ashita') ||
+          combined.contains('ありがとう、また明日')) {
+        return 'takopii-no-genzai-movie';
+      }
       return 'takopii-no-genzai';
     }
 
