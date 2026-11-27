@@ -85,6 +85,9 @@ class AnimeStreamResolver {
     '2167': 'clannad-s1',
     '4181': 'clannad-after-story',
     '16662': 'the-wind-rises',
+    '2001': 'gurren-lagann',
+    '4107': 'gurren-lagann-movie-1',
+    '4565': 'gurren-lagann-movie-2',
     '1535': 'death-note',
     '113415': 'jujutsu-kaisen',
     '131573': 'jujutsu-kaisen-0',
@@ -225,6 +228,9 @@ class AnimeStreamResolver {
     'clannad-after-story',
     'the-wind-rises',
     'hotarubi-no-mori-e',
+    'gurren-lagann',
+    'gurren-lagann-movie-1',
+    'gurren-lagann-movie-2',
   };
 
   /// Returns true if and only if the anime or season has a complete, authentic set
