@@ -102,6 +102,11 @@ class AnimeStreamResolver {
     '97986': 'made-in-abyss',
     '177159': 'momentary-lily',
     '108147': 'granbelm',
+    '120': 'fruits-basket-2001',
+    '105334': 'fruits-basket-s1',
+    '111762': 'fruits-basket-s2',
+    '124194': 'fruits-basket-s3',
+    '136192': 'fruits-basket-prelude',
     '1535': 'death-note',
     '113415': 'jujutsu-kaisen',
     '131573': 'jujutsu-kaisen-0',
@@ -259,6 +264,11 @@ class AnimeStreamResolver {
     'made-in-abyss',
     'momentary-lily',
     'granbelm',
+    'fruits-basket-2001',
+    'fruits-basket-s1',
+    'fruits-basket-s2',
+    'fruits-basket-s3',
+    'fruits-basket-prelude',
   };
 
   /// Returns true if and only if the anime or season has a complete, authentic set
@@ -950,6 +960,32 @@ class AnimeStreamResolver {
         id == '108147' ||
         id == 'granbelm') {
       return 'granbelm';
+    }
+
+    // Fruits Basket (unavailable in Japanese audio + hardsub MP4 on Archive.org)
+    if (combined.contains('fruits basket') ||
+        combined.contains('フルーツバスケット') ||
+        id.startsWith('fruits-basket')) {
+      if (id == '136192' || combined.contains('prelude')) {
+        return 'fruits-basket-prelude';
+      }
+      if (id == '120' || id == 'fruits-basket-2001') {
+        return 'fruits-basket-2001';
+      }
+      if (season == 3 ||
+          id == '124194' ||
+          id == 'fruits-basket-s3' ||
+          combined.contains('the final')) {
+        return 'fruits-basket-s3';
+      }
+      if (season == 2 ||
+          id == '111762' ||
+          id == 'fruits-basket-s2' ||
+          combined.contains('2nd season') ||
+          combined.contains('season 2')) {
+        return 'fruits-basket-s2';
+      }
+      return 'fruits-basket-s1';
     }
 
     // Jujutsu Kaisen
