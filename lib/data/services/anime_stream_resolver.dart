@@ -113,6 +113,10 @@ class AnimeStreamResolver {
     '146953': 'masamune-kun-s2',
     '157397': 'yumemiru-danshi',
     '105932': 'araburu-kisetsu',
+    '118419': 'kamisama-ni-natta-hi',
+    '18119': 'servant-x-service',
+    '114232': 'higehiro',
+    '98820': 'just-because',
     '1535': 'death-note',
     '113415': 'jujutsu-kaisen',
     '131573': 'jujutsu-kaisen-0',
@@ -281,6 +285,10 @@ class AnimeStreamResolver {
     'masamune-kun-s2',
     'yumemiru-danshi',
     'araburu-kisetsu',
+    'kamisama-ni-natta-hi',
+    'servant-x-service',
+    'higehiro',
+    'just-because',
   };
 
   /// Returns true if and only if the anime or season has a complete, authentic set
@@ -1047,6 +1055,40 @@ class AnimeStreamResolver {
         id == '105932' ||
         id == 'araburu-kisetsu') {
       return 'araburu-kisetsu';
+    }
+
+    // Kamisama ni Natta Hi (incomplete on Archive.org)
+    if (combined.contains('kamisama ni natta hi') ||
+        combined.contains('the day i became a god') ||
+        combined.contains('神様になった日') ||
+        id == '118419' ||
+        id == 'kamisama-ni-natta-hi') {
+      return 'kamisama-ni-natta-hi';
+    }
+
+    // Servant x Service (unavailable on Archive.org)
+    if (combined.contains('servant x service') ||
+        combined.contains('servant × service') ||
+        combined.contains('サーバント×サービス') ||
+        id == '18119' ||
+        id == 'servant-x-service') {
+      return 'servant-x-service';
+    }
+
+    // Higehiro (unavailable on Archive.org)
+    if (combined.contains('higehiro') ||
+        combined.contains('hige wo soru') ||
+        combined.contains('ひげを剃る') ||
+        id == '114232' ||
+        id == 'higehiro') {
+      return 'higehiro';
+    }
+
+    // Just Because! (unavailable on Archive.org)
+    if (combined.contains('just because') ||
+        id == '98820' ||
+        id == 'just-because') {
+      return 'just-because';
     }
 
     // Jujutsu Kaisen
