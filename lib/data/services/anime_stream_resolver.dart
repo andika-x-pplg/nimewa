@@ -143,7 +143,6 @@ class AnimeStreamResolver {
     'spirited-away',
     'eat-your-pancreas',
     'dungeon-meshi',
-    'hotarubi-no-mori-e',
     'anohana',
     'white-album-2',
   };
@@ -225,6 +224,7 @@ class AnimeStreamResolver {
     'clannad-s1',
     'clannad-after-story',
     'the-wind-rises',
+    'hotarubi-no-mori-e',
   };
 
   /// Returns true if and only if the anime or season has a complete, authentic set
